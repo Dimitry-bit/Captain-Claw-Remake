@@ -1,6 +1,28 @@
-# Readme
+# Building
+
+---
+
+- Visual Studio
+ 
+```commandline
+git clone https://github.com/Dimitry-bit/Captain-Claw-Remake.git
+cd ./Captain-Claw-Remake
+premake5 vs2022
+cp /path/to/SFML/libs ./vendor/sfml/libs
+cp /path/to/SFML/include ./vendor/sfml/include
+```
+
+- CLion
+ 
+_NOTE: `✅ Reload CMake profile sequentially`_
+```commandline
+git clone https://github.com/Dimitry-bit/Captain-Claw-Remake.git
+Open Project in CLion
+```
 
 # Conventions
+
+---
 
 ## Coding Convention
 
@@ -95,166 +117,3 @@ resources/characters/enemy_slime.png
 resources/common/font_arial.ttf
 resources/common/gui.png
 ```
-
----
-
-# Game Engine:
-
-- Animation
-  ---
-	- Play Animation
-	- Stop Animation
-	- Restart Animation
-	- Pause Animation
-
-	---
-
-- Logging (`printf()` )
-  ---
-	- Log Types:
-		- Info
-		- Warning
-		- Error
-		- Fatal
-	- Syntax: `[LOG_TYPE][SCRIPT]: MESSAGE.`
-		- `[INFO][Game]: Initialization finished successfully.`
-	  
-	---
-
-- Drawing
-  ---
-	- Layers
-		- Background (bg)
-		- Middle
-		- Frontground (fg)
-	- Window resizing (optional)
-
-	---
-
-- Resource Management (optional)
-  ---
-	- Easy Loading/Unloading to resources
-	- Easy Access to resources
-
-	---
-
-- Graphical User Interface
-	- Button
-		- Add
-		- Update
-		- Remove
-	- Text (sf::Text)
-		- Add
-		- Edit
-		- Remove
-
----
-
-# Game
-
-- Loading resources
-  ---
-	- Texture
-	- Sound
-	- Font
- 
-	---
-
-- Level Design
-  ---
-	- Smooth level transitions
-
-	---
-  
-- Game GUI
-  ---
-	- Main Menu
-		- Select Level
-		- Settings
-			- Music Slider
-			- Ambient Slider
-			- SFX Slider
-		- Keymap
-
-		---
-
-	- Pause Menu
-		- Exit Game
-		- Exit To Main Menu
-		- Restart Level
-		- Restart To Nearest Checkpoint
-		- Settings
-		- Keymap
-  
-		---
-
-	- Current weapon
-		- Melee
-			- Sword
-		- Ranged
-			- Pistole
-			- Magic
-	- Current weapon ammo
-
-		---
-
-	- Gold counter
-	- Health
-	- Lives
-
-	---
-
-- Game Mechanics
-  ---
-	- Moving platforms
-	- Hidden platforms
-	- Pickups
-		- Gold
-		- Health potion
-		- Ranged weapons ammo
-	- Check points
-
-	---
-  
-- Player mechanics
-  ---
-	- Move right/left
-	- Move Up/Down (Ladders) 
-	- Smooth Jumping
-		- Time calculated jump (NO RANDOM FORCE)
-	- Attack
-		- Melee
-		- Ranged
-	- Animation
-		- Attack
-		- Reload (if ranged)
-		- Death
-		- Move
-			- right/left
-			- up/down
-		- Damage
-	- Lives and live pickups
-	- Health
-	- Damage
-		- Red glow when player take damage
-  
-	---
-
-- Enemy AI
-  ---
-	- Move right/left
-	- Shooting
-		- Melee
-		- Ranged
-	- Animation
-		- Attack
-		- Reload (if ranged)
-		- Death
-		- Move
-		- Damage
-	- Health
-	- Drops
-		- Gold
-		- Ammo
-		- Health
----
