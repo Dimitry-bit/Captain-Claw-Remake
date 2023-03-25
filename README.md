@@ -11,15 +11,15 @@ Variables | lowerCase | `int screenWidth = 0;`, `float targetFrameTime = 0.016f;
 Local variables | lowerCase | `Vector2 playerPosition = { 0 };`
 Global variables | lowerCase | `bool windowReady = false;`
 Constants | lowerCase | `const int maxValue = 8;`
-Pointers | my_type_t *pointer | `texture2D_t *array = NULL;`
+Pointers | snake_case_t *pointer | `texture2D_t *array = NULL;`
 float values | always x.xf | `float gravity = 10.0f`
 Operators | value1*value2 | `int product = value*6;`
 Operators | value1/value2 | `int division = value/4;`
 Operators | value1 + value2 | `int sum = value + 10;`
 Operators | value1 - value2 | `int res = value - 5;`
-Enum | texture_format_t | `enum texture_format_t`
+Enum | snake_case_t | `enum texture_format_t`
 Enum members | ALL_CAPS | `PIXELFORMAT_UNCOMPRESSED_R8G8B8`
-Struct | struct_name_t | `struct texture2D_t`, `struct material_t`
+Struct | snake_case_t | `struct texture2D_t`, `struct material_t`
 Struct members | lowerCase | `texture.width`, `color.r`
 Functions | TitleCase | `InitWindow()`, `LoadImageFromMemory()`
 Functions params | lowerCase | `width`, `height`
