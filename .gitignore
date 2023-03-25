@@ -404,4 +404,5 @@ FodyWeavers.xsd
 **/*.vcxproj
 vendor/
 bin/
+!bin/resources/
 intermediate/
