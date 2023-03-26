@@ -27,7 +27,7 @@ x86/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
 bld/
-[Bb]in/
+#[Bb]in/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
@@ -479,12 +479,12 @@ fabric.properties
 .idea/*
 !.idea/cmake.xml
 
-
 **/*.exe
 **/*.sln
 **/*.vcxproj
-vendor/*
-!vendor/CMakeLists.txt
-bin/
-!bin/resources/
-intermediate/
+[Vv]endor/*
+![Vv]endor/CMakeLists.txt
+![Vv]endor/premake5.lua
+[Bb]in/*
+![Bb]in/resources/
+[Ii]ntermediate/
