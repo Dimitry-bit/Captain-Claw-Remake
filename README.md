@@ -47,9 +47,10 @@ Functions | TitleCase | `InitWindow()`, `LoadImageFromMemory()`
 Functions params | lowerCase | `width`, `height`
 Ternary Operator | (condition) ? result1 : result2 | `printf("Value is 0: %s", (value == 0) ? "yes" : "no");`
 
-_NOTE: Avoid ~~`namespace std`~~_
+_NOTE: Avoid ~~`using namespace`~~_
 ```cpp 
 using namespace std;
+using namespace sf;
 ```
 
 - Some other conventions to follow:
@@ -59,15 +60,17 @@ using namespace std;
 	 - Control flow statements always are followed **by a space**:
 
 ```cpp
-if (condition) 
+if (condition) {
 	value = 0;
+}
 
 while (!WindowShouldClose()) {
 
 }
 
-for (int i = 0; i < NUM_VALUES; i++) 
-	cout << i;
+for (int i = 0; i < NUM_VALUES; i++) {
+	printf("%d", i);
+}
 
 // Be careful with the switch formatting!
 switch (value) {
