@@ -3,6 +3,8 @@
 #include "SFML/Graphics.hpp"
 #include "SFML/Audio.hpp"
 
+void ResCleanup();
+
 bool ResFontLoadFromFile(const char* identifier);
 bool ResImageLoadFromFile(const char* identifier);
 bool ResTextureLoadFromFile(const char* identifier, const sf::IntRect& area = sf::IntRect());
