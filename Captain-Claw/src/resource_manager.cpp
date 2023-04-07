@@ -88,7 +88,12 @@ bool ResSoundBuffLoadFromFile(const char* identifier)
 
 const sf::Font& ResFontGet(const char* identifier)
 {
-    sf::Font* font = (sf::Font*) fontTBL[identifier];
+    if (!fontTBL.count(identifier)) {
+        printf("[ERROR][Resources]: %s is not loaded, returning default.\n", identifier);
+        return defaultFont;
+    }
+
+    sf::Font* font = (sf::Font*) fontTBL.at(identifier);
     if (font == nullptr) {
         printf("[ERROR][Resources]: %s is not loaded, returning default.\n", identifier);
         return defaultFont;
@@ -99,7 +104,12 @@ const sf::Font& ResFontGet(const char* identifier)
 
 const sf::Image& ResImageGet(const char* identifier)
 {
-    sf::Image* image = (sf::Image*) imageTBL[identifier];
+    if (!imageTBL.count(identifier)) {
+        printf("[ERROR][Resources]: %s is not loaded, returning default.\n", identifier);
+        return defaultImage;
+    }
+
+    sf::Image* image = (sf::Image*) imageTBL.at(identifier);
     if (image == nullptr) {
         printf("[ERROR][Resources]: %s is not loaded, returning default.\n", identifier);
         return defaultImage;
@@ -110,7 +120,12 @@ const sf::Image& ResImageGet(const char* identifier)
 
 const sf::Texture& ResTextureGet(const char* identifier)
 {
-    sf::Texture* texture = (sf::Texture*) textureTBL[identifier];
+    if (!textureTBL.count(identifier)) {
+        printf("[ERROR][Resources]: %s is not loaded, returning default.\n", identifier);
+        return defaultTexture;
+    }
+
+    sf::Texture* texture = (sf::Texture*) textureTBL.at(identifier);
     if (texture == nullptr) {
         printf("[ERROR][Resources]: %s is not loaded, returning default.\n", identifier);
         return defaultTexture;
@@ -121,7 +136,12 @@ const sf::Texture& ResTextureGet(const char* identifier)
 
 const sf::SoundBuffer& ResSoundBuffGet(const char* identifier)
 {
-    sf::SoundBuffer* soundBuff = (sf::SoundBuffer*) soundTBL[identifier];
+    if (!soundTBL.count(identifier)) {
+        printf("[ERROR][Resources]: %s is not loaded, returning default.\n", identifier);
+        return defaultSoundBuffer;
+    }
+
+    sf::SoundBuffer* soundBuff = (sf::SoundBuffer*) soundTBL.at(identifier);
     if (soundBuff == nullptr) {
         printf("[ERROR][Resources]: %s is not loaded, returning default.\n", identifier);
         return defaultSoundBuffer;
@@ -130,53 +150,85 @@ const sf::SoundBuffer& ResSoundBuffGet(const char* identifier)
     return *soundBuff;
 }
 
-void ResFontUnload(const char* identifier)
+void ResFontUnload(const char* identifier, bool erase)
 {
-    sf::Font* data = (sf::Font*) fontTBL[identifier];
-    delete data;
+    if (!fontTBL.count(identifier)) {
+        printf("[ERROR][Resources]: %s is not loaded, unloading failed.", identifier);
+        return;
+    }
+
+    delete fontTBL.at(identifier);
+    if (erase) {
+        fontTBL.erase(identifier);
+    }
+
     printf("[INFO][Resources]: %s unloaded successfully.\n", identifier);
 }
 
-void ResImageUnload(const char* identifier)
+void ResImageUnload(const char* identifier, bool erase)
 {
-    sf::Image* data = (sf::Image*) imageTBL[identifier];
-    delete data;
+    if (!imageTBL.count(identifier)) {
+        printf("[ERROR][Resources]: %s is not loaded, unloading failed.", identifier);
+        return;
+    }
+
+    delete imageTBL.at(identifier);
+    if (erase) {
+        imageTBL.erase(identifier);
+    }
+
     printf("[INFO][Resources]: %s unloaded successfully.\n", identifier);
 }
 
-void ResTextureUnload(const char* identifier)
+void ResTextureUnload(const char* identifier, bool erase)
 {
-    sf::Texture* data = (sf::Texture*) textureTBL[identifier];
-    delete data;
+    if (!textureTBL.count(identifier)) {
+        printf("[ERROR][Resources]: %s is not loaded, unloading failed.", identifier);
+        return;
+    }
+
+    delete textureTBL.at(identifier);
+    if (erase) {
+        textureTBL.erase(identifier);
+    }
+
     printf("[INFO][Resources]: %s unloaded successfully.\n", identifier);
 }
 
-void ResSoundBuffUnload(const char* identifier)
+void ResSoundBuffUnload(const char* identifier, bool erase)
 {
-    sf::SoundBuffer* data = (sf::SoundBuffer*) soundTBL[identifier];
-    delete data;
+    if (!soundTBL.count(identifier)) {
+        printf("[ERROR][Resources]: %s is not loaded, unloading failed.", identifier);
+        return;
+    }
+
+    delete soundTBL.at(identifier);
+    if (erase) {
+        soundTBL.erase(identifier);
+    }
+
     printf("[INFO][Resources]: %s unloaded successfully.\n", identifier);
 }
 
-void ResCleanup()
+void ResUnloadAll()
 {
     for (auto& asset: fontTBL) {
-        ResFontUnload(asset.first.c_str());
+        ResFontUnload(asset.first.c_str(), false);
     }
     fontTBL.clear();
 
     for (auto& asset: imageTBL) {
-        ResImageUnload(asset.first.c_str());
+        ResImageUnload(asset.first.c_str(), false);
     }
     imageTBL.clear();
 
     for (auto& asset: textureTBL) {
-        ResTextureUnload(asset.first.c_str());
+        ResTextureUnload(asset.first.c_str(), false);
     }
     textureTBL.clear();
 
     for (auto& asset: soundTBL) {
-        ResSoundBuffUnload(asset.first.c_str());
+        ResSoundBuffUnload(asset.first.c_str(), false);
     }
     soundTBL.clear();
 }

@@ -1,5 +1,7 @@
 #include <SFML/Graphics.hpp>
 
+#include "resource_manager.h"
+
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(800, 600), "Captain Claw");
@@ -20,5 +22,6 @@ int main()
         window.display();
     }
 
+    ResUnloadAll();
     return 0;
 }
