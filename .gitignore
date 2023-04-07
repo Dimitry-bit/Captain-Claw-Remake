@@ -17,10 +17,10 @@
 mono_crash.*
 
 # Build results
-[Dd]ebug/
+#[Dd]ebug/
 [Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
+#[Rr]elease/
+#[Rr]eleases/
 x64/
 x86/
 [Ww][Ii][Nn]32/
@@ -485,6 +485,7 @@ fabric.properties
 [Vv]endor/*
 ![Vv]endor/CMakeLists.txt
 ![Vv]endor/premake5.lua
-[Bb]in/*
-![Bb]in/resources/
+[Bb]in/**/[Dd]ebug*/*
+[Bb]in/**/[Rr]elease*/*
+![Bb]in/**/openal32.dll
 [Ii]ntermediate/
