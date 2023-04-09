@@ -1,6 +1,7 @@
 #include <iostream>
 #include "SFML/Graphics.hpp"
 #include "SFML/Audio.hpp"
+#include "Settings.h"
 using namespace sf;
 void SettingsSoundSlider(Texture slider_tex,Sprite slider,Music music){
     int volume=100;
