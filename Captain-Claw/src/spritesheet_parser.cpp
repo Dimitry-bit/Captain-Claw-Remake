@@ -31,7 +31,7 @@ bool SpriteSheetLoadFromFile(const char* identifier, spriteSheet_t& spriteSheet)
 
     // TODO(Dimitry): This will cause a crash if parsed wrong. TOO BAD!
     while (!feof(fp)) {
-        fscanf(fp, "%255s x=%d y=%d w=%d h=%d pX=%f pY=%f",
+        fscanf(fp, " n=%255s x=%d y=%d w=%d h=%d pX=%f pY=%f",
                frameID, &area.left, &area.top, &area.width, &area.height, &pivot.x, &pivot.y);
         spriteSheet.frameCount++;
         spriteSheet.frames.push_back(
