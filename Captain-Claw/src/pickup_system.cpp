@@ -157,3 +157,22 @@ player ammo_raise_3(player &captain_claw,const sf::Sprite pistol_death_bag[5], c
     }
     return captain_claw;
 }
+player lives(player &captain_claw)
+{
+    if(captain_claw.health==0)
+    {
+        captain_claw.lives--;
+    }
+    return captain_claw;
+}
+player lives(player &captain_claw,const sf::Sprite extra_live [5],const sf::Sprite claw)
+{
+    for (int i = 0; i <= 4 ; ++i)
+    {
+        if (claw.getGlobalBounds().intersects(extra_live[i].getGlobalBounds()))
+        {
+            captain_claw.lives++;
+        }
+    }
+    return captain_claw;
+}
