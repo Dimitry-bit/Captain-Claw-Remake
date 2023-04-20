@@ -1,9 +1,20 @@
+#include <regex>
 #include "SFML/Graphics.hpp"
 #include "SFML/Audio/SoundBuffer.hpp"
 
 #include "resource_manager.h"
 
 using std::string;
+
+struct asset_context_t {
+    asset_types_t pushType;
+
+    std::map<std::string, asset_slot_t> fontTBL;
+    std::map<std::string, asset_slot_t> imageTBL;
+    std::map<std::string, asset_slot_t> textureTBL;
+    std::map<std::string, asset_slot_t> soundTBL;
+    std::map<std::string, asset_slot_t> spriteSheetTBL;
+};
 
 const string parentDir("../resources/");
 const string fontDir(parentDir + "fonts/");
@@ -16,275 +27,280 @@ const sf::Texture defaultTexture = sf::Texture();
 const sf::Image defaultImage = sf::Image();
 const sf::SoundBuffer defaultSoundBuffer = sf::SoundBuffer();
 
-std::map<std::string, sf::Font*> fontTBL;
-std::map<std::string, sf::Image*> imageTBL;
-std::map<std::string, sf::Texture*> textureTBL;
-std::map<std::string, sf::SoundBuffer*> soundTBL;
-std::map<std::string, spriteSheet_t*> spriteSheetTBL;
+static asset_context_t assetContext;
 
-bool ResFontLoadFromFile(const char* identifier)
+template <typename Type>
+bool LoadFromFile(asset_slot_t& slot, const char* dir, const char* identifier);
+
+template <typename Type>
+void AssetUnload(std::map<std::string, asset_slot_t>& table, const char* identifier, bool erase);
+
+asset_slot_t* AssetGet(std::map<std::string, asset_slot_t>& table, const char* identifier);
+
+void AssetPopType()
 {
-    sf::Font* font = new sf::Font();
-    const string path(fontDir + identifier);
-    if (!font->loadFromFile(path)) {
+    assetContext.pushType = ASSET_NONE;
+}
+
+void AssetPushType(asset_types_t type)
+{
+    assetContext.pushType = type;
+}
+
+template <typename Type>
+bool LoadFromFile(asset_slot_t& slot, const char* dir, const char* identifier)
+{
+    Type* asset = new Type;
+    string path(dir);
+    path.append(identifier);
+    if (!asset->loadFromFile(path)) {
         printf("[ERROR][Resource]: Unable to load %s.\n", path.c_str());
-        delete font;
+        delete asset;
         return false;
     }
 
-    delete fontTBL[identifier];
-    fontTBL[identifier] = font;
-    printf("[INFO][Resources]: %s loaded successfully.\n", identifier);
+    slot.data = asset;
+    slot.header.fileName = path;
+    slot.header.fileExtension = path.substr(path.find_last_of('.'), path.length());
+    slot.header.id = identifier;
+    printf("[INFO][Resources]: %s loaded successfully.\n", path.c_str());
     return true;
 }
 
-bool ResImageLoadFromFile(const char* identifier)
-{
-    sf::Image* image = new sf::Image();
-    const string path(imageDir + identifier);
-    if (!image->loadFromFile(path)) {
-        printf("[ERROR][Resource]: Unable to load %s.\n", path.c_str());
-        delete image;
-        return false;
-    }
-
-    delete imageTBL[identifier];
-    imageTBL[identifier] = image;
-    printf("[INFO][Resources]: %s loaded successfully.\n", identifier);
-    return true;
-
-}
-
-bool ResTextureLoadFromFile(const char* identifier, const sf::IntRect& area)
-{
-    sf::Texture* texture = new sf::Texture();
-    const string path(textureDir + identifier);
-    if (!texture->loadFromFile(path, area)) {
-        printf("[ERROR][Resource]: Unable to load %s.\n", path.c_str());
-        delete texture;
-        return false;
-    }
-
-    delete textureTBL[identifier];
-    textureTBL[identifier] = texture;
-    printf("[INFO][Resources]: %s loaded successfully.\n", identifier);
-    return true;
-}
-
-bool ResTextureLoadFromImage(const sf::Image& image, const char* identifier, const sf::IntRect& area)
-{
-    sf::Texture* texture = new sf::Texture();
-    const string path(textureDir + identifier);
-    if (!texture->loadFromImage(image, area)) {
-        printf("[ERROR][Resource]: Unable to load %s.\n", path.c_str());
-        delete texture;
-        return false;
-    }
-
-    delete textureTBL[identifier];
-    textureTBL[identifier] = texture;
-    printf("[INFO][Resources]: %s loaded successfully.\n", identifier);
-    return true;
-}
-
-bool ResSoundBuffLoadFromFile(const char* identifier)
-{
-    sf::SoundBuffer* soundBuffer = new sf::SoundBuffer();
-    const string path(soundDir + identifier);
-    if (!soundBuffer->loadFromFile(path)) {
-        printf("[ERROR][Resource]: Unable to load %s.\n", path.c_str());
-        delete soundBuffer;
-        return false;
-    }
-
-    delete soundTBL[identifier];
-    soundTBL[identifier] = soundBuffer;
-    printf("[INFO][Resources]: %s loaded successfully.\n", identifier);
-    return true;
-}
-
-bool ResSpriteSheetLoadFromFile(const char* identifier)
+bool ResSpriteSheetLoadFromFile(asset_slot_t& slot, const char* dir, const char* identifier)
 {
     spriteSheet_t* spriteSheet = new spriteSheet_t;
-    const string path(textureDir + identifier);
+    string path(dir);
+    path.append(identifier);
     if (!SpriteSheetLoadFromFile(path.c_str(), *spriteSheet)) {
         printf("[ERROR][Resource]: Unable to load %s.\n", path.c_str());
         delete spriteSheet;
         return false;
     }
 
-    delete spriteSheetTBL[identifier];
-    spriteSheetTBL[identifier] = spriteSheet;
+    slot.spriteSheet = spriteSheet;
+    slot.header.fileName = path;
+    slot.header.fileExtension = path.substr(path.find_last_of('.'), path.length());
+    slot.header.id = identifier;
     printf("[INFO][Resources]: %s loaded successfully.\n", identifier);
     return true;
 }
 
-bool ResTextureLoadFromSpriteSheet(const spriteSheet_t& spriteSheet)
+bool ResLoadFromFile(const char* identifier, int tags)
 {
-    bool status = true;
-    sf::Image image = spriteSheet.texture.copyToImage();
-
-    for (auto& frame: spriteSheet.frames) {
-        if (!ResTextureLoadFromImage(image, frame.id.c_str(), frame.area)) {
-            status = false;
+    switch (assetContext.pushType) {
+        case ASSET_NONE: {
+            return false;
         }
+            break;
+        case ASSET_FONT: {
+            asset_slot_t& slot = assetContext.fontTBL[identifier];
+            slot.assetTags = tags;
+            slot.type = ASSET_FONT;
+            return LoadFromFile<sf::Font>(slot, fontDir.c_str(), identifier);
+        }
+            break;
+        case ASSET_IMAGE: {
+            asset_slot_t& slot = assetContext.imageTBL[identifier];
+            slot.assetTags = tags;
+            slot.type = ASSET_IMAGE;
+            return LoadFromFile<sf::Image>(slot, imageDir.c_str(), identifier);
+        }
+            break;
+        case ASSET_TEXTURE: {
+            asset_slot_t& slot = assetContext.textureTBL[identifier];
+            slot.assetTags = tags;
+            slot.type = ASSET_TEXTURE;
+            return LoadFromFile<sf::Texture>(slot, textureDir.c_str(), identifier);
+        }
+            break;
+        case ASSET_SOUNDBUFFER: {
+            asset_slot_t& slot = assetContext.soundTBL[identifier];
+            slot.assetTags = tags;
+            slot.type = ASSET_SOUNDBUFFER;
+            return LoadFromFile<sf::SoundBuffer>(slot, soundDir.c_str(), identifier);
+        }
+            break;
+        case ASSET_SPRITESHEET: {
+            asset_slot_t& slot = assetContext.spriteSheetTBL[identifier];
+            slot.assetTags = tags;
+            slot.type = ASSET_SPRITESHEET;
+            return ResSpriteSheetLoadFromFile(slot, textureDir.c_str(), identifier);
+        }
+            break;
+    }
+    return false;
+}
+
+bool ResTextureLoadFromSpriteSheet(const char* identifier, int tags)
+{
+    if (!assetContext.spriteSheetTBL.count(identifier)) {
+        printf("[ERROR][Resources]: %s is not loaded.\n", identifier);
+        return false;
+    }
+
+    bool status = true;
+
+    const asset_slot_t* spriteSheetAsset = &assetContext.spriteSheetTBL.at(identifier);
+    sf::Image image = spriteSheetAsset->spriteSheet->texture.copyToImage();
+
+    for (auto& frame: spriteSheetAsset->spriteSheet->frames) {
+        sf::Texture* tex = new sf::Texture;
+        if (!tex->loadFromImage(image, frame.area)) {
+            delete tex;
+            status = false;
+            continue;
+        }
+
+        std::string frameIdentifier(identifier);
+        frameIdentifier = frameIdentifier.substr(0, frameIdentifier.find_last_of('.'));
+        frameIdentifier.push_back('/');
+        frameIdentifier.append(frame.id);
+
+        asset_slot_t& slot = assetContext.textureTBL[frameIdentifier];
+
+        slot.texture = tex;
+        slot.header.fileName = spriteSheetAsset->header.fileName;
+        slot.header.fileExtension = spriteSheetAsset->header.fileExtension;
+        slot.header.id = frameIdentifier;
+        frame.id = frameIdentifier;
+        slot.type = ASSET_TEXTURE;
+        slot.assetTags = spriteSheetAsset->assetTags | tags;
     }
 
     return status;
 }
 
-const sf::Font& ResFontGet(const char* identifier)
+asset_slot_t* AssetGet(std::map<std::string, asset_slot_t>& table, const char* identifier)
 {
-    if (!fontTBL.count(identifier)) {
-        printf("[ERROR][Resources]: %s is not loaded, returning default.\n", identifier);
-        return defaultFont;
-    }
-
-    sf::Font* font = (sf::Font*) fontTBL.at(identifier);
-    if (font == nullptr) {
-        printf("[ERROR][Resources]: %s is not loaded, returning default.\n", identifier);
-        return defaultFont;
-    }
-
-    return *font;
-}
-
-const sf::Image& ResImageGet(const char* identifier)
-{
-    if (!imageTBL.count(identifier)) {
-        printf("[ERROR][Resources]: %s is not loaded, returning default.\n", identifier);
-        return defaultImage;
-    }
-
-    sf::Image* image = (sf::Image*) imageTBL.at(identifier);
-    if (image == nullptr) {
-        printf("[ERROR][Resources]: %s is not loaded, returning default.\n", identifier);
-        return defaultImage;
-    }
-
-    return *image;
-}
-
-const sf::Texture& ResTextureGet(const char* identifier)
-{
-    if (!textureTBL.count(identifier)) {
-        printf("[ERROR][Resources]: %s is not loaded, returning default.\n", identifier);
-        return defaultTexture;
-    }
-
-    sf::Texture* texture = (sf::Texture*) textureTBL.at(identifier);
-    if (texture == nullptr) {
-        printf("[ERROR][Resources]: %s is not loaded, returning default.\n", identifier);
-        return defaultTexture;
-    }
-
-    return *texture;
-}
-
-const sf::SoundBuffer& ResSoundBuffGet(const char* identifier)
-{
-    if (!soundTBL.count(identifier)) {
-        printf("[ERROR][Resources]: %s is not loaded, returning default.\n", identifier);
-        return defaultSoundBuffer;
-    }
-
-    sf::SoundBuffer* soundBuff = (sf::SoundBuffer*) soundTBL.at(identifier);
-    if (soundBuff == nullptr) {
-        printf("[ERROR][Resources]: %s is not loaded, returning default.\n", identifier);
-        return defaultSoundBuffer;
-    }
-
-    return *soundBuff;
-}
-
-const spriteSheet_t* ResSpriteSheetGet(const char* identifier)
-{
-    if (!spriteSheetTBL.count(identifier)) {
+    if (!table.count(identifier)) {
         printf("[ERROR][Resources]: %s is not loaded, returning default.\n", identifier);
         return nullptr;
     }
 
-    spriteSheet_t* spriteSheet = spriteSheetTBL.at(identifier);
-    if (spriteSheet == nullptr) {
-        printf("[ERROR][Resources]: %s is not loaded, returning default.\n", identifier);
+    return &table.at(identifier);
+}
+
+asset_slot_t* ResGetAssetSlot(asset_types_t type, const char* identifier)
+{
+    switch (type) {
+        case ASSET_NONE: {
+            return nullptr;
+        }
+            break;
+        case ASSET_FONT: {
+            return AssetGet(assetContext.fontTBL, identifier);
+        }
+            break;
+        case ASSET_IMAGE: {
+            return AssetGet(assetContext.imageTBL, identifier);
+        }
+            break;
+        case ASSET_TEXTURE: {
+            return AssetGet(assetContext.textureTBL, identifier);
+        }
+            break;
+        case ASSET_SOUNDBUFFER: {
+            return AssetGet(assetContext.soundTBL, identifier);
+        }
+            break;
+        case ASSET_SPRITESHEET: {
+            return AssetGet(assetContext.spriteSheetTBL, identifier);
+        }
+            break;
+    }
+    return nullptr;
+}
+
+const sf::Font& ResFontGet(const char* identifier)
+{
+    asset_slot_t* slot = AssetGet(assetContext.fontTBL, identifier);
+
+    if (!slot || !slot->font) {
+        return defaultFont;
     }
 
-    return spriteSheet;
+    return *slot->font;
+}
+
+const sf::Image& ResImageGet(const char* identifier)
+{
+    asset_slot_t* slot = AssetGet(assetContext.imageTBL, identifier);
+
+    if (!slot || !slot->image) {
+        return defaultImage;
+    }
+
+    return *slot->image;
+}
+
+const sf::Texture& ResTextureGet(const char* identifier)
+{
+    asset_slot_t* slot = AssetGet(assetContext.textureTBL, identifier);
+
+    if (!slot || !slot->texture) {
+        return defaultTexture;
+    }
+
+    return *slot->texture;
+}
+
+const sf::SoundBuffer& ResSoundBuffGet(const char* identifier)
+{
+    asset_slot_t* slot = AssetGet(assetContext.soundTBL, identifier);
+
+    if (!slot || !slot->soundBuffer) {
+        return defaultSoundBuffer;
+    }
+
+    return *slot->soundBuffer;
+}
+
+const spriteSheet_t& ResSpriteSheetGet(const char* identifier)
+{
+    asset_slot_t* slot = AssetGet(assetContext.spriteSheetTBL, identifier);
+    return *slot->spriteSheet;
+}
+
+template <typename Type>
+void AssetUnload(std::map<std::string, asset_slot_t>& table, const char* identifier, bool erase)
+{
+    if (!table.count(identifier)) {
+        printf("[ERROR][Resources]: %s is not loaded, unloading failed.", identifier);
+        return;
+    }
+
+    delete (Type*) table.at(identifier).data; // NOTE(Tony): Union
+    if (erase) {
+        table.erase(identifier);
+    }
+
+    printf("[INFO][Resources]: %s unloaded successfully.\n", identifier);
 }
 
 void ResFontUnload(const char* identifier, bool erase)
 {
-    if (!fontTBL.count(identifier)) {
-        printf("[ERROR][Resources]: %s is not loaded, unloading failed.", identifier);
-        return;
-    }
-
-    delete fontTBL.at(identifier);
-    if (erase) {
-        fontTBL.erase(identifier);
-    }
-
-    printf("[INFO][Resources]: %s unloaded successfully.\n", identifier);
+    AssetUnload<sf::Font>(assetContext.fontTBL, identifier, erase);
 }
 
 void ResImageUnload(const char* identifier, bool erase)
 {
-    if (!imageTBL.count(identifier)) {
-        printf("[ERROR][Resources]: %s is not loaded, unloading failed.", identifier);
-        return;
-    }
-
-    delete imageTBL.at(identifier);
-    if (erase) {
-        imageTBL.erase(identifier);
-    }
-
-    printf("[INFO][Resources]: %s unloaded successfully.\n", identifier);
+    AssetUnload<sf::Image>(assetContext.imageTBL, identifier, erase);
 }
 
 void ResTextureUnload(const char* identifier, bool erase)
 {
-    if (!textureTBL.count(identifier)) {
-        printf("[ERROR][Resources]: %s is not loaded, unloading failed.", identifier);
-        return;
-    }
-
-    delete textureTBL.at(identifier);
-    if (erase) {
-        textureTBL.erase(identifier);
-    }
-
-    printf("[INFO][Resources]: %s unloaded successfully.\n", identifier);
+    AssetUnload<sf::Texture>(assetContext.textureTBL, identifier, erase);
 }
 
 void ResSoundBuffUnload(const char* identifier, bool erase)
 {
-    if (!soundTBL.count(identifier)) {
-        printf("[ERROR][Resources]: %s is not loaded, unloading failed.", identifier);
-        return;
-    }
-
-    delete soundTBL.at(identifier);
-    if (erase) {
-        soundTBL.erase(identifier);
-    }
-
-    printf("[INFO][Resources]: %s unloaded successfully.\n", identifier);
+    AssetUnload<sf::SoundBuffer>(assetContext.textureTBL, identifier, erase);
 }
 
 void ResSpriteSheetUnload(const char* identifier, bool erase)
 {
-    if (!spriteSheetTBL.count(identifier)) {
-        printf("[ERROR][Resources]: %s is not loaded, unloading failed.", identifier);
-        return;
-    }
-
-    delete spriteSheetTBL.at(identifier);
-    if (erase) {
-        spriteSheetTBL.erase(identifier);
-    }
-
-    printf("[INFO][Resources]: %s unloaded successfully.\n", identifier);
+    AssetUnload<spriteSheet_t>(assetContext.spriteSheetTBL, identifier, erase);
 }
 
 void ResTextureSpriteSheetUnload(const spriteSheet_t& spriteSheet)
@@ -296,28 +312,28 @@ void ResTextureSpriteSheetUnload(const spriteSheet_t& spriteSheet)
 
 void ResUnloadAll()
 {
-    for (auto& asset: fontTBL) {
+    for (auto& asset: assetContext.fontTBL) {
         ResFontUnload(asset.first.c_str(), false);
     }
-    fontTBL.clear();
+    assetContext.fontTBL.clear();
 
-    for (auto& asset: imageTBL) {
+    for (auto& asset: assetContext.imageTBL) {
         ResImageUnload(asset.first.c_str(), false);
     }
-    imageTBL.clear();
+    assetContext.imageTBL.clear();
 
-    for (auto& asset: textureTBL) {
+    for (auto& asset: assetContext.textureTBL) {
         ResTextureUnload(asset.first.c_str(), false);
     }
-    textureTBL.clear();
+    assetContext.textureTBL.clear();
 
-    for (auto& asset: soundTBL) {
+    for (auto& asset: assetContext.soundTBL) {
         ResSoundBuffUnload(asset.first.c_str(), false);
     }
-    soundTBL.clear();
+    assetContext.soundTBL.clear();
 
-    for (auto& asset: spriteSheetTBL) {
+    for (auto& asset: assetContext.spriteSheetTBL) {
         ResSpriteSheetUnload(asset.first.c_str(), false);
     }
-    spriteSheetTBL.clear();
+    assetContext.spriteSheetTBL.clear();
 }
