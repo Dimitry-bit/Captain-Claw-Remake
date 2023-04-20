@@ -19,7 +19,7 @@ void ClawMain()
     scene_context_t world = {};
     world.tileGridWidth = MAX_GRID_SIZE;
     world.tileGridHeight = MAX_GRID_SIZE;
-    world.tileSize = 64;
+    world.tileSize = 64; // TODO(Tony): replace by #define
     entity_t* tileGrid[MAX_GRID_SIZE][MAX_GRID_SIZE] = {};
     world.tileGrid = (entity_t**) tileGrid;
     SceneAllocAssets(&world);
