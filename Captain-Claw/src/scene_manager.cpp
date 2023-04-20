@@ -44,6 +44,7 @@ void SceneAllocAssets(scene_context_t* world)
     ResTextureLoadFromSpriteSheet("characters/OFFICER/OFFICER_IDLE.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION);
     ResTextureLoadFromSpriteSheet("characters/SOLDIER/SOLDIER_IDLE.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION);
 
+    // Load level1
     SceneDeserialize(world, "../resources/LEVELS/LEVEL1.cscene");
 }
 
@@ -142,7 +143,7 @@ bool SceneAddTile(scene_context_t* world, entity_t* entity, const sf::Vector2i& 
     return SceneAddTile(world, entity, tilePos.x, tilePos.y);
 }
 
-void SceneAddObject(scene_context_t* world, entity_t* entity)
+void SceneAddEntity(scene_context_t* world, entity_t* entity)
 {
     world->objects.push_back(entity);
     printf("[INFO][SceneManager]: Object Placed.\n");
@@ -267,6 +268,7 @@ void DrawWorld(const scene_context_t* world)
     const float height = viewSize.y / 2;
     const int size = world->tileSize;
 
+    // Simple tile culling (Improve FPS)
     int fromX = (drawCenter.x - width) / size - 2;
     int toX = (drawCenter.x + width) / size + 2;
     int fromY = (drawCenter.y - height) / size - 2;

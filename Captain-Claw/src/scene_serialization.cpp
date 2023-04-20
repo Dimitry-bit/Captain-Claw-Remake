@@ -90,7 +90,7 @@ void SceneDeserialize(scene_context_t* world, const std::string& file)
         entity_t* entity = EntityAlloc();
         if (entity) {
             ReadEntityData(entity, fp);
-            SceneAddObject(world, entity);
+            SceneAddEntity(world, entity);
         }
     }
 
