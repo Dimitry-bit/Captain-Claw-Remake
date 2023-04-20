@@ -2,6 +2,10 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include "pickup_system.h"
+
+Player captain_claw;
+
+
 Player gold_counting_coins(Player &captain_claw, const sf::Sprite coins[50], const sf::Sprite claw)
 {
     for (int i = 0; i <= 49 ; ++i)
