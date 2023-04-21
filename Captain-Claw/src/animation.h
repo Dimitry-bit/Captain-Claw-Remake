@@ -2,6 +2,8 @@
 // Created by Zeyad on 03/28/23.
 //
 
+#pragma once
+
 #include "SFML/System.hpp"
 
 #include "spritesheet_parser.h"
