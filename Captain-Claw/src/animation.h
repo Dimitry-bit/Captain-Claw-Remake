@@ -5,6 +5,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include "spritesheet_parser.h"
 
 // A structure holding the information about an animator (like a modified sprite)
 struct Animator {
@@ -17,9 +18,8 @@ struct Animator {
 // A structure holding the information about an animation
 struct Animation {
 
-    sf::Texture* texture;
-    int frames; // Total number of frames in the animation
-    int rows; // Number of rows (animations) in the animation spritesheet
+    //sf::Texture* texture;
+    const spriteSheet_t* spriteSheet;
     float frameTime; // Duration of each frame
     bool loop; // Flag to indicate if the animation should loop
     int currentFrame; // Index of the current frame being displayed
@@ -27,13 +27,14 @@ struct Animation {
     std::vector<Animator> sprites; // Vector of animators for this animation
 };
 // Function to initialize an animation
-void AnimationInit(Animation* anim, sf::Texture* texture, int frames, int rows, float frameTime, bool loop = true);
+//void AnimationInit(Animation* anim, sf::Texture* texture, int frames, int rows, float frameTime, bool loop = true);
+void AnimationInit(Animation* anim,const spriteSheet_t* spriteSheet,float frameTime, bool loop = true);
 
 // Function to initialize an animator
 void AnimatorInit(Animator& animtr, sf::Sprite& sprite);
 
 // Function to start playing an animation (a request to play, i.e add to the vector of animators)
-void play(Animation* anim, Animator& animtr, int row);
+void play(Animation* anim, Animator& animtr);
 
 // Function to update an animation (handles the current requests, i.e the vector of animators)
 void update(Animation* anim, float deltaTime);
