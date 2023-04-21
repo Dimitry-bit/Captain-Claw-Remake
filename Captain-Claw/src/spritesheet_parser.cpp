@@ -29,7 +29,7 @@ bool SpriteSheetLoadFromFile(const char* identifier, spriteSheet_t& spriteSheet)
     sf::IntRect area;
     sf::Vector2f pivot;
 
-    // TODO(Dimitry): This will cause a crash if parsed wrong. TOO BAD!
+    // TODO(Tony): This will cause a crash if parsed wrong. TOO BAD!
     while (!feof(fp)) {
         fscanf(fp, " n=%255s x=%d y=%d w=%d h=%d pX=%f pY=%f",
                frameID, &area.left, &area.top, &area.width, &area.height, &pivot.x, &pivot.y);

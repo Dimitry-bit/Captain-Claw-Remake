@@ -17,7 +17,7 @@ set(CMAKE_CACHEFILE_DIR ${CMAKE_SOURCE_DIR}/intermediate/${PROJECT_NAME}/$<CONFI
 file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/src)
 file(GLOB_RECURSE SRC_FILES ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/src/*.cpp)
 
-add_executable(${PROJECT_NAME} ${SRC_FILES})
+add_executable(${PROJECT_NAME} ${SRC_FILES} Captain-Claw/src/pickup_system.cpp Captain-Claw/src/pickup_system.h Captain-Claw/src/keymap_menu.cpp Captain-Claw/src/keymap_menu.h)
 
 set(BUILD_SHARED_LIBS ON)
 

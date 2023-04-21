@@ -1,5 +1,3 @@
-#pragma once
-
 #include <vector_math.h>
 #include <SFML/Graphics.hpp>
 #include <cmath>

@@ -1,113 +1,113 @@
-n=ACTION/012 x=0    y=0    w=64   h=64   pX=0.5  pY=0.5  
-n=ACTION/74 x=64   y=0    w=64   h=64   pX=0.5  pY=0.5  
-n=ACTION/302 x=128  y=0    w=51   h=64   pX=0.5  pY=0.5  oX=13   oY=0    oW=64   oH=64   
-n=ACTION/303 x=179  y=0    w=51   h=33   pX=0.5  pY=0.5  oX=13   oY=31   oW=64   oH=64   
-n=ACTION/304 x=0    y=64   w=64   h=33   pX=0.5  pY=0.5  oX=0    oY=31   oW=64   oH=64   
-n=ACTION/305 x=64   y=64   w=64   h=33   pX=0.5  pY=0.5  oX=0    oY=31   oW=64   oH=64   
-n=ACTION/307 x=128  y=64   w=31   h=20   pX=0.5  pY=0.5  oX=0    oY=44   oW=64   oH=64   
-n=ACTION/308 x=159  y=64   w=31   h=64   pX=0.5  pY=0.5  oX=0    oY=0    oW=64   oH=64   
-n=ACTION/309 x=190  y=64   w=64   h=64   pX=0.5  pY=0.5  
-n=ACTION/310 x=0    y=128  w=64   h=64   pX=0.5  pY=0.5  
-n=ACTION/311 x=64   y=128  w=64   h=64   pX=0.5  pY=0.5  
-n=ACTION/312 x=128  y=128  w=64   h=8    pX=0.5  pY=0.5  oX=0    oY=0    oW=64   oH=64   
-n=ACTION/313 x=192  y=128  w=51   h=29   pX=0.5  pY=0.5  oX=6    oY=17   oW=64   oH=64   
-n=ACTION/319 x=0    y=192  w=64   h=64   pX=0.5  pY=0.5  
-n=ACTION/320 x=64   y=192  w=62   h=18   pX=0.5  pY=0.5  oX=0    oY=46   oW=64   oH=64   
-n=ACTION/321 x=126  y=192  w=59   h=64   pX=0.5  pY=0.5  oX=5    oY=0    oW=64   oH=64   
-n=ACTION/322 x=185  y=192  w=64   h=64   pX=0.5  pY=0.5  
-n=ACTION/323 x=0    y=256  w=64   h=64   pX=0.5  pY=0.5  
-n=ACTION/326 x=64   y=256  w=59   h=18   pX=0.5  pY=0.5  oX=4    oY=46   oW=64   oH=64   
-n=ACTION/327 x=123  y=256  w=64   h=64   pX=0.5  pY=0.5  
-n=ACTION/328 x=187  y=256  w=64   h=64   pX=0.5  pY=0.5  
-n=ACTION/331 x=0    y=320  w=64   h=33   pX=0.5  pY=0.5  oX=0    oY=0    oW=64   oH=64   
-n=ACTION/332 x=64   y=320  w=64   h=33   pX=0.5  pY=0.5  oX=0    oY=0    oW=64   oH=64   
-n=ACTION/334 x=128  y=320  w=63   h=33   pX=0.5  pY=0.5  oX=0    oY=0    oW=64   oH=64   
-n=ACTION/401 x=191  y=320  w=64   h=64   pX=0.5  pY=0.5  
-n=ACTION/402 x=0    y=384  w=28   h=64   pX=0.5  pY=0.5  oX=0    oY=0    oW=64   oH=64   
-n=ACTION/403 x=28   y=384  w=64   h=64   pX=0.5  pY=0.5  
-n=ACTION/404 x=92   y=384  w=64   h=64   pX=0.5  pY=0.5  
-n=ACTION/405 x=156  y=384  w=39   h=64   pX=0.5  pY=0.5  oX=25   oY=0    oW=64   oH=64   
-n=ACTION/406 x=0    y=448  w=64   h=64   pX=0.5  pY=0.5  
-n=ACTION/407 x=64   y=448  w=64   h=64   pX=0.5  pY=0.5  
-n=ACTION/408 x=128  y=448  w=64   h=64   pX=0.5  pY=0.5  
-n=ACTION/920 x=192  y=448  w=51   h=64   pX=0.5  pY=0.5  oX=13   oY=0    oW=64   oH=64   
-n=ACTION/922 x=0    y=512  w=64   h=64   pX=0.5  pY=0.5  
-n=ACTION/925 x=64   y=512  w=64   h=64   pX=0.5  pY=0.5  
-n=ACTION/926 x=128  y=512  w=64   h=64   pX=0.5  pY=0.5  
-n=ACTION/933 x=192  y=512  w=35   h=64   pX=0.5  pY=0.5  oX=7    oY=0    oW=64   oH=64   
-n=ACTION/934 x=227  y=512  w=24   h=64   pX=0.5  pY=0.5  oX=13   oY=0    oW=64   oH=64   
-n=ACTION/935 x=0    y=576  w=64   h=64   pX=0.5  pY=0.5  
-n=ACTION/937 x=64   y=576  w=64   h=64   pX=0.5  pY=0.5  
-n=ACTION/938 x=128  y=576  w=30   h=50   pX=0.5  pY=0.5  oX=0    oY=14   oW=64   oH=64   
-n=BACK/001 x=158  y=576  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/002 x=0    y=640  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/003 x=64   y=640  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/004 x=128  y=640  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/005 x=192  y=640  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/006 x=0    y=704  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/007 x=64   y=704  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/008 x=128  y=704  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/009 x=192  y=704  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/010 x=0    y=768  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/011 x=64   y=768  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/012 x=128  y=768  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/013 x=192  y=768  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/014 x=0    y=832  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/015 x=64   y=832  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/016 x=128  y=832  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/017 x=192  y=832  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/018 x=0    y=896  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/019 x=64   y=896  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/020 x=128  y=896  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/021 x=192  y=896  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/022 x=0    y=960  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/023 x=64   y=960  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/024 x=128  y=960  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/025 x=192  y=960  w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/026 x=0    y=1024 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/027 x=64   y=1024 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/028 x=128  y=1024 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/029 x=192  y=1024 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/030 x=0    y=1088 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/031 x=64   y=1088 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/032 x=128  y=1088 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/033 x=192  y=1088 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/034 x=0    y=1152 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/035 x=64   y=1152 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/036 x=128  y=1152 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/037 x=192  y=1152 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/038 x=0    y=1216 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/039 x=64   y=1216 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/040 x=128  y=1216 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/041 x=192  y=1216 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/042 x=0    y=1280 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/043 x=64   y=1280 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/044 x=128  y=1280 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/045 x=192  y=1280 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/046 x=0    y=1344 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/047 x=64   y=1344 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/048 x=128  y=1344 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/049 x=192  y=1344 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/050 x=0    y=1408 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/051 x=64   y=1408 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/052 x=128  y=1408 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/053 x=192  y=1408 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/054 x=0    y=1472 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/055 x=64   y=1472 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/056 x=128  y=1472 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/057 x=192  y=1472 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/058 x=0    y=1536 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/059 x=64   y=1536 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/060 x=128  y=1536 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/061 x=192  y=1536 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/062 x=0    y=1600 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/063 x=64   y=1600 w=64   h=64   pX=0.5  pY=0.5  
-n=BACK/064 x=128  y=1600 w=64   h=64   pX=0.5  pY=0.5  
-n=FRONT/416 x=192  y=1600 w=45   h=64   pX=0.5  pY=0.5  oX=19   oY=0    oW=64   oH=64   
-n=FRONT/417 x=0    y=1664 w=36   h=64   pX=0.5  pY=0.5  oX=0    oY=0    oW=64   oH=64   
-n=FRONT/422 x=36   y=1664 w=45   h=64   pX=0.5  pY=0.5  oX=19   oY=0    oW=64   oH=64   
-n=FRONT/423 x=81   y=1664 w=36   h=64   pX=0.5  pY=0.5  oX=0    oY=0    oW=64   oH=64   
-n=FRONT/426 x=117  y=1664 w=64   h=64   pX=0.5  pY=0.5  
-n=FRONT/427 x=181  y=1664 w=64   h=64   pX=0.5  pY=0.5  
-n=FRONT/428 x=0    y=1728 w=51   h=64   pX=0.5  pY=0.5  oX=13   oY=0    oW=64   oH=64   
-n=FRONT/429 x=51   y=1728 w=46   h=64   pX=0.5  pY=0.5  oX=0    oY=0    oW=64   oH=64   
+n=ACTION/001 x=1    y=1    w=64   h=64   
+n=ACTION/002 x=1    y=67   w=64   h=64   
+n=ACTION/003 x=67   y=1    w=64   h=64   
+n=ACTION/004 x=1    y=133  w=64   h=64   
+n=ACTION/005 x=67   y=67   w=64   h=64   
+n=ACTION/006 x=133  y=1    w=64   h=64   
+n=ACTION/008 x=1    y=199  w=64   h=64   
+n=ACTION/009 x=67   y=133  w=64   h=64   
+n=ACTION/010 x=133  y=67   w=64   h=64   
+n=ACTION/011 x=199  y=1    w=64   h=64   
+n=ACTION/012 x=1    y=265  w=64   h=64   
+n=ACTION/013 x=67   y=199  w=64   h=64   
+n=ACTION/014 x=133  y=133  w=64   h=64   
+n=ACTION/015 x=199  y=67   w=64   h=64   
+n=ACTION/016 x=265  y=1    w=64   h=64   
+n=ACTION/017 x=1    y=331  w=64   h=64   
+n=ACTION/302 x=67   y=265  w=64   h=64   
+n=ACTION/309 x=133  y=199  w=64   h=64   
+n=ACTION/312 x=199  y=133  w=64   h=64   
+n=ACTION/319 x=265  y=67   w=64   h=64   
+n=ACTION/320 x=331  y=1    w=64   h=64   
+n=ACTION/321 x=67   y=331  w=64   h=64   
+n=ACTION/322 x=133  y=265  w=64   h=64   
+n=ACTION/323 x=199  y=199  w=64   h=64   
+n=ACTION/326 x=265  y=133  w=64   h=64   
+n=ACTION/327 x=331  y=67   w=64   h=64   
+n=ACTION/328 x=397  y=1    w=64   h=64   
+n=ACTION/401 x=133  y=331  w=64   h=64   
+n=ACTION/402 x=199  y=265  w=64   h=64   
+n=ACTION/403 x=265  y=199  w=64   h=64   
+n=ACTION/404 x=331  y=133  w=64   h=64   
+n=ACTION/405 x=397  y=67   w=64   h=64   
+n=ACTION/406 x=463  y=1    w=64   h=64   
+n=ACTION/407 x=199  y=331  w=64   h=64   
+n=ACTION/408 x=265  y=265  w=64   h=64   
+n=ACTION/925 x=331  y=199  w=64   h=64   
+n=ACTION/933 x=397  y=133  w=64   h=64   
+n=ACTION/934 x=463  y=67   w=64   h=64   
+n=ACTION/935 x=529  y=1    w=64   h=64   
+n=ACTION/937 x=265  y=331  w=64   h=64   
+n=ACTION/938 x=331  y=265  w=64   h=64   
+n=BACK/001 x=397  y=199  w=64   h=64   
+n=BACK/002 x=463  y=133  w=64   h=64   
+n=BACK/003 x=529  y=67   w=64   h=64   
+n=BACK/004 x=595  y=1    w=64   h=64   
+n=BACK/005 x=331  y=331  w=64   h=64   
+n=BACK/006 x=397  y=265  w=64   h=64   
+n=BACK/007 x=463  y=199  w=64   h=64   
+n=BACK/008 x=529  y=133  w=64   h=64   
+n=BACK/009 x=595  y=67   w=64   h=64   
+n=BACK/010 x=661  y=1    w=64   h=64   
+n=BACK/011 x=397  y=331  w=64   h=64   
+n=BACK/012 x=463  y=265  w=64   h=64   
+n=BACK/013 x=529  y=199  w=64   h=64   
+n=BACK/014 x=595  y=133  w=64   h=64   
+n=BACK/015 x=661  y=67   w=64   h=64   
+n=BACK/016 x=727  y=1    w=64   h=64   
+n=BACK/017 x=463  y=331  w=64   h=64   
+n=BACK/018 x=529  y=265  w=64   h=64   
+n=BACK/019 x=595  y=199  w=64   h=64   
+n=BACK/020 x=661  y=133  w=64   h=64   
+n=BACK/021 x=727  y=67   w=64   h=64   
+n=BACK/022 x=793  y=1    w=64   h=64   
+n=BACK/023 x=529  y=331  w=64   h=64   
+n=BACK/024 x=595  y=265  w=64   h=64   
+n=BACK/025 x=661  y=199  w=64   h=64   
+n=BACK/026 x=727  y=133  w=64   h=64   
+n=BACK/027 x=793  y=67   w=64   h=64   
+n=BACK/028 x=859  y=1    w=64   h=64   
+n=BACK/029 x=595  y=331  w=64   h=64   
+n=BACK/030 x=661  y=265  w=64   h=64   
+n=BACK/031 x=727  y=199  w=64   h=64   
+n=BACK/032 x=793  y=133  w=64   h=64   
+n=BACK/033 x=859  y=67   w=64   h=64   
+n=BACK/034 x=925  y=1    w=64   h=64   
+n=BACK/035 x=661  y=331  w=64   h=64   
+n=BACK/036 x=727  y=265  w=64   h=64   
+n=BACK/037 x=793  y=199  w=64   h=64   
+n=BACK/038 x=859  y=133  w=64   h=64   
+n=BACK/039 x=925  y=67   w=64   h=64   
+n=BACK/040 x=991  y=1    w=64   h=64   
+n=BACK/041 x=727  y=331  w=64   h=64   
+n=BACK/042 x=793  y=265  w=64   h=64   
+n=BACK/043 x=859  y=199  w=64   h=64   
+n=BACK/044 x=925  y=133  w=64   h=64   
+n=BACK/045 x=991  y=67   w=64   h=64   
+n=BACK/046 x=1057 y=1    w=64   h=64   
+n=BACK/047 x=793  y=331  w=64   h=64   
+n=BACK/048 x=859  y=265  w=64   h=64   
+n=BACK/049 x=925  y=199  w=64   h=64   
+n=BACK/050 x=991  y=133  w=64   h=64   
+n=BACK/051 x=1057 y=67   w=64   h=64   
+n=BACK/052 x=1123 y=1    w=64   h=64   
+n=BACK/053 x=1189 y=1    w=64   h=64   
+n=BACK/054 x=859  y=331  w=64   h=64   
+n=BACK/055 x=925  y=265  w=64   h=64   
+n=BACK/056 x=991  y=199  w=64   h=64   
+n=BACK/057 x=1057 y=133  w=64   h=64   
+n=BACK/058 x=1123 y=67   w=64   h=64   
+n=BACK/059 x=1189 y=67   w=64   h=64   
+n=BACK/060 x=925  y=331  w=64   h=64   
+n=BACK/061 x=991  y=265  w=64   h=64   
+n=BACK/062 x=1057 y=199  w=64   h=64   
+n=BACK/063 x=1123 y=133  w=64   h=64   
+n=BACK/064 x=1189 y=133  w=64   h=64   
+n=FRONT/1 x=991  y=331  w=64   h=64   
+n=FRONT/2 x=1057 y=265  w=64   h=64   
+n=FRONT/3 x=1123 y=199  w=64   h=64   
+n=FRONT/4 x=1189 y=199  w=64   h=64   
+n=FRONT/5 x=1057 y=331  w=64   h=64   
+n=FRONT/6 x=1123 y=265  w=64   h=64   
+n=FRONT/7 x=1189 y=265  w=64   h=64   
+n=FRONT/8 x=1123 y=331  w=64   h=64   
