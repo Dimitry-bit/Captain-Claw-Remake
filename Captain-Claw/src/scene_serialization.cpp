@@ -72,19 +72,24 @@ void SceneDeserialize(scene_context_t* world, const std::string& file)
     fread(&world->tileGridWidth, sizeof(world->tileGridWidth), 1, fp);
     fread(&world->tileGridHeight, sizeof(world->tileGridHeight), 1, fp);
     fread(&world->tileSize, sizeof(world->tileSize), 1, fp);
-    int count;
-    fread(&count, sizeof(count), 1, fp);
-    while (count-- > 0) {
-        int x, y;
-        fread(&x, sizeof(x), 1, fp);
-        fread(&y, sizeof(y), 1, fp);
-        entity_t* entity = EntityAlloc();
-        if (entity) {
-            ReadEntityData(entity, fp);
-            SceneAddTile(world, entity, x, y);
+    fread(&world->tileMapCount, sizeof(world->tileMapCount), 1, fp);
+    for (int i = 0; i < world->tileMapCount; ++i) {
+        int count;
+        fread(&count, sizeof(count), 1, fp);
+        SceneSetTileIndex(world ,i);
+        while (count-- > 0) {
+            int x, y;
+            fread(&x, sizeof(x), 1, fp);
+            fread(&y, sizeof(y), 1, fp);
+            entity_t* entity = EntityAlloc();
+            if (entity) {
+                ReadEntityData(entity, fp);
+                SceneAddTile(world, entity, x, y);
+            }
         }
     }
 
+    int count;
     fread(&count, sizeof(count), 1, fp);
     while (count--) {
         entity_t* entity = EntityAlloc();
