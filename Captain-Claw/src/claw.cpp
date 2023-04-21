@@ -4,6 +4,7 @@
 #include "renderer.h"
 #include "resource_manager.h"
 #include "scene_manager.h"
+#include "animation.h"
 
 void HandleEvent(render_context_t* renderContext);
 void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf::Time deltaTime);
@@ -58,6 +59,7 @@ void HandleEvent(render_context_t* renderContext)
 void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf::Time deltaTime)
 {
     HandleEvent(renderContext);
+    AnimSystemUpdate(deltaTime.asSeconds());
 
     rWindow->clear();
     rWindow->setView(renderContext->worldView);

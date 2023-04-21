@@ -1,102 +1,105 @@
 //
 // Created by Zeyad on 03/28/23.
 //
-#include "animation.h"
+
+#include <vector>
 #include "SFML/Graphics.hpp"
 
+#include "animation.h"
 
-void AnimationInit(Animation* anim, const spriteSheet_t* spriteSheet, float frameTime, bool loop){
-    anim->spriteSheet = spriteSheet;
-    anim->frameTime = frameTime;
-    anim->loop = loop;
-    anim->currentFrame = 0;
-    anim->elapsedTime = 0.0f;
-}
+std::vector<Animator*> animators;
+std::vector<Animator*> animatorsToRemove;
 
+const float animatorUpdateRate = 1.0f / 10.0f;
 
-// Initialize the animator (modified sprite)
-void AnimatorInit(Animator& animtr, sf::Sprite& sprite) {
-    animtr.lol = &sprite;
-}
+void AnimUpdate(Animator* animator, float deltaTime);
 
-// Add the modified sprite to the animation to be played
-void play(Animation* anim, Animator& animtr) {
-    anim->sprites.push_back(animtr);
-}
+// TODO(Zeyad): Validate pointer
 
-// Remove the modified sprite from the animation
-void stop(Animation* anim, Animator& animtr) {
-
-    for (auto it = anim->sprites.begin(); it != anim->sprites.end(); it++) {
-        if (it->lol == animtr.lol)
-        {
-            anim->sprites.erase(it);
-            break;
-        }
-    }
-
-}
-
-void pause(Animation* anim, Animator& animtr)
+Animation AnimAnimationCreate(const spriteSheet_t* spriteSheet, bool isLoop, float speed)
 {
-    for (auto it = anim->sprites.begin(); it != anim->sprites.end(); it++) {
-        if (it->lol == animtr.lol) {
-           it->pause = true;
-           break;
-        }
-    }
+    Animation animation = {
+        .spriteSheet = spriteSheet,
+        .speed = speed,
+        .isLoop = isLoop,
+    };
 
+    return animation;
 }
 
-void resume(Animation* anim, Animator& animtr)
+void AnimAnimatorInit(Animator* animator, sf::Sprite* sprite)
 {
-    for (auto it = anim->sprites.begin(); it != anim->sprites.end(); it++) {
-        if (it->lol == animtr.lol) {
-            it->pause = false;
+    animator->currentFrame = 0;
+    animator->elapsedTime = 0;
+    animator->state = ANIMATOR_STATE_STOPPED;
+    animator->sprite = sprite;
+}
+
+void AnimPlay(Animator* animator, const Animation* animation)
+{
+    animator->currentFrame = 0;
+    animator->state = ANIMATOR_STATE_PLAYING;
+    animator->elapsedTime = 0;
+    animator->anim = *animation;
+
+    animators.push_back(animator);
+}
+
+void AnimPause(Animator* animator)
+{
+    animator->state = ANIMATOR_STATE_PAUSED;
+}
+
+void AnimResume(Animator* animator)
+{
+    animator->state = ANIMATOR_STATE_PLAYING;
+}
+
+void AnimStop(Animator* animator)
+{
+    animator->state = ANIMATOR_STATE_STOPPED;
+    for (auto it = animators.begin(); it != animators.end(); ++it) {
+        if ((*it)->state == ANIMATOR_STATE_STOPPED) {
+            animators.erase(it);
             break;
         }
     }
-
 }
-void inverseState(Animation* anim, Animator& animtr){
-    for (auto it = anim->sprites.begin(); it != anim->sprites.end(); it++) {
-        if (it->lol == animtr.lol) {
-            it->pause = !(it->pause);
-            break;
+
+void AnimUpdate(Animator* animator, float deltaTime)
+{
+    animator->elapsedTime += deltaTime;
+
+    // TODO(Zeyad): Division by zero
+    if (animator->elapsedTime >= animatorUpdateRate / animator->anim.speed) {
+        animator->elapsedTime = 0;
+
+        sf::Sprite& sprite = *animator->sprite;
+        const spriteSheet_t& spriteSheet = *animator->anim.spriteSheet;
+        const sf::IntRect& area = spriteSheet.frames[animator->currentFrame].area;
+        const sf::Vector2f& pivot = spriteSheet.frames[animator->currentFrame].pivot;
+
+        sprite.setTexture(spriteSheet.texture);
+        sprite.setTextureRect(spriteSheet.frames[animator->currentFrame].area);
+        sprite.setOrigin(pivot.x * area.width, pivot.y * area.height);
+
+        animator->currentFrame++;
+        if (animator->anim.isLoop) {
+            animator->currentFrame %= spriteSheet.frameCount;
+        } else {
+            animatorsToRemove.push_back(animator);
         }
     }
 }
 
-
-
-void update(Animation* anim, float deltaTime) {
-    anim->elapsedTime += deltaTime;
-    if (anim->elapsedTime >= anim->frameTime) {
-        anim->elapsedTime -= anim->frameTime;
-        anim->currentFrame++;
-        if (anim->currentFrame >= anim->spriteSheet->frameCount) {
-            if (anim->loop) {
-                anim->currentFrame = 0;
-            } else {
-                anim->currentFrame = anim->spriteSheet->frameCount - 1;
-            }
-        }
-    }
-    sf::Vector2f origin;
-    for (auto sprite : anim->sprites) {
-
-        origin.x = anim->spriteSheet->frames[anim->currentFrame].pivot.x * anim->spriteSheet->frames[anim->currentFrame].area.width;
-        origin.y = anim->spriteSheet->frames[anim->currentFrame].pivot.y * anim->spriteSheet->frames[anim->currentFrame].area.width;
-        sprite.lol->setOrigin(origin);
-        if (!sprite.pause){
-        sprite.lol->setTexture(anim->spriteSheet->texture);
-        sprite.lol->setTextureRect(anim->spriteSheet->frames[anim->currentFrame].area);
-
-
-        printf("Current frame: %i\n", anim->currentFrame);
-        printf("Texture rect: %i, %i, %i, %i\n", sprite.lol->getTextureRect().left ,sprite.lol->getTextureRect().top, sprite.lol->getTextureRect().width, sprite.lol->getTextureRect().height);
-    }
+void AnimSystemUpdate(float deltaTime)
+{
+    for (auto& animator: animators) {
+        AnimUpdate(animator, deltaTime);
     }
 
+    for (auto& animator: animatorsToRemove) {
+        AnimStop(animator);
+    }
+    animatorsToRemove.clear();
 }
-
