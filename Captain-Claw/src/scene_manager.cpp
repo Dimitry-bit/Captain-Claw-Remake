@@ -27,6 +27,9 @@ void SceneAllocAssets(scene_context_t* world)
     ResLoadFromFile("objects/CRATES.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_EYECANDY);
     ResLoadFromFile("characters/OFFICER/OFFICER_IDLE.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION);
     ResLoadFromFile("characters/SOLDIER/SOLDIER_IDLE.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION);
+    ResLoadFromFile("vfx/GLITTER.png", ASSET_TAG_ANIMATION);
+    ResLoadFromFile("vfx/GLITTERGREEN.png", ASSET_TAG_ANIMATION);
+    ResLoadFromFile("vfx/GLITTERRED.png", ASSET_TAG_ANIMATION);
     AssetPopType();
     ResTextureLoadFromSpriteSheet("tilesets/LEVEL1_TILES.png", ASSET_TAG_TILE);
     ResTextureLoadFromSpriteSheet("objects/LEVEL1_OBJECTS.png", ASSET_TAG_OBJ | ASSET_TAG_EYECANDY);
@@ -43,6 +46,9 @@ void SceneAllocAssets(scene_context_t* world)
     ResTextureLoadFromSpriteSheet("objects/CRATES.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_EYECANDY);
     ResTextureLoadFromSpriteSheet("characters/OFFICER/OFFICER_IDLE.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION);
     ResTextureLoadFromSpriteSheet("characters/SOLDIER/SOLDIER_IDLE.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION);
+    ResTextureLoadFromSpriteSheet("vfx/GLITTER.png", ASSET_TAG_ANIMATION);
+    ResTextureLoadFromSpriteSheet("vfx/GLITTERGREEN.png", ASSET_TAG_ANIMATION);
+    ResTextureLoadFromSpriteSheet("vfx/GLITTERRED.png", ASSET_TAG_ANIMATION);
 
     // Load level1
     SceneDeserialize(world, "../resources/LEVELS/LEVEL1.cscene");
