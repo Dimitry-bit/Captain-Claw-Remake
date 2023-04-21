@@ -1,32 +1,33 @@
 #include <iostream>
 #include "SFML/Graphics.hpp"
 #include "Player Movement.h"
+#include <math.h>
 
-sf::Clock cl;
-float dt;
-float multiplier = 30.f;
-float movespeed=5.f;
+bool IsValidMove(const sf::Vector2f& pos, float groundH)
+{
+    return (pos.y < groundH);
+}
 
-sf::Vector2f upvelocity = {0,0};
-float groundheight=440.f;
-float gravity=-1;
-bool grounded=false;
-
-
-
-void movement(sf:: Sprite& x, float& d,float& mul,float sp,float groundH,sf::Vector2f upvel){
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-        x.move(sp*d*mul,0);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-        x.move(-sp*d*mul,0);
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up)){
-       upvel.y=-sp*d*mul;
-        if(x.getPosition().y < groundH){
-            upvel.y -= gravity*d;
-        }
-        else {
-            upvel.y=0;
-        }
+void MoveUnchecked(sf::Sprite& x, sf::Vector2f movement, float& deltaTime,sf::Sprite& ladder, float jumpHeight)
+{
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+        movement.x += 1.0f * deltaTime;
+        x.setScale(1,0);
     }
-d =cl.restart().asSeconds();
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+        movement.x -= 1.0f * deltaTime;
+        x.setScale(-1,0);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && x.getGlobalBounds().intersects(ladder.getGlobalBounds())){
+        movement.y -= 1.0f * deltaTime;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && x.getGlobalBounds().intersects(ladder.getGlobalBounds())){
+        movement.y += 1.0f * deltaTime;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)){
+        movement.y= -sqrtf(2.0f * 981.0f * jumpHeight);
+        movement.y += 981.0f * deltaTime;
+    }
+
+    x.move(movement);
 }
