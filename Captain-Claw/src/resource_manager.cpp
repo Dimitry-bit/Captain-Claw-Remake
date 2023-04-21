@@ -79,7 +79,7 @@ bool ResSpriteSheetLoadFromFile(asset_slot_t& slot, const char* dir, const char*
     }
 
     slot.spriteSheet = spriteSheet;
-    slot.header.fileName = path;
+    slot.header.fileName = identifier;
     slot.header.fileExtension = path.substr(path.find_last_of('.'), path.length());
     slot.header.id = identifier;
     printf("[INFO][Resources]: %s loaded successfully.\n", identifier);

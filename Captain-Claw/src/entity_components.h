@@ -32,6 +32,7 @@ enum pickup_types_t {
     PICKUP_AMMO,
     PICKUP_HEALTH,
     PICKUP_TREASURE,
+    PICKUP_LIVE,
 };
 
 struct c_pickup_t {

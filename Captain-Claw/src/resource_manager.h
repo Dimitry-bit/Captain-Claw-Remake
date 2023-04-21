@@ -61,6 +61,7 @@ void ResTextureSpriteSheetUnload(const spriteSheet_t& spriteSheet);
 
 void ResUnloadAll();
 
+asset_slot_t* ResGetAssetSlot(asset_types_t type, const char* identifier);
 const sf::Font& ResFontGet(const char* identifier);
 const sf::Image& ResImageGet(const char* identifier);
 const sf::Texture& ResTextureGet(const char* identifier);

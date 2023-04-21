@@ -32,21 +32,25 @@ static void ReadEntityData(entity_t* entity, FILE* fp)
         case C_NONE:break;
         case C_TILE: {
             fread(&entity->tile.type, sizeof(entity->tile.type), 1, fp);
+            EntitySet(entity, entity->type, &entity->tile);
         }
             break;
         case C_PICKUP: {
             fread(&entity->pickup.type, sizeof(entity->pickup.type), 1, fp);
             fread(&entity->pickup.value, sizeof(entity->pickup.value), 1, fp);
+            EntitySet(entity, entity->type, &entity->pickup);
         }
             break;
         case C_CHECKPOINT: {
             fread(&entity->checkpoint.keepInventory, sizeof(entity->checkpoint.keepInventory), 1, fp);
+            EntitySet(entity, entity->type, &entity->checkpoint);
         }
             break;
         case C_ENEMY: {
             fread(&entity->enemy.type, sizeof(entity->enemy.type), 1, fp);
             fread(&entity->enemy.min.x, sizeof(entity->enemy.min.x), 2, fp);
             fread(&entity->enemy.max.x, sizeof(entity->enemy.max.x), 2, fp);
+            EntitySet(entity, entity->type, &entity->enemy);
         }
             break;
         case C_PLATFORM: {
@@ -54,6 +58,7 @@ static void ReadEntityData(entity_t* entity, FILE* fp)
             fread(&entity->platform.a.x, sizeof(entity->platform.a.x), 2, fp);
             fread(&entity->platform.b.x, sizeof(entity->platform.b.x), 2, fp);
             fread(&entity->platform.time, sizeof(entity->platform.time), 1, fp);
+            EntitySet(entity, entity->type, &entity->platform);
         }
             break;
         case C_SOUND:break;
@@ -76,7 +81,7 @@ void SceneDeserialize(scene_context_t* world, const std::string& file)
     for (int i = 0; i < world->tileMapCount; ++i) {
         int count;
         fread(&count, sizeof(count), 1, fp);
-        SceneSetTileIndex(world ,i);
+        SceneSetTileIndex(world, i);
         while (count-- > 0) {
             int x, y;
             fread(&x, sizeof(x), 1, fp);

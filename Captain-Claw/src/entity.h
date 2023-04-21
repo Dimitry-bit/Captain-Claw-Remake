@@ -3,6 +3,7 @@
 #include <string>
 
 #include "entity_components.h"
+#include "animation.h"
 
 using std::string;
 
@@ -10,6 +11,13 @@ struct entity_t {
     entity_components_t type;
     string logic;
 
+    sf::RectangleShape swordCollider;
+    int gold_counter = 0;
+    int health = 100;
+    int ammo_pistol = 10;
+    int lives = 6;
+
+    Animator animator;
     c_render_t render;
     c_tile_t tile;
     c_platform_t platform;

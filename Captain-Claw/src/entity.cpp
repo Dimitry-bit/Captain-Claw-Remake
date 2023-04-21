@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "renderer.h"
 #include "resource_manager.h"
+#include "pickup_system.h"
 
 static void EntityInitRender(entity_t* self, const render_types_t& rType, const string& graphicID = "");
 
@@ -13,6 +14,10 @@ entity_t* EntityAlloc()
 
 void EntityDealloc(entity_t** entity)
 {
+    if ((*entity)->animator.state != ANIMATOR_STATE_STOPPED) {
+        AnimStop(&(*entity)->animator);
+    }
+
     delete *entity;
     *entity = nullptr;
 }
@@ -21,6 +26,7 @@ void EntityInit(entity_t* self, const string& logic, const render_types_t& rType
 {
     EntityInitRender(self, rType, graphicID);
     self->logic = logic;
+    AnimAnimatorInit(&self->animator, &self->render.sprite);
 }
 
 void EntitySet(entity_t* self, const entity_components_t& cType, const void* cValue)
@@ -30,6 +36,7 @@ void EntitySet(entity_t* self, const entity_components_t& cType, const void* cVa
         case C_NONE:break;
         case C_PICKUP: {
             self->pickup = *(const c_pickup_t*) (cValue);
+            PickupEntityInit(self);
         }
             break;
         case C_CHECKPOINT: {
@@ -65,9 +72,17 @@ static void EntityInitRender(entity_t* self, const render_types_t& rType, const 
     self->render.type = rType;
     self->render.graphicsID = graphicID;
     if (self->render.type == RENDER_SPRITE && !self->render.graphicsID.empty()) {
-        const sf::Texture& tex = ResTextureGet(self->render.graphicsID.c_str());
-        self->render.sprite.setTexture(tex);
-        self->render.sprite.setTextureRect(sf::IntRect(0, 0, tex.getSize().x, tex.getSize().y));
+        const asset_slot_t* slot = ResGetAssetSlot(ASSET_TEXTURE, self->render.graphicsID.c_str());
+        const sf::Texture* tex = slot->texture;
+        if (slot->assetTags & ASSET_TAG_ANIMATION) {
+            const spriteSheet_t& spriteSheet = ResSpriteSheetGet(slot->header.fileName.c_str());
+            tex = &spriteSheet.texture;
+            self->render.sprite.setTextureRect(spriteSheet.frames[0].area);
+            self->render.sprite.setOrigin(spriteSheet.frames[0].pivot);
+            self->render.graphicsID = slot->header.fileName;
+        }
+
+        self->render.sprite.setTexture(*tex);
     }
 }
 
