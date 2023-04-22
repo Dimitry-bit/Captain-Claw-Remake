@@ -28,6 +28,7 @@ unsigned int SoundPlay(const sf::SoundBuffer* sound, bool isLoop)
         return 0;
     }
 
+    // TODO(Tony): Should wrap ?
     unsigned int handle = soundHandleIndex++;
     soundObjects[handle] = {
         .handle = handle,
@@ -38,8 +39,6 @@ unsigned int SoundPlay(const sf::SoundBuffer* sound, bool isLoop)
     soundComponent.self.setBuffer(*sound);
     soundComponent.self.play();
 
-    // TODO(Tony): Should wrap ?
-    soundHandleIndex++;
     return handle;
 }
 
