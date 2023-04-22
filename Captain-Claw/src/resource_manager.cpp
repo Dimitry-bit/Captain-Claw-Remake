@@ -266,7 +266,7 @@ template <typename Type>
 void AssetUnload(std::map<std::string, asset_slot_t>& table, const char* identifier, bool erase)
 {
     if (!table.count(identifier)) {
-        printf("[ERROR][Resources]: %s is not loaded, unloading failed.", identifier);
+        printf("[ERROR][Resources]: %s is not loaded, unloading failed.\n", identifier);
         return;
     }
 
@@ -295,7 +295,7 @@ void ResTextureUnload(const char* identifier, bool erase)
 
 void ResSoundBuffUnload(const char* identifier, bool erase)
 {
-    AssetUnload<sf::SoundBuffer>(assetContext.textureTBL, identifier, erase);
+    AssetUnload<sf::SoundBuffer>(assetContext.soundTBL, identifier, erase);
 }
 
 void ResSpriteSheetUnload(const char* identifier, bool erase)
