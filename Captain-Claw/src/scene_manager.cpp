@@ -82,6 +82,55 @@ void SceneAllocAssets(scene_context_t* world)
     ResTextureLoadFromSpriteSheet(CHAR_SOLDIER_IDLE);
     ResTextureLoadFromSpriteSheet(CHAR_CLAW_IDLE);
 
+    AssetPushType(ASSET_SOUNDBUFFER);
+    ResLoadFromFile(WAV_AMBIENT_CAVEMEDIUM2);
+    ResLoadFromFile(WAV_CLAW_DRYGUNSHOT1);
+    ResLoadFromFile(WAV_CLAW_FALLDEATH);
+    ResLoadFromFile(WAV_CLAW_GUNSHOT);
+    ResLoadFromFile(WAV_CLAW_LAND);
+    ResLoadFromFile(WAV_CLAW_LEFTFOOT1);
+    ResLoadFromFile(WAV_CLAW_RIGHTFOOT1);
+    ResLoadFromFile(WAV_CLAW_LEFTSWING1);
+    ResLoadFromFile(WAV_CLAW_LIGHTSWORD);
+    ResLoadFromFile(WAV_CLAW_SWORDSWISH);
+    ResLoadFromFile(WAV_CLAW_UPPERCUT1);
+    ResLoadFromFile(WAV_CLAW_VOICE_1);
+    ResLoadFromFile(WAV_CLAW_HIT1);
+    ResLoadFromFile(WAV_CLAW_HIT2);
+    ResLoadFromFile(WAV_CLAW_HIT3);
+    ResLoadFromFile(WAV_CLAW_HITATHIH);
+    ResLoadFromFile(WAV_CLAW_HITATLOW);
+    ResLoadFromFile(WAV_OFFICER_HIT1);
+    ResLoadFromFile(WAV_OFFICER_HIT2);
+    ResLoadFromFile(WAV_SOLDIER_HIT1);
+    ResLoadFromFile(WAV_SOLDIER_HIT2);
+    ResLoadFromFile(WAV_SOLDIER_HIT3);
+    ResLoadFromFile(WAV_SOLDIER_HIT4);
+    ResLoadFromFile(WAV_SOLDIER_BASH_ATTACK);
+    ResLoadFromFile(WAV_SOLDIER_GUN_ATTACK);
+    ResLoadFromFile(WAV_GAME_HIT1);
+    ResLoadFromFile(WAV_GAME_HIT2);
+    ResLoadFromFile(WAV_GAME_HIT3);
+    ResLoadFromFile(WAV_GAME_HIT4);
+    ResLoadFromFile(WAV_GAME_COIN);
+    ResLoadFromFile(WAV_GAME_AMMUNITION);
+    ResLoadFromFile(WAV_GAME_TREASURE);
+    ResLoadFromFile(WAV_GAME_CROSS);
+    ResLoadFromFile(WAV_GAME_EXTRALIFE);
+    ResLoadFromFile(WAV_GAME_RINGS);
+    ResLoadFromFile(WAV_GAME_SCEPTER);
+    ResLoadFromFile(WAV_GAME_PICKUP1);
+    ResLoadFromFile(WAV_GAME_PICKUP2);
+    ResLoadFromFile(WAV_GAME_FOODITEM);
+    ResLoadFromFile(WAV_GAME_FLAGRISE);
+    ResLoadFromFile(WAV_GAME_FLAGWAVE);
+    ResLoadFromFile(WAV_GAME_DEATHTILE);
+    ResLoadFromFile(WAV_GAME_KILLOFF);
+    ResLoadFromFile(WAV_GAME_PEGCRUMBLE);
+    ResLoadFromFile(WAV_GAME_SOLHITHI);
+    ResLoadFromFile(WAV_GAME_SOLHITL2);
+    AssetPopType();
+
     // Load level1
     SceneDeserialize(world, LEVEL_ROCA);
 }
