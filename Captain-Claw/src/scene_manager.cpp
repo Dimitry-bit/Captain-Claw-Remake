@@ -1,5 +1,6 @@
 #include "scene_manager.h"
 #include "scene_serialization.h"
+#include "asset_constants.h"
 #include "renderer.h"
 #include "resource_manager.h"
 #include "entity.h"
@@ -8,50 +9,81 @@ void SceneAllocAssets(scene_context_t* world)
 {
     // This is fine if we only load 1--2 levels
 
-
-    AssetPushType(ASSET_SPRITESHEET);
-    ResLoadFromFile("tilesets/LEVEL1_TILES.png", ASSET_TAG_TILE);
-    ResLoadFromFile("objects/LEVEL1_OBJECTS.png", ASSET_TAG_OBJ | ASSET_TAG_EYECANDY);
-    ResLoadFromFile("objects/GAME.png", ASSET_TAG_OBJ | ASSET_TAG_PICKUP);
-    ResLoadFromFile("objects/CHECKPOINT.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION);
-    ResLoadFromFile("objects/SUPERCHECKPOINT.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION);
-    ResLoadFromFile("objects/COINS.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_PICKUP);
-    ResLoadFromFile("objects/CRUMBLINGPEG.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION);
-    ResLoadFromFile("objects/EXTRALIFE.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_PICKUP);
-    ResLoadFromFile("objects/HANDS4.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_EYECANDY);
-    ResLoadFromFile("objects/MANICAL1.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_EYECANDY);
-    ResLoadFromFile("objects/TORCH.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_EYECANDY);
-    ResLoadFromFile("objects/TORSHSTAND.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_EYECANDY);
-    ResLoadFromFile("objects/CRATES.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_EYECANDY);
-    ResLoadFromFile("characters/OFFICER/OFFICER_IDLE.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION);
-    ResLoadFromFile("characters/SOLDIER/SOLDIER_IDLE.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION);
-    ResLoadFromFile("characters/CLAW/CLAW_IDLE.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION);
-    ResLoadFromFile("vfx/GLITTER.png", ASSET_TAG_ANIMATION);
-    ResLoadFromFile("vfx/GLITTERGREEN.png", ASSET_TAG_ANIMATION);
-    ResLoadFromFile("vfx/GLITTERRED.png", ASSET_TAG_ANIMATION);
+    AssetPushType(ASSET_FONT);
+    ResLoadFromFile(FONT_JETBRAINS);
     AssetPopType();
-    ResTextureLoadFromSpriteSheet("tilesets/LEVEL1_TILES.png", ASSET_TAG_TILE);
-    ResTextureLoadFromSpriteSheet("objects/LEVEL1_OBJECTS.png", ASSET_TAG_OBJ | ASSET_TAG_EYECANDY);
-    ResTextureLoadFromSpriteSheet("objects/GAME.png", ASSET_TAG_OBJ | ASSET_TAG_PICKUP);
-    ResTextureLoadFromSpriteSheet("objects/CHECKPOINT.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION);
-    ResTextureLoadFromSpriteSheet("objects/SUPERCHECKPOINT.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION);
-    ResTextureLoadFromSpriteSheet("objects/COINS.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_PICKUP);
-    ResTextureLoadFromSpriteSheet("objects/CRUMBLINGPEG.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION);
-    ResTextureLoadFromSpriteSheet("objects/EXTRALIFE.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_PICKUP);
-    ResTextureLoadFromSpriteSheet("objects/HANDS4.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_EYECANDY);
-    ResTextureLoadFromSpriteSheet("objects/MANICAL1.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_EYECANDY);
-    ResTextureLoadFromSpriteSheet("objects/TORCH.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_EYECANDY);
-    ResTextureLoadFromSpriteSheet("objects/TORSHSTAND.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_EYECANDY);
-    ResTextureLoadFromSpriteSheet("objects/CRATES.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_EYECANDY);
-    ResTextureLoadFromSpriteSheet("characters/OFFICER/OFFICER_IDLE.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION);
-    ResTextureLoadFromSpriteSheet("characters/SOLDIER/SOLDIER_IDLE.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION);
-    ResTextureLoadFromSpriteSheet("characters/CLAW/CLAW_IDLE.png", ASSET_TAG_OBJ | ASSET_TAG_ANIMATION);
-    ResTextureLoadFromSpriteSheet("vfx/GLITTER.png", ASSET_TAG_ANIMATION);
-    ResTextureLoadFromSpriteSheet("vfx/GLITTERGREEN.png", ASSET_TAG_ANIMATION);
-    ResTextureLoadFromSpriteSheet("vfx/GLITTERRED.png", ASSET_TAG_ANIMATION);
+
+    AssetPushType(ASSET_SPRITESHEET); // ASSET_PUSH
+    ResLoadFromFile(TILE_LEVEL1_TILES, ASSET_TAG_TILE);
+    ResLoadFromFile(OBJ_LEVEL1_OBJECTS, ASSET_TAG_OBJ | ASSET_TAG_EYECANDY);
+    ResLoadFromFile(OBJ_SPRITESHEET_GAME, ASSET_TAG_OBJ | ASSET_TAG_PICKUP);
+    ResLoadFromFile(OBJ_CHECKPOINT, ASSET_TAG_OBJ | ASSET_TAG_ANIMATION);
+    ResLoadFromFile(OBJ_SUPERCHECKPOINT, ASSET_TAG_OBJ | ASSET_TAG_ANIMATION);
+    ResLoadFromFile(OBJ_CRUMBLINGPEG, ASSET_TAG_OBJ | ASSET_TAG_ANIMATION);
+    ResLoadFromFile(OBJ_EXTRALIFE, ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_PICKUP);
+    ResLoadFromFile(OBJ_HANDS4, ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_EYECANDY);
+    ResLoadFromFile(OBJ_MANICAL1, ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_EYECANDY);
+    ResLoadFromFile(OBJ_TORCH, ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_EYECANDY);
+    ResLoadFromFile(OBJ_TORSHSTAND, ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_EYECANDY);
+    ResLoadFromFile(OBJ_CRATES, ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_EYECANDY);
+    ResLoadFromFile(OBJ_COINS, ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_PICKUP);
+    ResLoadFromFile(OBJ_DYNAMITELIT1, ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_PICKUP);
+    ResLoadFromFile(OBJ_DYNAMITELIT2, ASSET_TAG_OBJ | ASSET_TAG_ANIMATION | ASSET_TAG_PICKUP);
+    ResLoadFromFile(OBJ_WARP, ASSET_TAG_ANIMATION);
+    ResLoadFromFile(OBJ_VERTWARP, ASSET_TAG_ANIMATION);
+    ResLoadFromFile(OBJ_BOSSWARP, ASSET_TAG_ANIMATION);
+
+    ResLoadFromFile(CHAR_OFFICER_IDLE, ASSET_TAG_ANIMATION);
+
+    ResLoadFromFile(CHAR_SOLDIER_IDLE, ASSET_TAG_ANIMATION);
+    ResLoadFromFile(CHAR_SOLDIER_WALK, ASSET_TAG_ANIMATION);
+    ResLoadFromFile(CHAR_SOLDIER_GUN_ATTACK, ASSET_TAG_ANIMATION);
+    ResLoadFromFile(CHAR_SOLDIER_HURT_STANCES, ASSET_TAG_ANIMATION);
+
+    ResLoadFromFile(CHAR_CLAW_IDLE, ASSET_TAG_ANIMATION);
+    ResLoadFromFile(CHAR_CLAW_CLIMBING, ASSET_TAG_ANIMATION);
+    ResLoadFromFile(CHAR_CLAW_FALLING, ASSET_TAG_ANIMATION);
+    ResLoadFromFile(CHAR_CLAW_RUN, ASSET_TAG_ANIMATION);
+    ResLoadFromFile(CHAR_CLAW_HURT, ASSET_TAG_ANIMATION);
+    ResLoadFromFile(CHAR_CLAW_JUMP, ASSET_TAG_ANIMATION);
+    ResLoadFromFile(CHAR_CLAW_CROTCH_PISTOL_ATTACK, ASSET_TAG_ANIMATION);
+    ResLoadFromFile(CHAR_CLAW_CROTCH_SWORD_ATTACK, ASSET_TAG_ANIMATION);
+    ResLoadFromFile(CHAR_CLAW_MELEE_ATTACK, ASSET_TAG_ANIMATION);
+    ResLoadFromFile(CHAR_CLAW_PISTOL_ATTACK, ASSET_TAG_ANIMATION);
+    ResLoadFromFile(CHAR_CLAW_SWORD_ATTACK, ASSET_TAG_ANIMATION);
+
+    ResLoadFromFile(VFX_GLITTER, ASSET_TAG_ANIMATION);
+    ResLoadFromFile(VFX_GLITTERGREEN, ASSET_TAG_ANIMATION);
+    ResLoadFromFile(VFX_GLITTERRED, ASSET_TAG_ANIMATION);
+
+    ResLoadFromFile(UI_DYNAMITE, ASSET_TAG_ANIMATION);
+    ResLoadFromFile(UI_HEALTHHEART, ASSET_TAG_ANIMATION);
+    ResLoadFromFile(UI_PISTOL, ASSET_TAG_ANIMATION);
+    ResLoadFromFile(UI_POWERUPS, ASSET_TAG_ANIMATION);
+    ResLoadFromFile(UI_STOPWATCH, ASSET_TAG_ANIMATION);
+    ResLoadFromFile(UI_TREASURECHEST, ASSET_TAG_ANIMATION);
+    ResLoadFromFile(UI_LIVESHEAD, ASSET_TAG_ANIMATION);
+    AssetPopType(); // ASSET_POP
+
+    ResTextureLoadFromSpriteSheet(TILE_LEVEL1_TILES);
+    ResTextureLoadFromSpriteSheet(OBJ_LEVEL1_OBJECTS);
+    ResTextureLoadFromSpriteSheet(OBJ_SPRITESHEET_GAME);
+    ResTextureLoadFromSpriteSheet(OBJ_CHECKPOINT);
+    ResTextureLoadFromSpriteSheet(OBJ_SUPERCHECKPOINT);
+    ResTextureLoadFromSpriteSheet(OBJ_CRUMBLINGPEG);
+    ResTextureLoadFromSpriteSheet(OBJ_EXTRALIFE);
+    ResTextureLoadFromSpriteSheet(OBJ_HANDS4);
+    ResTextureLoadFromSpriteSheet(OBJ_MANICAL1);
+    ResTextureLoadFromSpriteSheet(OBJ_TORCH);
+    ResTextureLoadFromSpriteSheet(OBJ_TORSHSTAND);
+    ResTextureLoadFromSpriteSheet(OBJ_CRATES);
+    ResTextureLoadFromSpriteSheet(OBJ_COINS);
+    ResTextureLoadFromSpriteSheet(CHAR_OFFICER_IDLE);
+    ResTextureLoadFromSpriteSheet(CHAR_SOLDIER_IDLE);
+    ResTextureLoadFromSpriteSheet(CHAR_CLAW_IDLE);
 
     // Load level1
-    SceneDeserialize(world, "../resources/LEVELS/LEVEL1.cscene");
+    SceneDeserialize(world, LEVEL_ROCA);
 }
 
 void SceneDealloc(scene_context_t* world)
