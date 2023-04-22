@@ -5,6 +5,7 @@
 #include "resource_manager.h"
 #include "scene_manager.h"
 #include "animation.h"
+#include "sound_sys.h"
 
 void HandleEvent(render_context_t* renderContext);
 void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf::Time deltaTime);
@@ -60,6 +61,7 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
 {
     HandleEvent(renderContext);
     AnimSystemUpdate(deltaTime.asSeconds());
+    SoundSystemUpdate();
 
     rWindow->clear();
     rWindow->setView(renderContext->worldView);
