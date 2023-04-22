@@ -86,7 +86,7 @@ void AnimUpdate(Animator* animator, float deltaTime)
         animator->currentFrame++;
         if (animator->anim.isLoop) {
             animator->currentFrame %= spriteSheet.frameCount;
-        } else {
+        } else if (animator->currentFrame >= spriteSheet.frameCount) {
             animatorsToRemove.push_back(animator);
         }
     }
