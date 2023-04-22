@@ -63,7 +63,7 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
 
     rWindow->clear();
     rWindow->setView(renderContext->worldView);
-    DrawWorld(world);
+//    DrawWorld(world);
 
     rWindow->setView(renderContext->uiView);
     // TODO(Tony): Draw UI stuff

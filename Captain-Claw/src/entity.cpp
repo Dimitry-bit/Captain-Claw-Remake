@@ -14,9 +14,9 @@ entity_t* EntityAlloc()
 
 void EntityDealloc(entity_t** entity)
 {
-    if ((*entity)->animator.state != ANIMATOR_STATE_STOPPED) {
-        AnimStop(&(*entity)->animator);
-    }
+//    if (entity && (*entity)->animator.state != ANIMATOR_STATE_STOPPED) {
+//        AnimStop(&(*entity)->animator);
+//    }
 
     delete *entity;
     *entity = nullptr;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <list>
 
 #include "entity_components.h"
 #include "animation.h"
@@ -31,6 +32,11 @@ struct entity_transform {
     sf::FloatRect bounds;
     sf::Vector2f position;
     sf::Vector2f origin;
+};
+
+struct component_list_t {
+    entity_components_t type;
+    std::list<entity_t*> entities;
 };
 
 entity_t* EntityAlloc();
