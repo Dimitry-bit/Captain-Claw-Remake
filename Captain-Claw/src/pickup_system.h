@@ -1,4 +1,5 @@
 #pragma once
+#include "animation.h"
 
 #include<iostream>
 #include<SFML/Graphics.hpp>
@@ -14,6 +15,7 @@ struct Player
     int health = 100 ;
     int ammo_pistol = 10 ;
     int lives=6;
+    Animator animator;
 };
 struct pickup_t
 {
