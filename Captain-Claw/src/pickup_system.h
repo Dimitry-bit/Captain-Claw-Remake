@@ -4,6 +4,8 @@
 #include<SFML/Graphics.hpp>
 #include<SFML/Audio.hpp>
 
+#include "entity.h"
+
 struct Player
 {
     sf::Sprite sprite;
@@ -13,19 +15,12 @@ struct Player
     int ammo_pistol = 10 ;
     int lives=6;
 };
-enum pickup_type
-{
-    PICKUP_GOLD=0,
-    PICKUP_HEALTH,
-    PICKUP_AMMO,
-    PICKUP_LIVE
-};
 struct pickup_t
 {
     sf::Sprite gfx ;
     int value ;
     bool isEnabled ;
-    pickup_type type ;
+    pickup_types_t type;
 };
 
 void PickupAddGold(Player &captain_claw, pickup_t& gold);

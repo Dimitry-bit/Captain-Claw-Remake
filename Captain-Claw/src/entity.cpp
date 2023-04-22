@@ -36,7 +36,6 @@ void EntitySet(entity_t* self, const entity_components_t& cType, const void* cVa
         case C_NONE:break;
         case C_PICKUP: {
             self->pickup = *(const c_pickup_t*) (cValue);
-            PickupEntityInit(self);
         }
             break;
         case C_CHECKPOINT: {

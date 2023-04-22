@@ -15,7 +15,7 @@ void PickupUpdate(Player &captain_claw) {
             continue;
         }
         switch (pickups[i]->type) {
-            case PICKUP_GOLD:
+            case PICKUP_TREASURE:
                 PickupAddGold(captain_claw, *pickups[i]);
                 break;
             case PICKUP_HEALTH:
