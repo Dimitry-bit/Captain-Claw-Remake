@@ -15,7 +15,7 @@ unsigned int soundHandleIndex = 1;
 bool IsValidSoundObj(unsigned int handle)
 {
     if (!soundObjects.count(handle)) {
-        printf("[ERROR][SoundSys]: Sound object ID(%d) is not a live.\n", handle);
+        printf("[ERROR][SoundSys]: Sound object ID(%d) is not alive.\n", handle);
         return false;
     }
 
