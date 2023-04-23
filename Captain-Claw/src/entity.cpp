@@ -31,36 +31,32 @@ void EntityInit(entity_t* self, const string& logic, const render_types_t& rType
 
 void EntitySet(entity_t* self, const entity_components_t& cType, const void* cValue)
 {
+    self->type |= cType;
+
     switch (cType) {
         case C_NONE:break;
         case C_PICKUP: {
             self->pickup = *(const c_pickup_t*) (cValue);
-            self->type = cType;
         }
             break;
         case C_CHECKPOINT: {
             self->checkpoint = *(const c_checkpoint_t*) (cValue);
-            self->type = cType;
         }
             break;
         case C_ENEMY: {
             self->enemy = *(const c_enemy_t*) (cValue);
-            self->type = cType;
         }
             break;
         case C_PLATFORM: {
             self->platform = *(const c_platform_t*) (cValue);
-            self->type = cType;
         }
             break;
         case C_SOUND: {
             self->sound = *(const c_sound_t*) (cValue);
-            self->type = cType;
         }
             break;
         case C_TILE: {
             self->tile = *(const c_tile_t*) (cValue);
-            self->type = cType;
         }
             break;
         case C_RENDER: {

@@ -9,7 +9,7 @@
 using std::string;
 
 struct entity_t {
-    entity_components_t type;
+    unsigned int type;
     string logic;
     unsigned long long ID;
 

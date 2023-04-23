@@ -7,13 +7,13 @@ using std::string;
 
 enum entity_components_t {
     C_NONE = 0,
-    C_TILE,
-    C_PICKUP,
-    C_CHECKPOINT,
-    C_ENEMY,
-    C_PLATFORM,
-    C_SOUND,
-    C_RENDER,
+    C_TILE = 1 << 0,
+    C_PICKUP = 1 << 1,
+    C_CHECKPOINT = 1 << 2,
+    C_ENEMY = 1 << 3,
+    C_PLATFORM = 1 << 4,
+    C_SOUND = 1 << 5,
+    C_RENDER = 1 << 6,
 };
 
 enum tile_types_t {

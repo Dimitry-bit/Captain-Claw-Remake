@@ -8,7 +8,13 @@ static void ReadEntityData(scene_context_t* world, entity_t* entity, FILE* fp);
 
 static void ReadEntityData(scene_context_t* world, entity_t* entity, FILE* fp)
 {
-    fread(&entity->type, sizeof(entity->type), 1, fp);
+    // NOTE(Tony): Silly hack for alignment
+    unsigned int type;
+    fread(&type, sizeof(type), 1, fp);
+    entity->type = 0;
+    if (type != 0) {
+        entity->type = 1 << (type - 1);
+    }
 
     int len;
     fread(&len, sizeof(len), 1, fp);
@@ -27,31 +33,30 @@ static void ReadEntityData(scene_context_t* world, entity_t* entity, FILE* fp)
     EntityInit(entity, entity->logic, entity->render.type, entity->render.graphicsID);
     EntitySetPos(entity, transform.position);
     EntitySetOrigin(entity, transform.origin);
-    ECSAdd(&world->ecs, entity->ID, C_RENDER, &entity->render);
 
     switch (entity->type) {
         case C_NONE:break;
         case C_TILE: {
             fread(&entity->tile.type, sizeof(entity->tile.type), 1, fp);
-            EntitySet(entity, entity->type, &entity->tile);
+            EntitySet(entity, C_TILE, &entity->tile);
         }
             break;
         case C_PICKUP: {
             fread(&entity->pickup.type, sizeof(entity->pickup.type), 1, fp);
             fread(&entity->pickup.value, sizeof(entity->pickup.value), 1, fp);
-            ECSAdd(&world->ecs, entity->ID, entity->type, &entity->pickup);
+            ECSAdd(&world->ecs, entity->ID, C_PICKUP, &entity->pickup);
         }
             break;
         case C_CHECKPOINT: {
             fread(&entity->checkpoint.keepInventory, sizeof(entity->checkpoint.keepInventory), 1, fp);
-            ECSAdd(&world->ecs, entity->ID, entity->type, &entity->checkpoint);
+            ECSAdd(&world->ecs, entity->ID, C_CHECKPOINT, &entity->checkpoint);
         }
             break;
         case C_ENEMY: {
             fread(&entity->enemy.type, sizeof(entity->enemy.type), 1, fp);
             fread(&entity->enemy.min.x, sizeof(entity->enemy.min.x), 2, fp);
             fread(&entity->enemy.max.x, sizeof(entity->enemy.max.x), 2, fp);
-            ECSAdd(&world->ecs, entity->ID, entity->type, &entity->enemy);
+            ECSAdd(&world->ecs, entity->ID, C_ENEMY, &entity->enemy);
         }
             break;
         case C_PLATFORM: {
@@ -59,11 +64,15 @@ static void ReadEntityData(scene_context_t* world, entity_t* entity, FILE* fp)
             fread(&entity->platform.a.x, sizeof(entity->platform.a.x), 2, fp);
             fread(&entity->platform.b.x, sizeof(entity->platform.b.x), 2, fp);
             fread(&entity->platform.time, sizeof(entity->platform.time), 1, fp);
-            ECSAdd(&world->ecs, entity->ID, entity->type, &entity->platform);
+            ECSAdd(&world->ecs, entity->ID, C_PLATFORM, &entity->platform);
         }
             break;
         case C_SOUND:break;
         case C_RENDER:break;
+    }
+
+    if (!(entity->type & C_TILE)) {
+        ECSAdd(&world->ecs, entity->ID, C_RENDER, &entity->render);
     }
 }
 
