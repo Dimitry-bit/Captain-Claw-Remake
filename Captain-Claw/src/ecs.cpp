@@ -91,6 +91,10 @@ void ECSEntityDealloc(ECS* self, unsigned long long id)
         return;
     }
 
+    for (auto& component: self->componentList) {
+        component.second.entityIDs.erase(id);
+    }
+
     entity_t* e = self->entitiesRegistry.at(id);
     EntityDealloc(&e);
     self->entitiesRegistry.erase(id);
