@@ -37,6 +37,7 @@ void AnimAnimatorInit(Animator* animator, sf::Sprite* sprite)
 
 void AnimPlay(Animator* animator, const Animation* animation)
 {
+    AnimStop(animator);
     animator->currentFrame = 0;
     animator->state = ANIMATOR_STATE_PLAYING;
     animator->elapsedTime = 0;
