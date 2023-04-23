@@ -63,12 +63,20 @@ void EntitySet(entity_t* self, const entity_components_t& cType, const void* cVa
             // TODO(Tony): Move render init in here
         }
             break;
+        case C_DAMAGEABLE: {
+            self->damageable = *(const c_damageable_t*) (cValue);
+        }
+            break;
+        case C_INVENTORY: {
+            self->inventory = *(const c_inventory_t*) (cValue);
+        }
+            break;
     }
 }
 
 bool EntityHas(entity_t* self, const entity_components_t& cType)
 {
-    return self->type == cType;
+    return (self->type & cType);
 }
 
 static void EntityInitRender(entity_t* self, const render_types_t& rType, const string& graphicID)

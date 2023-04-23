@@ -13,13 +13,9 @@ struct entity_t {
     string logic;
     unsigned long long ID;
 
-    sf::RectangleShape swordCollider;
-    int gold_counter = 0;
-    int health = 100;
-    int ammo_pistol = 10;
-    int lives = 6;
-
     Animator animator;
+    c_inventory_t inventory;
+    c_damageable_t damageable;
     c_render_t render;
     c_tile_t tile;
     c_platform_t platform;

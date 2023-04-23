@@ -53,28 +53,28 @@ void PickupUpdate(unsigned long long playerID, std::unordered_set<unsigned long 
 
 void PickupAddGold(entity_t& captain_claw, c_pickup_t& gold)
 {
-    captain_claw.gold_counter += gold.value;
+    captain_claw.inventory.gold_counter += gold.value;
     const sf::SoundBuffer& sound_gold = ResSoundBuffGet(WAV_GAME_COIN);
     SoundPlay(&sound_gold);
 }
 
 void PickupAddHealth(entity_t& captain_claw, c_pickup_t& health)
 {
-    captain_claw.health += health.value;
+    captain_claw.damageable.health += health.value;
     const sf::SoundBuffer& sound_health = ResSoundBuffGet(WAV_GAME_FOODITEM);
     SoundPlay(&sound_health);
 }
 
 void PickupAddAmmo(entity_t& captain_claw, c_pickup_t& ammo)
 {
-    captain_claw.ammo_pistol += ammo.value;
+    captain_claw.inventory.ammo_pistol += ammo.value;
     const sf::SoundBuffer& sound_ammo = ResSoundBuffGet(WAV_GAME_AMMUNITION);
     SoundPlay(&sound_ammo);
 }
 
 void PickupAddLives(entity_t& captain_claw, c_pickup_t& live)
 {
-    captain_claw.lives += live.value;
+    captain_claw.damageable.lives += live.value;
     const sf::SoundBuffer& sound_live = ResSoundBuffGet(WAV_GAME_EXTRALIFE);
     SoundPlay(&sound_live);
 }

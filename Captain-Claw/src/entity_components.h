@@ -14,6 +14,8 @@ enum entity_components_t {
     C_PLATFORM = 1 << 4,
     C_SOUND = 1 << 5,
     C_RENDER = 1 << 6,
+    C_DAMAGEABLE = 1 << 7,
+    C_INVENTORY = 1 << 8,
 };
 
 enum tile_types_t {
@@ -89,4 +91,16 @@ struct c_render_t {
     sf::Sprite sprite;
     sf::RectangleShape rectangleShape;
     sf::CircleShape circleShape;
+};
+
+struct c_inventory_t {
+    int gold_counter;
+    int ammo_pistol;
+};
+
+struct c_damageable_t {
+    sf::FloatRect swordCollider;
+    sf::Vector2f pistolOffset;
+    int health;
+    int lives;
 };

@@ -80,6 +80,8 @@ void* ECSGet(ECS* self, unsigned long long id, entity_components_t t)
         case C_PLATFORM:return &e->platform;
         case C_SOUND:return &e->sound;
         case C_RENDER:return &e->render;
+        case C_DAMAGEABLE:return &e->damageable;
+        case C_INVENTORY:return &e->inventory;
     }
 
     return nullptr;
