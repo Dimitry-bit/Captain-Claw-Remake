@@ -9,6 +9,7 @@
 #include "c_render.h"
 #include "entity.h"
 #include "asset_constants.h"
+#include "pickup_system.h"
 
 void HandleEvent(render_context_t* renderContext);
 void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf::Time deltaTime);
@@ -122,7 +123,10 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
         switch (component.second.systemType) {
             case C_NONE:break;
             case C_TILE:break;
-            case C_PICKUP:break;
+            case C_PICKUP: {
+                PickupUpdate(captainClaw->ID, component.second.entityIDs, &world->ecs);
+            }
+                break;
             case C_CHECKPOINT:break;
             case C_ENEMY:break;
             case C_PLATFORM:break;

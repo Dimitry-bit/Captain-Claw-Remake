@@ -1,31 +1,19 @@
 #pragma once
-#include "animation.h"
-#include<iostream>
-#include<SFML/Graphics.hpp>
-#include<SFML/Audio.hpp>
 
+#include <unordered_set>
+
+#include "ecs.h"
 #include "entity.h"
 
-struct Player
-{
+struct Player {
     sf::Sprite sprite;
     sf::RectangleShape swordCollider;
-    int gold_counter =0 ;
-    int health = 100 ;
-    int ammo_pistol = 10 ;
-    int lives=6;
+    int health = 100;
     Animator animator;
 };
-struct pickup_t
-{
-    sf::Sprite gfx ;
-    int value ;
-    bool isEnabled ;
-    pickup_types_t type;
-};
 
-void PickupAddGold(Player &captain_claw, pickup_t& gold);
-void PickupAddHealth(Player &captain_claw, pickup_t & health);
-void PickupAddAmmo(Player &captain_claw, pickup_t & ammo);
-void PickupAddLives(Player &captain_claw, pickup_t & live);
-void PickupUpdate (Player &captain_claw);
+void PickupAddGold(entity_t& captain_claw, c_pickup_t& gold);
+void PickupAddHealth(entity_t& captain_claw, c_pickup_t& health);
+void PickupAddAmmo(entity_t& captain_claw, c_pickup_t& ammo);
+void PickupAddLives(entity_t& captain_claw, c_pickup_t& live);
+void PickupUpdate(unsigned long long playerID, std::unordered_set<unsigned long long>& entityIDs, ECS* ecs);
