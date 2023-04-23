@@ -7,9 +7,14 @@
 #include "animation.h"
 #include "sound_sys.h"
 #include "c_render.h"
+#include "entity.h"
+#include "asset_constants.h"
 
 void HandleEvent(render_context_t* renderContext);
 void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf::Time deltaTime);
+void ClawAlloc(ECS* ecs);
+
+entity_t* captainClaw;
 
 void ClawMain()
 {
@@ -36,6 +41,7 @@ void ClawMain()
     world.tileMapIndex = 0;
     world.ecs = {};
     SceneAllocAssets(&world);
+    ClawAlloc(&world.ecs);
 
     sf::Clock deltaClock;
     while (window.isOpen()) {
@@ -59,11 +65,26 @@ void HandleEvent(render_context_t* renderContext)
     }
 }
 
+void ClawAlloc(ECS* ecs)
+{
+    captainClaw = ECSEntityAlloc(ecs);
+    const spriteSheet_t& spriteSheet = ResSpriteSheetGet(CHAR_CLAW_IDLE);
+    captainClaw->render.sprite.setTexture(spriteSheet.texture);
+    captainClaw->render.type = RENDER_SPRITE;
+    ECSAdd(ecs, captainClaw->ID, C_RENDER, &captainClaw->render);
+    Animation clawIdle = AnimAnimationCreate(&spriteSheet);
+    AnimAnimatorInit(&captainClaw->animator, &captainClaw->render.sprite);
+    AnimPlay(&captainClaw->animator, &clawIdle);
+    captainClaw->render.sprite.setPosition(300.0f, 300.0f);
+}
+
 void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf::Time deltaTime)
 {
     HandleEvent(renderContext);
     AnimSystemUpdate(deltaTime.asSeconds());
     SoundSystemUpdate();
+
+    captainClaw->render.sprite.setPosition(rWindow->mapPixelToCoords(sf::Vector2i(sf::Mouse::getPosition(*rWindow))));
 
     rWindow->clear();
     rWindow->setView(renderContext->worldView);
