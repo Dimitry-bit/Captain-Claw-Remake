@@ -146,13 +146,7 @@ void SceneDealloc(scene_context_t* world)
         }
     }
 
-    for (auto& compList: world->componentList) {
-        for (auto& entity: compList.entities) {
-            EntityDealloc(&entity);
-        }
-        compList.entities.clear();
-    }
-    world->componentList.clear();
+    ECSDealloc(&world->ecs);
 
     printf("[INFO][SceneManager]: Scene deallocated successfully.\n");
 }
@@ -225,24 +219,6 @@ bool SceneAddTile(scene_context_t* world, entity_t* entity, const sf::Vector2i& 
     return SceneAddTile(world, entity, tilePos.x, tilePos.y);
 }
 
-void SceneAddEntity(scene_context_t* world, entity_t* entity)
-{
-    for (auto& componentList: world->componentList) {
-        if (componentList.type == entity->type) {
-            componentList.entities.push_back(entity);
-            printf("[INFO][SceneManager]: Object Placed.\n");
-            return;
-        }
-    }
-
-    component_list_t newCompList = {
-        .type = entity->type,
-    };
-    newCompList.entities.push_back(entity);
-    world->componentList.push_back(newCompList);
-    printf("[INFO][SceneManager]: Object Placed.\n");
-}
-
 entity_t* SceneRemoveEntity(scene_context_t* world, const entity_t* entity, int tileMapIndex)
 {
     for (int y = 0; y < world->tileGridHeight; ++y) {
@@ -253,19 +229,6 @@ entity_t* SceneRemoveEntity(scene_context_t* world, const entity_t* entity, int 
                 tilemap_t* tileMap = &world->tileMaps[tileMapIndex];
                 tileMap->tileGrid[y * world->tileGridWidth + x] = nullptr;
                 return e;
-            }
-        }
-    }
-
-    for (auto& compList: world->componentList) {
-        if (compList.type == entity->type) {
-            for (auto it = compList.entities.begin(); it != compList.entities.end(); ++it) {
-                if (*it == entity) {
-                    entity_t* obj = *it;
-                    compList.entities.erase(it);
-                    printf("[INFO][SceneManager]: Entity removed.\n");
-                    return obj;
-                }
             }
         }
     }

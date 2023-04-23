@@ -13,6 +13,7 @@ enum entity_components_t {
     C_ENEMY,
     C_PLATFORM,
     C_SOUND,
+    C_RENDER,
 };
 
 enum tile_types_t {

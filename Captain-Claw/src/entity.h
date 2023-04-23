@@ -11,6 +11,7 @@ using std::string;
 struct entity_t {
     entity_components_t type;
     string logic;
+    unsigned long long ID;
 
     sf::RectangleShape swordCollider;
     int gold_counter = 0;
@@ -32,11 +33,6 @@ struct entity_transform {
     sf::FloatRect bounds;
     sf::Vector2f position;
     sf::Vector2f origin;
-};
-
-struct component_list_t {
-    entity_components_t type;
-    std::list<entity_t*> entities;
 };
 
 entity_t* EntityAlloc();

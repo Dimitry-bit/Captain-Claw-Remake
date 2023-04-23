@@ -4,9 +4,9 @@
 #include "scene_serialization.h"
 #include "entity.h"
 
-static void ReadEntityData(entity_t* entity, FILE* fp);
+static void ReadEntityData(scene_context_t* world, entity_t* entity, FILE* fp);
 
-static void ReadEntityData(entity_t* entity, FILE* fp)
+static void ReadEntityData(scene_context_t* world, entity_t* entity, FILE* fp)
 {
     fread(&entity->type, sizeof(entity->type), 1, fp);
 
@@ -27,6 +27,7 @@ static void ReadEntityData(entity_t* entity, FILE* fp)
     EntityInit(entity, entity->logic, entity->render.type, entity->render.graphicsID);
     EntitySetPos(entity, transform.position);
     EntitySetOrigin(entity, transform.origin);
+    ECSAdd(&world->ecs, entity->ID, C_RENDER, &entity->render);
 
     switch (entity->type) {
         case C_NONE:break;
@@ -38,19 +39,19 @@ static void ReadEntityData(entity_t* entity, FILE* fp)
         case C_PICKUP: {
             fread(&entity->pickup.type, sizeof(entity->pickup.type), 1, fp);
             fread(&entity->pickup.value, sizeof(entity->pickup.value), 1, fp);
-            EntitySet(entity, entity->type, &entity->pickup);
+            ECSAdd(&world->ecs, entity->ID, entity->type, &entity->pickup);
         }
             break;
         case C_CHECKPOINT: {
             fread(&entity->checkpoint.keepInventory, sizeof(entity->checkpoint.keepInventory), 1, fp);
-            EntitySet(entity, entity->type, &entity->checkpoint);
+            ECSAdd(&world->ecs, entity->ID, entity->type, &entity->checkpoint);
         }
             break;
         case C_ENEMY: {
             fread(&entity->enemy.type, sizeof(entity->enemy.type), 1, fp);
             fread(&entity->enemy.min.x, sizeof(entity->enemy.min.x), 2, fp);
             fread(&entity->enemy.max.x, sizeof(entity->enemy.max.x), 2, fp);
-            EntitySet(entity, entity->type, &entity->enemy);
+            ECSAdd(&world->ecs, entity->ID, entity->type, &entity->enemy);
         }
             break;
         case C_PLATFORM: {
@@ -58,10 +59,11 @@ static void ReadEntityData(entity_t* entity, FILE* fp)
             fread(&entity->platform.a.x, sizeof(entity->platform.a.x), 2, fp);
             fread(&entity->platform.b.x, sizeof(entity->platform.b.x), 2, fp);
             fread(&entity->platform.time, sizeof(entity->platform.time), 1, fp);
-            EntitySet(entity, entity->type, &entity->platform);
+            ECSAdd(&world->ecs, entity->ID, entity->type, &entity->platform);
         }
             break;
         case C_SOUND:break;
+        case C_RENDER:break;
     }
 }
 
@@ -88,7 +90,7 @@ void SceneDeserialize(scene_context_t* world, const std::string& file)
             fread(&y, sizeof(y), 1, fp);
             entity_t* entity = EntityAlloc();
             if (entity) {
-                ReadEntityData(entity, fp);
+                ReadEntityData(world, entity, fp);
                 SceneAddTile(world, entity, x, y);
             }
         }
@@ -97,10 +99,10 @@ void SceneDeserialize(scene_context_t* world, const std::string& file)
     int count;
     fread(&count, sizeof(count), 1, fp);
     while (count--) {
-        entity_t* entity = EntityAlloc();
+        entity_t* entity = ECSEntityAlloc(&world->ecs);
         if (entity) {
-            ReadEntityData(entity, fp);
-            SceneAddEntity(world, entity);
+            ReadEntityData(world, entity, fp);
+//            SceneAddEntity(world, entity);
         }
     }
 

@@ -3,7 +3,7 @@
 #include <list>
 #include "SFML/Graphics.hpp"
 
-#include "entity.h"
+#include "ecs.h"
 #include "renderer.h"
 
 #define MAX_GRID_WIDTH 300
@@ -21,7 +21,7 @@ struct scene_context_t {
     unsigned int tileMapCount;
 
     tilemap_t* tileMaps;
-    std::list<component_list_t> componentList;
+    ECS ecs;
 };
 
 void SceneAllocAssets(scene_context_t* world);
