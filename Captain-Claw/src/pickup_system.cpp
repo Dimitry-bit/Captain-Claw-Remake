@@ -33,6 +33,10 @@ void PickupUpdate(unsigned long long playerID, std::unordered_set<unsigned long 
             case PICKUP_NONE:break;
         }
 
+        AnimAnimatorInit(&glitterAnimator, &glitter);
+        Animation animation_store = AnimAnimationCreate(&ResSpriteSheetGet(VFX_GLITTER), false);
+        AnimPlay(&glitterAnimator, &animation_store);
+
         sf::Vector2f pos = render->sprite.getPosition();
         sf::IntRect texRect = render->sprite.getTextureRect();
         // Center glitter
@@ -50,9 +54,6 @@ void PickupUpdate(unsigned long long playerID, std::unordered_set<unsigned long 
 void PickupAddGold(entity_t& captain_claw, c_pickup_t& gold)
 {
     captain_claw.gold_counter += gold.value;
-    AnimAnimatorInit(&glitterAnimator, &glitter);
-    Animation animation_store = AnimAnimationCreate(&ResSpriteSheetGet(VFX_GLITTER), false);
-    AnimPlay(&glitterAnimator, &animation_store);
     const sf::SoundBuffer& sound_gold = ResSoundBuffGet(WAV_GAME_COIN);
     SoundPlay(&sound_gold);
 }
