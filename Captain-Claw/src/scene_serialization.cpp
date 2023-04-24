@@ -57,6 +57,16 @@ static void ReadEntityData(scene_context_t* world, entity_t* entity, FILE* fp)
             fread(&entity->enemy.min.x, sizeof(entity->enemy.min.x), 2, fp);
             fread(&entity->enemy.max.x, sizeof(entity->enemy.max.x), 2, fp);
             ECSAdd(&world->ecs, entity->ID, C_ENEMY, &entity->enemy);
+
+            // NOTE(Tony): Random number for testing only
+            c_damageable_t damageable = {
+                .swordCollider = {0, 0, 50, 50},
+                .pistolOffset = {30.0f, 30.0f},
+                .health = 100,
+                .lives = 1,
+            };
+
+            ECSAdd(&world->ecs, entity->ID, C_DAMAGEABLE, &damageable);
         }
             break;
         case C_PLATFORM: {

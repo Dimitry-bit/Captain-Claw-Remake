@@ -10,6 +10,7 @@
 #include "entity.h"
 #include "asset_constants.h"
 #include "pickup_system.h"
+#include "combat_system.h"
 
 void HandleEvent(render_context_t* renderContext);
 void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf::Time deltaTime);
@@ -74,9 +75,19 @@ void ClawAlloc(ECS* ecs)
     captainClaw->render.type = RENDER_SPRITE;
     ECSAdd(ecs, captainClaw->ID, C_RENDER, &captainClaw->render);
     Animation clawIdle = AnimAnimationCreate(&spriteSheet);
-    AnimAnimatorInit(&captainClaw->animator, &captainClaw->render.sprite);
     AnimPlay(&captainClaw->animator, &clawIdle);
     captainClaw->render.sprite.setPosition(300.0f, 300.0f);
+
+    c_inventory_t inv{};
+    ECSAdd(ecs, captainClaw->ID, C_INVENTORY, &inv);
+
+    c_damageable_t damageable = {
+        .swordCollider= {10, -90.0f, 120, 90},
+        .pistolOffset = {30.0f, -90.0f,},
+        .health = 100,
+        .lives = 6,
+    };
+    ECSAdd(ecs, captainClaw->ID, C_DAMAGEABLE, &damageable);
 }
 
 void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf::Time deltaTime)
@@ -86,6 +97,10 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
     SoundSystemUpdate();
 
     captainClaw->render.sprite.setPosition(rWindow->mapPixelToCoords(sf::Vector2i(sf::Mouse::getPosition(*rWindow))));
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+        captainClaw->render.sprite.setScale(-captainClaw->render.sprite.getScale().x,
+                                            captainClaw->render.sprite.getScale().y);
+    }
 
     rWindow->clear();
     rWindow->setView(renderContext->worldView);
@@ -128,13 +143,19 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
             }
                 break;
             case C_CHECKPOINT:break;
-            case C_ENEMY:break;
+            case C_ENEMY: {
+                CombatAttack(captainClaw->ID, component.second.entityIDs, &world->ecs, deltaTime.asSeconds());
+            }
+                break;
             case C_PLATFORM:break;
             case C_SOUND:break;
             case C_RENDER: {
                 DrawEntity(component.second.entityIDs, &world->ecs);
             }
                 break;
+            case C_DAMAGEABLE:break;
+            case C_INVENTORY:break;
+            case C_ANIMATOR:break;
         }
     }
 
@@ -148,6 +169,37 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
             DrawEntity(tile);
         }
     }
+
+#if 1
+    sf::CircleShape pistolPoint;
+    pistolPoint.setRadius(5.0f);
+    pistolPoint.setFillColor(Color::White);
+    sf::Vector2f pistolPointPos;
+    pistolPointPos.y = captainClaw->damageable.pistolOffset.y + captainClaw->render.sprite.getPosition().y;
+    pistolPointPos.x = captainClaw->render.sprite.getPosition().x;
+    if (captainClaw->render.sprite.getScale().x > 0) {
+        pistolPointPos.x += captainClaw->damageable.pistolOffset.x;
+    } else if (captainClaw->render.sprite.getScale().x < 0) {
+        pistolPointPos.x -= captainClaw->damageable.pistolOffset.x;
+    }
+    pistolPoint.setPosition(pistolPointPos);
+
+    sf::RectangleShape swordCollider;
+    swordCollider.setFillColor(sf::Color(255, 255, 255, 50));
+    swordCollider.setSize(sf::Vector2f(captainClaw->damageable.swordCollider.width,
+                                       captainClaw->damageable.swordCollider.height));
+    sf::Vector2f pos;
+    pos = captainClaw->render.sprite.getPosition();
+    pos.y += captainClaw->damageable.swordCollider.top;
+    if (captainClaw->render.sprite.getScale().x > 0) {
+        pos.x += captainClaw->damageable.swordCollider.left;
+    } else {
+        pos.x -= (captainClaw->damageable.swordCollider.width + captainClaw->damageable.swordCollider.left);
+    }
+    swordCollider.setPosition(pos);
+    rWindow->draw(pistolPoint);
+    rWindow->draw(swordCollider);
+#endif
 
     rWindow->setView(renderContext->uiView);
     // TODO(Tony): Draw UI stuff
