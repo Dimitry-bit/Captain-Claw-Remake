@@ -35,4 +35,5 @@ void AnimPlay(Animator* animator, const Animation* animation);
 void AnimPause(Animator* animator);
 void AnimResume(Animator* animator);
 void AnimStop(Animator* animator);
+float AnimGetNormalizedTime(const Animator* animator);
 void AnimSystemUpdate(float deltaTime);

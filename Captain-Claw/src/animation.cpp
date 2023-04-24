@@ -93,6 +93,11 @@ void AnimUpdate(Animator* animator, float deltaTime)
     }
 }
 
+float AnimGetNormalizedTime(const Animator* animator)
+{
+    return ((float) animator->currentFrame / (float) animator->anim.spriteSheet->frameCount);
+}
+
 void AnimSystemUpdate(float deltaTime)
 {
     for (auto& animator: animators) {
