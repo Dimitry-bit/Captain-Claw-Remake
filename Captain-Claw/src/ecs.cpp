@@ -19,6 +19,8 @@ entity_t* ECSEntityAlloc(ECS* self)
     entity_t* e = EntityAlloc();
     e->ID = self->nextEntityID++;
     self->entitiesRegistry[e->ID] = e;
+    AnimAnimatorInit(&e->animator, &e->render.sprite);
+    ECSAdd(self, e->ID, C_ANIMATOR, &e->animator);
     return e;
 }
 
@@ -82,6 +84,7 @@ void* ECSGet(ECS* self, unsigned long long id, entity_components_t t)
         case C_RENDER:return &e->render;
         case C_DAMAGEABLE:return &e->damageable;
         case C_INVENTORY:return &e->inventory;
+        case C_ANIMATOR:return &e->animator;
     }
 
     return nullptr;

@@ -16,6 +16,7 @@ enum entity_components_t {
     C_RENDER = 1 << 6,
     C_DAMAGEABLE = 1 << 7,
     C_INVENTORY = 1 << 8,
+    C_ANIMATOR = 1 << 9,
 };
 
 enum tile_types_t {
