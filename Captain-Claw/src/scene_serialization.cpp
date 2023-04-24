@@ -58,6 +58,11 @@ static void ReadEntityData(scene_context_t* world, entity_t* entity, FILE* fp)
             fread(&entity->enemy.min.x, sizeof(entity->enemy.min.x), 2, fp);
             fread(&entity->enemy.max.x, sizeof(entity->enemy.max.x), 2, fp);
             ECSAdd(&world->ecs, entity->ID, C_ENEMY, &entity->enemy);
+            entity->enemy.state = ENEMY_STATE_IDLE;
+            entity->enemy.idleTimer = 0;
+            entity->enemy.idlePeriod = 0;
+            entity->enemy.targetPoint = sf::Vector2f(0.0f, 0.0f);
+            entity->enemy.startPos = entity->render.sprite.getPosition();
 
             // NOTE(Tony): Random number for testing only
             c_damageable_t damageable = {

@@ -51,8 +51,23 @@ enum enemy_types_t {
     ENEMY_RAT,
 };
 
+enum enemy_ai_states {
+    ENEMY_STATE_IDLE = 0,
+    ENEMY_STATE_MOVING,
+    ENEMY_STATE_ATTACKING,
+    ENEMY_STATE_HIT,
+    ENEMY_STATE_RECOVERING,
+    ENEMY_STATE_DEATH,
+};
+
 struct c_enemy_t {
     enemy_types_t type;
+    enemy_ai_states state;
+    float idlePeriod;
+    float idleTimer;
+    float hitTimer;
+    sf::Vector2f startPos;
+    sf::Vector2f targetPoint;
     sf::Vector2f min;
     sf::Vector2f max;
 };

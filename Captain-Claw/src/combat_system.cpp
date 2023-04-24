@@ -23,20 +23,6 @@ struct Bullet {
     bool isActive;
 };
 
-const char* soldierHitSounds[] = {
-    WAV_SOLDIER_HIT1,
-    WAV_SOLDIER_HIT2,
-    WAV_SOLDIER_HIT3,
-    WAV_SOLDIER_HIT4,
-};
-const int soldierHitSoundsCount = 4;
-
-const char* officerHitSounds[] = {
-    WAV_OFFICER_HIT1,
-    WAV_OFFICER_HIT2,
-};
-const int officerHitSoundsCount = 2;
-
 const char* clawHitSounds[] = {
     WAV_CLAW_HIT1,
     WAV_CLAW_HIT2,
@@ -70,16 +56,11 @@ void BulletsUpdate(std::unordered_set<unsigned long long>& entityIDs, ECS* ecs, 
 
 void CombatDeath(unsigned long long eID, c_enemy_t* enemyData, Animator* animator)
 {
-    Animation animation;
-    if (enemyData->type == ENEMY_SOLDIER) {
-        animation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_SOLDIER_DEATH), false, 1);
-    } else if (enemyData->type == ENEMY_OFFICER) {
-        animation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_OFFICER_DEATH), false, 1);
-    } else {
-        animation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_DEATH), false, 1);
-    }
+//    Animation animation;
+//    animation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_DEATH), false, 1);
+//    AnimPlay(animator, &animation);
 
-    AnimPlay(animator, &animation);
+    enemyData->state = ENEMY_STATE_DEATH;
     entitiesMarkedForRemoval.insert(eID);
 }
 
@@ -93,24 +74,13 @@ void CombatDamage(unsigned long long eID, ECS* ecs, int damage)
         return;
     }
 
-    // FIXME(Tony): stop duplicate sounds
-    Animation animation;
-    int htiSoundIndex = rand();
-    if (enemyData->type == ENEMY_SOLDIER) {
-        animation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_SOLDIER_HURT_STANCES), false, 1);
-        htiSoundIndex %= soldierHitSoundsCount;
-        SoundPlay(&ResSoundBuffGet(soldierHitSounds[htiSoundIndex]), false);
-    } else if (enemyData->type == ENEMY_OFFICER) {
-        animation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_OFFICER_HURT_STANCES), false, 1);
-        htiSoundIndex %= officerHitSoundsCount;
-        SoundPlay(&ResSoundBuffGet(officerHitSounds[htiSoundIndex]), false);
-    } else {
-        animation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_HURT), false, 1);
-        htiSoundIndex %= clawHitSoundsCount;
-        SoundPlay(&ResSoundBuffGet(clawHitSounds[htiSoundIndex]), false);
-    }
-    AnimPlay(animator, &animation);
+//  FIXME(Tony): stop duplicate sounds
 
+//    animation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_HURT), false, 1);
+//    htiSoundIndex %= clawHitSoundsCount;
+//    SoundPlay(&ResSoundBuffGet(clawHitSounds[htiSoundIndex]), false);
+
+    enemyData->state = ENEMY_STATE_HIT;
     actor->health -= damage;
     if (actor->health <= 0) {
         actor->lives -= 1;

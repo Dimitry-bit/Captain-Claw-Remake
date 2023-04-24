@@ -12,6 +12,7 @@
 #include "pickup_system.h"
 #include "combat_system.h"
 #include "c_checkpoint.h"
+#include "c_enemy.h"
 
 void HandleEvent(render_context_t* renderContext);
 void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf::Time deltaTime);
@@ -148,6 +149,7 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
             }
                 break;
             case C_ENEMY: {
+                EnemyAIUpdate(captainClaw->ID, component.second.entityIDs, &world->ecs, deltaTime.asSeconds());
                 CombatAttack(captainClaw->ID, component.second.entityIDs, &world->ecs, deltaTime.asSeconds());
             }
                 break;
