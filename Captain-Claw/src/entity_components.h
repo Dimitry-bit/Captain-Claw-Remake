@@ -71,6 +71,7 @@ struct c_platform_t {
 
 struct c_checkpoint_t {
     bool keepInventory;
+    bool isActive;
 };
 
 struct c_sound_t {

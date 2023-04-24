@@ -49,6 +49,7 @@ static void ReadEntityData(scene_context_t* world, entity_t* entity, FILE* fp)
             break;
         case C_CHECKPOINT: {
             fread(&entity->checkpoint.keepInventory, sizeof(entity->checkpoint.keepInventory), 1, fp);
+            entity->checkpoint.isActive = false;
             ECSAdd(&world->ecs, entity->ID, C_CHECKPOINT, &entity->checkpoint);
         }
             break;
