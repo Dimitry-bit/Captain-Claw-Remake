@@ -46,7 +46,7 @@ void PickupUpdate(unsigned long long playerID, std::unordered_set<unsigned long 
         break;
     }
 
-    if (glitterAnimator.state == ANIMATOR_STATE_PLAYING) {
+    if (glitterAnimator.state == ANIMATOR_STATE_PLAYING && AnimGetNormalizedTime(&glitterAnimator) < 1.0f) {
         rWindow->draw(glitter);
     }
 }
