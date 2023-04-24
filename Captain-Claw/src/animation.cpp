@@ -105,7 +105,12 @@ void AnimSystemUpdate(float deltaTime)
     }
 
     for (auto& animator: animatorsToRemove) {
-        AnimStop(animator);
+        for (auto it = animators.begin(); it != animators.end(); ++it) {
+            if (*it == animator) {
+                animators.erase(it);
+                break;
+            }
+        }
     }
     animatorsToRemove.clear();
 }
