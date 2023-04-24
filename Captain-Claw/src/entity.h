@@ -14,6 +14,8 @@ struct entity_t {
     unsigned long long ID;
 
     Animator animator;
+
+    c_player_t player;
     c_inventory_t inventory;
     c_damageable_t damageable;
     c_render_t render;

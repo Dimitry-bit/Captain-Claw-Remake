@@ -26,6 +26,8 @@ const float hitPeriod = 0.8f;
 const float soliderSpeed = 100.0f;
 const float arriveThreshold = 15.0f;
 
+// TODO(Tony): Pull types and their associated hit/death sounds and animations in a map
+
 void EnemyAIStateIDLE(c_enemy_t* enemy, Animator* animator, float deltaTime);
 void EnemyAIStateMoving(c_enemy_t* enemy, Animator* animator, c_render_t* render, float deltaTime);
 void EnemyAIStateAttack(unsigned long long playerID, c_enemy_t* enemy, Animator* animator, c_render_t* render);
@@ -162,16 +164,17 @@ void EnemyAIStateRecovering(c_enemy_t* enemy, Animator* animator, float deltaTim
 void EnemyAIStateDeath(c_enemy_t* enemy, Animator* animator)
 {
     Animation animation;
-    if (enemy->type == ENEMY_SOLDIER) {
-        if (AnimGetRunningAnimName(animator) != CHAR_SOLDIER_DEATH) {
-            animation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_SOLDIER_DEATH), false, 1);
-            AnimPlay(animator, &animation);
-        }
-    } else if (enemy->type == ENEMY_OFFICER) {
-        if (AnimGetRunningAnimName(animator) != CHAR_OFFICER_DEATH) {
-            animation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_OFFICER_DEATH), false, 1);
-            AnimPlay(animator, &animation);
-        }
+    int htiSoundIndex = rand();
+    if (enemy->type == ENEMY_SOLDIER && AnimGetRunningAnimName(animator) != CHAR_SOLDIER_DEATH) {
+        animation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_SOLDIER_DEATH), false, 1);
+        htiSoundIndex %= soldierHitSoundsCount;
+        SoundPlay(&ResSoundBuffGet(soldierHitSounds[htiSoundIndex]), false);
+        AnimPlay(animator, &animation);
+    } else if (enemy->type == ENEMY_OFFICER && AnimGetRunningAnimName(animator) != CHAR_OFFICER_DEATH) {
+        animation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_OFFICER_DEATH), false, 1);
+        htiSoundIndex %= officerHitSoundsCount;
+        SoundPlay(&ResSoundBuffGet(officerHitSounds[htiSoundIndex]), false);
+        AnimPlay(animator, &animation);
     }
 }
 

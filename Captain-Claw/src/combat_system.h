@@ -9,5 +9,8 @@
 
 using namespace sf;
 
-void CombatAttack(unsigned long long playerID, std::unordered_set<unsigned long long>& entityIDs,
-                  ECS* ecs, float deltaTime);
+void CombatSystemUpdate(unsigned long long playerID, std::unordered_set<unsigned long long>& entityIDs,
+                        ECS* ecs, float deltaTime);
+void CombatDamage(unsigned long long eID, ECS* ecs, int damage);
+
+void BulletCreate(const Vector2f& position, const Vector2f& direction, bool isEnemy);

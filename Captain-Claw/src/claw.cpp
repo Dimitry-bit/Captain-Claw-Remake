@@ -13,6 +13,7 @@
 #include "combat_system.h"
 #include "c_checkpoint.h"
 #include "c_enemy.h"
+#include "c_player.h"
 
 void HandleEvent(render_context_t* renderContext);
 void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf::Time deltaTime);
@@ -87,9 +88,12 @@ void ClawAlloc(ECS* ecs)
         .swordCollider= {10, -90.0f, 120, 90},
         .pistolOffset = {30.0f, -90.0f,},
         .health = 100,
-        .lives = 6,
+        .lives = 1,
     };
     ECSAdd(ecs, captainClaw->ID, C_DAMAGEABLE, &damageable);
+
+    c_player_t player = {.state = PLAYER_STATE_IDLE};
+    ECSAdd(ecs, captainClaw->ID, C_PLAYER, &player);
 }
 
 void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf::Time deltaTime)
@@ -97,6 +101,7 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
     HandleEvent(renderContext);
     AnimSystemUpdate(deltaTime.asSeconds());
     SoundSystemUpdate();
+    PlayerUpdate(captainClaw, deltaTime.asSeconds());
 
     captainClaw->render.sprite.setPosition(rWindow->mapPixelToCoords(sf::Vector2i(sf::Mouse::getPosition(*rWindow))));
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
@@ -149,8 +154,9 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
             }
                 break;
             case C_ENEMY: {
+                PlayerStateAttack(captainClaw->ID, component.second.entityIDs, &world->ecs, deltaTime.asSeconds());
                 EnemyAIUpdate(captainClaw->ID, component.second.entityIDs, &world->ecs, deltaTime.asSeconds());
-                CombatAttack(captainClaw->ID, component.second.entityIDs, &world->ecs, deltaTime.asSeconds());
+                CombatSystemUpdate(captainClaw->ID, component.second.entityIDs, &world->ecs, deltaTime.asSeconds());
             }
                 break;
             case C_PLATFORM:break;
