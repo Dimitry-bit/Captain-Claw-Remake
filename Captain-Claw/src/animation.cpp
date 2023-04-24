@@ -98,6 +98,15 @@ float AnimGetNormalizedTime(const Animator* animator)
     return ((float) animator->currentFrame / (float) animator->anim.spriteSheet->frameCount);
 }
 
+string AnimGetRunningAnimName(const Animator* animator)
+{
+    if (animator->state == ANIMATOR_STATE_STOPPED) {
+        return "";
+    }
+
+    return animator->anim.spriteSheet->fileName;
+}
+
 void AnimSystemUpdate(float deltaTime)
 {
     for (auto& animator: animators) {

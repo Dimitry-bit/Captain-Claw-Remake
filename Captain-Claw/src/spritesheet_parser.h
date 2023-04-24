@@ -12,6 +12,7 @@ struct frameMetadata_t {
 };
 
 struct spriteSheet_t {
+    string fileName;
     int frameCount = 0;
     sf::Texture texture;
     std::vector<frameMetadata_t> frames;

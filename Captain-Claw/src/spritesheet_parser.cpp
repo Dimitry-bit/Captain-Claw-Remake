@@ -15,6 +15,10 @@ bool SpriteSheetLoadFromFile(const char* identifier, spriteSheet_t& spriteSheet)
         return false;
     }
 
+    // NOTE(Tony): silly hack to add fileName data needed for animation
+    spriteSheet.fileName = identifier;
+    spriteSheet.fileName.erase(0, spriteSheet.fileName.find_first_not_of("../resources/textures/") - 1);
+
     string metaPath(identifier);
     metaPath = metaPath.substr(0, metaPath.find_last_of('.'));
     metaPath.append(".meta");
