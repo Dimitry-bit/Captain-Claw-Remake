@@ -3,6 +3,7 @@
 //
 
 #include <vector>
+#include <cmath>
 #include "SFML/Graphics.hpp"
 
 #include "animation.h"
@@ -11,6 +12,8 @@ std::vector<Animator*> animators;
 std::vector<Animator*> animatorsToRemove;
 
 const float animatorUpdateRate = 1.0f / 10.0f;
+const float originAlignmentThresholdX = 5.0f;
+const float originAlignmentThresholdY = 5.0f;
 
 void AnimUpdate(Animator* animator, float deltaTime);
 
@@ -82,6 +85,13 @@ void AnimUpdate(Animator* animator, float deltaTime)
 
         sprite.setTexture(spriteSheet.texture);
         sprite.setTextureRect(spriteSheet.frames[animator->currentFrame].area);
+
+        if (fabs(sprite.getOrigin().x - pivot.x * area.width) >= originAlignmentThresholdX) {
+            sprite.move(pivot.x * area.width - sprite.getOrigin().x, 0);
+        }
+        if (fabs(sprite.getOrigin().y - pivot.y * area.height) >= originAlignmentThresholdY) {
+            sprite.move(0, pivot.y * area.height - sprite.getOrigin().y);
+        }
         sprite.setOrigin(pivot.x * area.width, pivot.y * area.height);
 
         animator->currentFrame++;
