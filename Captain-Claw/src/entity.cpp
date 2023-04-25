@@ -70,6 +70,12 @@ void EntitySet(entity_t* self, const entity_components_t& cType, const void* cVa
         case C_INVENTORY: {
             self->inventory = *(const c_inventory_t*) (cValue);
         }
+        case C_ANIMATOR: {
+        }
+            break;
+        case C_PLAYER: {
+            self->player = *(const c_player_t*) (cValue);
+        }
             break;
     }
 }

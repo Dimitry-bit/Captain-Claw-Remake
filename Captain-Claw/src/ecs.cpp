@@ -85,6 +85,7 @@ void* ECSGet(ECS* self, unsigned long long id, entity_components_t t)
         case C_DAMAGEABLE:return &e->damageable;
         case C_INVENTORY:return &e->inventory;
         case C_ANIMATOR:return &e->animator;
+        case C_PLAYER:return &e->player;
     }
 
     return nullptr;

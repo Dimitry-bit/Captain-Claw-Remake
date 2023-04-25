@@ -17,6 +17,7 @@ enum entity_components_t {
     C_DAMAGEABLE = 1 << 7,
     C_INVENTORY = 1 << 8,
     C_ANIMATOR = 1 << 9,
+    C_PLAYER = 1 << 10,
 };
 
 enum tile_types_t {
@@ -120,4 +121,20 @@ struct c_damageable_t {
     sf::Vector2f pistolOffset;
     int health;
     int lives;
+};
+
+enum player_state_t {
+    PLAYER_STATE_IDLE = 0,
+    PLAYER_STATE_MOVING,
+    PLAYER_STATE_HIT,
+    PLAYER_STATE_RECOVER,
+    PLAYER_STATE_ATTACK,
+    PLAYER_STATE_DEATH,
+    PLAYER_STATE_JUMP,
+    PLAYER_STATE_FALLING,
+    Player_STATE_LANDING,
+};
+
+struct c_player_t {
+    player_state_t state;
 };
