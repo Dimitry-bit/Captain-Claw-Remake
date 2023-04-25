@@ -1,0 +1,8 @@
+//
+// Created by HP on 4/25/2023.
+//
+
+#ifndef CAPTAIN_CLAW_PLATFORMS_H
+#define CAPTAIN_CLAW_PLATFORMS_H
+
+#endif //CAPTAIN_CLAW_PLATFORMS_H
