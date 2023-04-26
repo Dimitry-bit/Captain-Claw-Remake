@@ -18,6 +18,7 @@ enum entity_components_t {
     C_INVENTORY = 1 << 8,
     C_ANIMATOR = 1 << 9,
     C_PLAYER = 1 << 10,
+    C_PHYSICS = 1 << 11,
 };
 
 enum tile_types_t {
@@ -137,4 +138,11 @@ enum player_state_t {
 
 struct c_player_t {
     player_state_t state;
+};
+
+struct c_physics_t {
+    sf::Vector2f velocity;
+    sf::Vector2f acceleration;
+    bool isKinematic;
+    bool useGravity;
 };

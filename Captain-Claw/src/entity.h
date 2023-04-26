@@ -25,6 +25,7 @@ struct entity_t {
     c_pickup_t pickup;
     c_enemy_t enemy;
     c_sound_t sound;
+    c_physics_t physics;
 };
 
 struct entity_transform {

@@ -1,7 +1,6 @@
 #include "entity.h"
 #include "renderer.h"
 #include "resource_manager.h"
-#include "pickup_system.h"
 
 static void EntityInitRender(entity_t* self, const render_types_t& rType, const string& graphicID = "");
 
@@ -75,6 +74,10 @@ void EntitySet(entity_t* self, const entity_components_t& cType, const void* cVa
             break;
         case C_PLAYER: {
             self->player = *(const c_player_t*) (cValue);
+        }
+            break;
+        case C_PHYSICS: {
+            self->physics = *(const c_physics_t*) (cValue);
         }
             break;
     }
