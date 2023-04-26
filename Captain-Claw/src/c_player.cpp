@@ -32,11 +32,19 @@ void PlayerUpdate(entity_t* player, float deltaTime)
     player->physics.acceleration = {};
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
         player->physics.acceleration.x = 1.0f;
-        player->render.sprite.setScale(1.0f, 1.0f);
+
+        sf::Vector2f scale = player->render.sprite.getScale();
+        if (scale.x < 0.0f) {
+            player->render.sprite.setScale(-1.0f * scale.x, scale.y);
+        }
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
         player->physics.acceleration.x = -1.0f;
-        player->render.sprite.setScale(-1.0f, 1.0f);
+
+        sf::Vector2f scale = player->render.sprite.getScale();
+        if (scale.x > 0.0f) {
+            player->render.sprite.setScale(-1.0f * scale.x, scale.y);
+        }
     }
     player->physics.acceleration *= playerSpeed;
 
