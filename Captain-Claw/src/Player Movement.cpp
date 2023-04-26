@@ -52,8 +52,16 @@ void MoveUnchecked(sf::Sprite& player,float& deltaTime, float jumpHeight,scene_c
         if(isValid(world,x,y))
             player.move(0,5.0f * deltaTime);
     }
+
+        entity_t *tile = SceneGetTileWithPos(world,player.getPosition().x , player.getPosition().y + player.getScale().y + 5);
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)){
-        player.move(0,-sqrtf(5.0f * 981.0f * jumpHeight));
+        if(tile->type==TILE_GROUND)
         player.move(0,981.0f * deltaTime);
+        else
+        {
+        player.move(0,-sqrtf(5.0f * 981.0f * jumpHeight));
+        }
     }
+    if((tile->type==TILE_CLEAR))
+        player.move(0,-sqrtf(5.0f * 981.0f * jumpHeight));
 }

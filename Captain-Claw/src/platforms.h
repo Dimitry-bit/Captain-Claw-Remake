@@ -1,8 +1,7 @@
-//
-// Created by HP on 4/25/2023.
-//
+#include <iostream>
+#include "scene_manager.h"
+#include "entity.h"
 
-#ifndef CAPTAIN_CLAW_PLATFORMS_H
-#define CAPTAIN_CLAW_PLATFORMS_H
 
-#endif //CAPTAIN_CLAW_PLATFORMS_H
+
+void PlatformsMovement(sf::Sprite platform,float deltaTime,float start,float end);
