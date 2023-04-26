@@ -1,4 +1,8 @@
 #include <iostream>
 #include "SFML/Graphics.hpp"
 
-void movement(sf:: Sprite& x, float& d,float& mul,float sp,float groundH,sf::Vector2f upvel);
+#include "ecs.h"
+#include "entity_components.h"
+#include "scene_manager.h"
+
+void EntityMove(std::unordered_set<unsigned long long>& entityIDS, ECS* ecs, scene_context_t* world, float deltaTime);

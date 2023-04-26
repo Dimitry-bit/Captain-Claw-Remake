@@ -20,11 +20,32 @@ const float attackPeriod = 0.5f;
 float attackTimer;
 
 const int swordDmg = 25;
+const float playerSpeed = 700.0f;
+const float jumpHeight = 200.0f;
+const float stopMovingThreshold = 35.0f;
 
 void PlayerUpdate(entity_t* player, float deltaTime)
 {
     Animator* animator = &player->animator;
     c_player_t* playerComponent = &player->player;
+
+    player->physics.acceleration = {};
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+        player->physics.acceleration.x = 1.0f;
+        player->render.sprite.setScale(1.0f, 1.0f);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+        player->physics.acceleration.x = -1.0f;
+        player->render.sprite.setScale(-1.0f, 1.0f);
+    }
+    player->physics.acceleration *= playerSpeed;
+
+    // TODO(Tony): Find a better way
+    if (player->physics.velocity.x <= stopMovingThreshold && player->physics.velocity.x >= -stopMovingThreshold) {
+        player->player.state = PLAYER_STATE_IDLE;
+    } else {
+        player->player.state = PLAYER_STATE_MOVING;
+    }
 
     switch (player->player.state) {
         case PLAYER_STATE_IDLE: {
@@ -35,6 +56,10 @@ void PlayerUpdate(entity_t* player, float deltaTime)
         }
             break;
         case PLAYER_STATE_MOVING: {
+            if (AnimGetRunningAnimName(animator) != CHAR_CLAW_RUN) {
+                Animation anim = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_RUN), true);
+                AnimPlay(animator, &anim);
+            }
         }
             break;
         case PLAYER_STATE_HIT: {

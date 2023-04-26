@@ -1,67 +1,26 @@
-#include <iostream>
 #include "SFML/Graphics.hpp"
+
 #include "Player Movement.h"
-#include <math.h>
-#include <scene_manager.h>
+#include "scene_manager.h"
 
-bool IsValidMove(const sf::Vector2f& pos, float groundH)
+const float dampMultiplier = 5.5f;
+
+// TODO(Tony): Pull in a separate file
+float Squaref(float a)
 {
-    return (pos.y < groundH);
-}
-bool isValid(const scene_context_t* world, float x, float y) {
-    entity_t *tile = SceneGetTileWithPos(world, x, y);
-    if (tile != nullptr) {
-        return (tile->tile.type == TILE_GROUND || tile->tile.type == TILE_CLIMBABLE || tile->tile.type == TILE_CLEAR);
-    }
+    return a * a;
 }
 
-void MoveUnchecked(sf::Sprite& player,float& deltaTime, float jumpHeight,scene_context_t* world)
+void EntityMove(std::unordered_set<unsigned long long>& entityIDS, ECS* ecs, scene_context_t* world, float deltaTime)
 {
+    for (auto& eID: entityIDS) {
+        c_physics_t* physics = (c_physics_t*) ECSGet(ecs, eID, C_PHYSICS);
+        c_render_t* render = (c_render_t*) ECSGet(ecs, eID, C_RENDER);
 
+        physics->acceleration += -dampMultiplier * physics->velocity;
+        sf::Vector2f displacement = 0.5f * physics->acceleration * Squaref(deltaTime) + physics->velocity * deltaTime;
+        physics->velocity += physics->acceleration * deltaTime;
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-        float x = player.getPosition().x + 5 * deltaTime;
-        float y = player.getPosition().y;
-        if (isValid(world,x,y))
-            player.move(5* deltaTime,0);
-        if (player.getScale().x>=0)
-            player.setScale(player.getScale().x,player.getScale().y);
-        else
-            player.setScale(player.getScale().x*-1,player.getScale().y);
-
+        render->sprite.move(displacement);
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-        float x = player.getPosition().x - 5* deltaTime;
-        float y = player.getPosition().y;
-        if(isValid(world,x,y))
-            player.move(-5.0f * deltaTime,0);
-        if (player.getScale().x>=0)
-            player.setScale(player.getScale().x*-1,player.getScale().y);
-        else
-            player.setScale(player.getScale().x,player.getScale().y);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)){
-        float x = player.getPosition().x;
-        float y = player.getPosition().y - 5* deltaTime;
-        if(isValid(world,x,y))
-           player.move(0,- 5.0f * deltaTime);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)){
-        float x = player.getPosition().x;
-        float y = player.getPosition().y + 5* deltaTime;
-        if(isValid(world,x,y))
-            player.move(0,5.0f * deltaTime);
-    }
-
-        entity_t *tile = SceneGetTileWithPos(world,player.getPosition().x , player.getPosition().y + player.getScale().y + 5);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)){
-        if(tile->type==TILE_GROUND)
-        player.move(0,981.0f * deltaTime);
-        else
-        {
-        player.move(0,-sqrtf(5.0f * 981.0f * jumpHeight));
-        }
-    }
-    if((tile->type==TILE_CLEAR))
-        player.move(0,-sqrtf(5.0f * 981.0f * jumpHeight));
 }

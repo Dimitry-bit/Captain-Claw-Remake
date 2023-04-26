@@ -14,6 +14,7 @@
 #include "c_checkpoint.h"
 #include "c_enemy.h"
 #include "c_player.h"
+#include "Player Movement.h"
 
 void HandleEvent(render_context_t* renderContext);
 void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf::Time deltaTime);
@@ -79,7 +80,7 @@ void ClawAlloc(ECS* ecs)
     ECSAdd(ecs, captainClaw->ID, C_RENDER, &captainClaw->render);
     Animation clawIdle = AnimAnimationCreate(&spriteSheet);
     AnimPlay(&captainClaw->animator, &clawIdle);
-    captainClaw->render.sprite.setPosition(300.0f, 300.0f);
+    captainClaw->render.sprite.setPosition(300.0f, 250.0f);
 
     c_inventory_t inv{};
     ECSAdd(ecs, captainClaw->ID, C_INVENTORY, &inv);
@@ -94,20 +95,25 @@ void ClawAlloc(ECS* ecs)
 
     c_player_t player = {.state = PLAYER_STATE_IDLE};
     ECSAdd(ecs, captainClaw->ID, C_PLAYER, &player);
+    c_physics_t physics = {.isKinematic = false, .useGravity = true};
+    ECSAdd(ecs, captainClaw->ID, C_PHYSICS, &physics);
 }
 
 void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf::Time deltaTime)
 {
+    SceneSetTileIndex(world, 1);
     HandleEvent(renderContext);
     AnimSystemUpdate(deltaTime.asSeconds());
     SoundSystemUpdate();
     PlayerUpdate(captainClaw, deltaTime.asSeconds());
 
+#if 0
     captainClaw->render.sprite.setPosition(rWindow->mapPixelToCoords(sf::Vector2i(sf::Mouse::getPosition(*rWindow))));
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
         captainClaw->render.sprite.setScale(-captainClaw->render.sprite.getScale().x,
                                             captainClaw->render.sprite.getScale().y);
     }
+#endif
 
     rWindow->clear();
     rWindow->setView(renderContext->worldView);
@@ -168,6 +174,11 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
             case C_DAMAGEABLE:break;
             case C_INVENTORY:break;
             case C_ANIMATOR:break;
+            case C_PLAYER:break;
+            case C_PHYSICS: {
+                EntityMove(component.second.entityIDs, &world->ecs, world, deltaTime.asSeconds());
+            }
+                break;
         }
     }
 
@@ -182,7 +193,7 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
         }
     }
 
-#if 1
+#if 0
     sf::CircleShape pistolPoint;
     pistolPoint.setRadius(5.0f);
     pistolPoint.setFillColor(Color::White);
@@ -211,6 +222,13 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
     swordCollider.setPosition(pos);
     rWindow->draw(pistolPoint);
     rWindow->draw(swordCollider);
+#endif
+    sf::CircleShape origin(5.0f);
+    origin.setOrigin(5.0f, 5.0f);
+    origin.setPosition(captainClaw->render.sprite.getPosition());
+    rWindow->draw(origin);
+#if 1
+
 #endif
 
     rWindow->setView(renderContext->uiView);
