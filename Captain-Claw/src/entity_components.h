@@ -145,4 +145,5 @@ struct c_physics_t {
     sf::Vector2f acceleration;
     bool isKinematic;
     bool useGravity;
+    bool isGrounded;
 };

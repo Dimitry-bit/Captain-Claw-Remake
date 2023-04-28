@@ -14,7 +14,7 @@
 #include "c_checkpoint.h"
 #include "c_enemy.h"
 #include "c_player.h"
-#include "Player Movement.h"
+#include "c_physics.h"
 
 void HandleEvent(render_context_t* renderContext);
 void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf::Time deltaTime);
@@ -176,7 +176,7 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
             case C_ANIMATOR:break;
             case C_PLAYER:break;
             case C_PHYSICS: {
-                EntityMove(component.second.entityIDs, &world->ecs, world, deltaTime.asSeconds());
+                PhysicsUpdate(component.second.entityIDs, &world->ecs, world, deltaTime.asSeconds());
             }
                 break;
         }
@@ -228,7 +228,15 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
     origin.setPosition(captainClaw->render.sprite.getPosition());
     rWindow->draw(origin);
 #if 1
-
+    sf::RectangleShape collider;
+    collider.setPosition(captainClaw->render.sprite.getGlobalBounds().left,
+                         captainClaw->render.sprite.getGlobalBounds().top);
+    collider.setSize(sf::Vector2f(captainClaw->render.sprite.getGlobalBounds().width,
+                                  captainClaw->render.sprite.getGlobalBounds().height));
+    collider.setFillColor(sf::Color::Transparent);
+    collider.setOutlineColor(sf::Color::Red);
+    collider.setOutlineThickness(3.0f);
+    rWindow->draw(collider);
 #endif
 
     rWindow->setView(renderContext->uiView);

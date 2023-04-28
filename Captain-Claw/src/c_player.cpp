@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "c_player.h"
 #include "resource_manager.h"
 #include "asset_constants.h"
@@ -18,41 +20,75 @@ const float recoverPeriod = 0.5f;
 float recoverTimer = 0.0f;
 const float attackPeriod = 0.5f;
 float attackTimer;
-
 const int swordDmg = 25;
-const float playerSpeed = 700.0f;
-const float jumpHeight = 200.0f;
+
+const float playerSpeed = 1000.0f;
 const float stopMovingThreshold = 35.0f;
+
+float timeInAir = 0.0f;
+const float jumpImpulseTime = 0.1f;
+const float jumpImpulseVel = 270.0f;
+const float jumpAccel = 25.0f;
+const float MAX_AIR_TIME = 0.4f;
+
+void PlayerLocomotion(c_player_t* player, c_physics_t* physics, c_render_t* render, float deltaTime)
+{
+    physics->acceleration = {};
+
+    if (physics->isGrounded) {
+        timeInAir = 0.0f;
+    } else {
+        timeInAir += deltaTime;
+    }
+
+    if (player->state == PLAYER_STATE_IDLE || player->state == PLAYER_STATE_MOVING) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+            physics->acceleration.x = 1.0f;
+
+            sf::Vector2f scale = render->sprite.getScale();
+            if (scale.x < 0.0f) {
+                render->sprite.setScale(-1.0f * scale.x, scale.y);
+            }
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+            physics->acceleration.x = -1.0f;
+
+            sf::Vector2f scale = render->sprite.getScale();
+            if (scale.x > 0.0f) {
+                render->sprite.setScale(-1.0f * scale.x, scale.y);
+            }
+        }
+        if (Keyboard::isKeyPressed(Keyboard::Space)) {
+            if (timeInAir < jumpImpulseTime) {
+                physics->velocity.y = -jumpImpulseVel;
+                physics->useGravity = false;
+            } else if (timeInAir < MAX_AIR_TIME) {
+                physics->acceleration.y = -jumpAccel;
+            } else {
+                physics->useGravity = true;
+            }
+        } else {
+            physics->useGravity = true;
+        }
+    }
+
+    physics->acceleration.x *= (physics->isGrounded) ? playerSpeed : 0.8f * playerSpeed;
+}
 
 void PlayerUpdate(entity_t* player, float deltaTime)
 {
     Animator* animator = &player->animator;
     c_player_t* playerComponent = &player->player;
 
-    player->physics.acceleration = {};
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-        player->physics.acceleration.x = 1.0f;
-
-        sf::Vector2f scale = player->render.sprite.getScale();
-        if (scale.x < 0.0f) {
-            player->render.sprite.setScale(-1.0f * scale.x, scale.y);
-        }
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-        player->physics.acceleration.x = -1.0f;
-
-        sf::Vector2f scale = player->render.sprite.getScale();
-        if (scale.x > 0.0f) {
-            player->render.sprite.setScale(-1.0f * scale.x, scale.y);
-        }
-    }
-    player->physics.acceleration *= playerSpeed;
+    PlayerLocomotion(playerComponent, &player->physics, &player->render, deltaTime);
 
     // TODO(Tony): Find a better way
-    if (player->physics.velocity.x <= stopMovingThreshold && player->physics.velocity.x >= -stopMovingThreshold) {
-        player->player.state = PLAYER_STATE_IDLE;
-    } else {
-        player->player.state = PLAYER_STATE_MOVING;
+    if (playerComponent->state != PLAYER_STATE_ATTACK) {
+        if (abs(player->physics.velocity.x) <= stopMovingThreshold) {
+            playerComponent->state = PLAYER_STATE_IDLE;
+        } else {
+//            playerComponent->state = PLAYER_STATE_MOVING;
+        }
     }
 
     switch (player->player.state) {
