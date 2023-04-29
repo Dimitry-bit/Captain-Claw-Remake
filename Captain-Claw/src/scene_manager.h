@@ -45,3 +45,4 @@ bool SceneIsEntityHitTile(const scene_context_t* world, float x, float y, entity
 bool SceneIsEntityHitTile(const scene_context_t* world, const sf::Vector2f& point, entity_t** out);
 
 void SceneSetTileIndex(scene_context_t* world, int index);
+void SceneDrawDebug(const scene_context_t* world);

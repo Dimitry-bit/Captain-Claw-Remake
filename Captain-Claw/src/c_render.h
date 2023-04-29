@@ -5,4 +5,5 @@
 #include "ecs.h"
 #include "entity_components.h"
 
-void DrawEntity(const std::unordered_set<unsigned long long>& entityIDs, ECS* ecs);
+void DrawEntities(const std::unordered_set<unsigned long long>& entityIDs, ECS* ecs);
+void DrawEntity(const c_render_t* render);

@@ -156,18 +156,3 @@ entity_transform EntityGetTransform(const entity_t* self)
 
     return transform;
 }
-
-void DrawEntity(const entity_t* entity)
-{
-    if (entity->render.type == RENDER_NONE) {
-        return;
-    }
-
-    if (entity->render.type == RENDER_SPRITE) {
-        rWindow->draw(entity->render.sprite);
-    } else if (entity->render.type == RENDER_RECTANGLE) {
-        rWindow->draw(entity->render.rectangleShape);
-    } else if (entity->render.type == RENDER_CIRCLE) {
-        rWindow->draw(entity->render.circleShape);
-    }
-}

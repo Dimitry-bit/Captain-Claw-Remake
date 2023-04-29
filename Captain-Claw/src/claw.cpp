@@ -141,7 +141,7 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
                 if (!tile)
                     continue;
 
-                DrawEntity(tile);
+                DrawEntity(&tile->render);
             }
         }
     }
@@ -168,7 +168,7 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
             case C_PLATFORM:break;
             case C_SOUND:break;
             case C_RENDER: {
-                DrawEntity(component.second.entityIDs, &world->ecs);
+                DrawEntities(component.second.entityIDs, &world->ecs);
             }
                 break;
             case C_DAMAGEABLE:break;
@@ -189,55 +189,30 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
             if (!tile)
                 continue;
 
-            DrawEntity(tile);
+            DrawEntity(&tile->render);
         }
     }
+    SceneDrawDebug(world);
 
-#if 0
-    sf::CircleShape pistolPoint;
-    pistolPoint.setRadius(5.0f);
-    pistolPoint.setFillColor(Color::White);
-    sf::Vector2f pistolPointPos;
-    pistolPointPos.y = captainClaw->damageable.pistolOffset.y + captainClaw->render.sprite.getPosition().y;
-    pistolPointPos.x = captainClaw->render.sprite.getPosition().x;
     if (captainClaw->render.sprite.getScale().x > 0) {
-        pistolPointPos.x += captainClaw->damageable.pistolOffset.x;
-    } else if (captainClaw->render.sprite.getScale().x < 0) {
-        pistolPointPos.x -= captainClaw->damageable.pistolOffset.x;
-    }
-    pistolPoint.setPosition(pistolPointPos);
-
-    sf::RectangleShape swordCollider;
-    swordCollider.setFillColor(sf::Color(255, 255, 255, 50));
-    swordCollider.setSize(sf::Vector2f(captainClaw->damageable.swordCollider.width,
-                                       captainClaw->damageable.swordCollider.height));
-    sf::Vector2f pos;
-    pos = captainClaw->render.sprite.getPosition();
-    pos.y += captainClaw->damageable.swordCollider.top;
-    if (captainClaw->render.sprite.getScale().x > 0) {
-        pos.x += captainClaw->damageable.swordCollider.left;
+        DrawOutlineFloatRect(sf::FloatRect{
+            captainClaw->render.sprite.getPosition().x,
+            captainClaw->render.sprite.getGlobalBounds().top,
+            captainClaw->damageable.swordCollider.width,
+            captainClaw->damageable.swordCollider.height,
+        }, sf::Color::Magenta);
     } else {
-        pos.x -= (captainClaw->damageable.swordCollider.width + captainClaw->damageable.swordCollider.left);
+        DrawOutlineFloatRect(sf::FloatRect{
+            captainClaw->render.sprite.getPosition().x - captainClaw->damageable.swordCollider.width,
+            captainClaw->render.sprite.getGlobalBounds().top,
+            captainClaw->damageable.swordCollider.width,
+            captainClaw->damageable.swordCollider.height,
+        }, sf::Color::Magenta);
     }
-    swordCollider.setPosition(pos);
-    rWindow->draw(pistolPoint);
-    rWindow->draw(swordCollider);
-#endif
-    sf::CircleShape origin(5.0f);
-    origin.setOrigin(5.0f, 5.0f);
-    origin.setPosition(captainClaw->render.sprite.getPosition());
-    rWindow->draw(origin);
-#if 1
-    sf::RectangleShape collider;
-    collider.setPosition(captainClaw->render.sprite.getGlobalBounds().left,
-                         captainClaw->render.sprite.getGlobalBounds().top);
-    collider.setSize(sf::Vector2f(captainClaw->render.sprite.getGlobalBounds().width,
-                                  captainClaw->render.sprite.getGlobalBounds().height));
-    collider.setFillColor(sf::Color::Transparent);
-    collider.setOutlineColor(sf::Color::Red);
-    collider.setOutlineThickness(3.0f);
-    rWindow->draw(collider);
-#endif
+    DrawOutlinePoint(captainClaw->render.sprite.getPosition() + captainClaw->damageable.pistolOffset,
+                     3.0f, 10, sf::Color::White);
+    DrawOutlineFloatRect(captainClaw->render.sprite.getGlobalBounds());
+    DrawOutlinePoint(captainClaw->render.sprite.getPosition(), 3.0f);
 
     rWindow->setView(renderContext->uiView);
     // TODO(Tony): Draw UI stuff

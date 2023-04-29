@@ -278,3 +278,32 @@ void SceneSetTileIndex(scene_context_t* world, int index)
 
     world->tileMapIndex = index;
 }
+
+void SceneDrawDebug(const scene_context_t* world)
+{
+    const sf::Vector2f drawCenter = rWindow->getView().getCenter();
+    const sf::Vector2f viewSize = rWindow->getView().getSize();
+    const float width = viewSize.x / 2;
+    const float height = viewSize.y / 2;
+
+    int fromX = (drawCenter.x - width) / world->tileSize - 2;
+    int toX = (drawCenter.x + width) / world->tileSize + 2;
+    int fromY = (drawCenter.y - height) / world->tileSize - 2;
+    int toY = (drawCenter.y + height) / world->tileSize + 2;
+
+    fromX = std::clamp(fromX, 0, (int) world->tileGridWidth - 1);
+    toX = std::clamp(toX, 0, (int) world->tileGridWidth);
+    fromY = std::clamp(fromY, 0, (int) world->tileGridHeight - 1);
+    toY = std::clamp(toY, 0, (int) world->tileGridHeight);
+
+    for (int x = fromX; x < toX; ++x) {
+        for (int y = fromY; y < toY; ++y) {
+            // ACTION Layer
+            entity_t* tile = SceneGetTileWithIndex(world, 1, x, y);
+            if (!tile)
+                continue;
+
+            DrawOutlineFloatRect(tile->render.sprite.getGlobalBounds());
+        }
+    }
+}

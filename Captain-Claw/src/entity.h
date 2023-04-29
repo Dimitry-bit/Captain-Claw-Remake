@@ -46,5 +46,3 @@ void EntitySetOrigin(entity_t* self, float x, float y);
 void EntitySetOrigin(entity_t* self, const sf::Vector2f& origin);
 entity_transform EntityGetTransform(const entity_t* self);
 void EntityUpdate(entity_t* self, const entity_t* to);
-
-void DrawEntity(const entity_t* entity);
