@@ -3,6 +3,7 @@
 
 #include "scene_serialization.h"
 #include "entity.h"
+#include "c_physics.h"
 
 static void ReadEntityData(scene_context_t* world, entity_t* entity, FILE* fp);
 
@@ -39,6 +40,12 @@ static void ReadEntityData(scene_context_t* world, entity_t* entity, FILE* fp)
         case C_TILE: {
             fread(&entity->tile.type, sizeof(entity->tile.type), 1, fp);
             EntitySet(entity, C_TILE, &entity->tile);
+
+            sf::Vector2f size = sf::Vector2f(entity->render.sprite.getGlobalBounds().width,
+                                             entity->render.sprite.getGlobalBounds().height);
+            sf::Vector2f offset = size * 0.5f;
+            c_collider_t tileCollider = PhysicsCreateCollider(size, offset, false);
+            EntitySet(entity, C_COLLIDER, &tileCollider);
         }
             break;
         case C_PICKUP: {

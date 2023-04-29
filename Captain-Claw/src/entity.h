@@ -26,6 +26,7 @@ struct entity_t {
     c_enemy_t enemy;
     c_sound_t sound;
     c_physics_t physics;
+    c_collider_t collider;
 };
 
 struct entity_transform {

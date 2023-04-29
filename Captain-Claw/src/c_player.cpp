@@ -87,7 +87,7 @@ void PlayerUpdate(entity_t* player, float deltaTime)
         if (abs(player->physics.velocity.x) <= stopMovingThreshold) {
             playerComponent->state = PLAYER_STATE_IDLE;
         } else {
-//            playerComponent->state = PLAYER_STATE_MOVING;
+            playerComponent->state = PLAYER_STATE_MOVING;
         }
     }
 

@@ -87,6 +87,7 @@ void* ECSGet(ECS* self, unsigned long long id, entity_components_t t)
         case C_ANIMATOR:return &e->animator;
         case C_PLAYER:return &e->player;
         case C_PHYSICS:return &e->physics;
+        case C_COLLIDER:return &e->collider;
     }
 
     return nullptr;

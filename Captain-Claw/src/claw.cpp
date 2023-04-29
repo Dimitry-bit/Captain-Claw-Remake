@@ -97,6 +97,9 @@ void ClawAlloc(ECS* ecs)
     ECSAdd(ecs, captainClaw->ID, C_PLAYER, &player);
     c_physics_t physics = {.isKinematic = false, .useGravity = true};
     ECSAdd(ecs, captainClaw->ID, C_PHYSICS, &physics);
+    c_collider_t
+        hitCollider = PhysicsCreateCollider(sf::Vector2f(70.0f, 115.0f), sf::Vector2f(0.0f, -115.0f / 2.0f), false);
+    ECSAdd(ecs, captainClaw->ID, C_COLLIDER, &hitCollider);
 }
 
 void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf::Time deltaTime)
@@ -194,25 +197,19 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
     }
     SceneDrawDebug(world);
 
-    if (captainClaw->render.sprite.getScale().x > 0) {
-        DrawOutlineFloatRect(sf::FloatRect{
-            captainClaw->render.sprite.getPosition().x,
-            captainClaw->render.sprite.getGlobalBounds().top,
-            captainClaw->damageable.swordCollider.width,
-            captainClaw->damageable.swordCollider.height,
-        }, sf::Color::Magenta);
-    } else {
-        DrawOutlineFloatRect(sf::FloatRect{
-            captainClaw->render.sprite.getPosition().x - captainClaw->damageable.swordCollider.width,
-            captainClaw->render.sprite.getGlobalBounds().top,
-            captainClaw->damageable.swordCollider.width,
-            captainClaw->damageable.swordCollider.height,
-        }, sf::Color::Magenta);
-    }
-    DrawOutlinePoint(captainClaw->render.sprite.getPosition() + captainClaw->damageable.pistolOffset,
-                     3.0f, 10, sf::Color::White);
-    DrawOutlineFloatRect(captainClaw->render.sprite.getGlobalBounds());
-    DrawOutlinePoint(captainClaw->render.sprite.getPosition(), 3.0f);
+//    DrawOutlineFloatRect(sf::FloatRect{
+//        captainClaw->render.sprite.getGlobalBounds().left + captainClaw->damageable.swordCollider.width,
+//        captainClaw->render.sprite.getGlobalBounds().top,
+//        captainClaw->damageable.swordCollider.width,
+//        captainClaw->damageable.swordCollider.height,
+//    }, sf::Color::Magenta);
+//    DrawOutlinePoint(sf::Vector2f{
+//                         captainClaw->render.sprite.getGlobalBounds().left + captainClaw->damageable.pistolOffset.x,
+//                         captainClaw->render.sprite.getGlobalBounds().top + captainClaw->damageable.pistolOffset.y},
+//                     3.0f, 10, sf::Color::White);
+//    DrawOutlinePoint(captainClaw->render.sprite.getPosition(), 3.0f);
+    DrawCollider(captainClaw->collider);
+    DrawOutlinePoint(captainClaw->collider.center, 3.0f);
 
     rWindow->setView(renderContext->uiView);
     // TODO(Tony): Draw UI stuff

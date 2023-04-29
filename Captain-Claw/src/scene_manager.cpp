@@ -4,6 +4,7 @@
 #include "renderer.h"
 #include "resource_manager.h"
 #include "entity.h"
+#include "c_physics.h"
 
 void SceneAllocAssets(scene_context_t* world)
 {
@@ -303,7 +304,7 @@ void SceneDrawDebug(const scene_context_t* world)
             if (!tile)
                 continue;
 
-            DrawOutlineFloatRect(tile->render.sprite.getGlobalBounds());
+            DrawCollider(tile->collider);
         }
     }
 }

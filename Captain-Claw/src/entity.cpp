@@ -80,6 +80,10 @@ void EntitySet(entity_t* self, const entity_components_t& cType, const void* cVa
             self->physics = *(const c_physics_t*) (cValue);
         }
             break;
+        case C_COLLIDER: {
+            self->collider = *(const c_collider_t*) (cValue);
+        }
+            break;
     }
 }
 

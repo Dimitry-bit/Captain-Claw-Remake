@@ -19,6 +19,7 @@ enum entity_components_t {
     C_ANIMATOR = 1 << 9,
     C_PLAYER = 1 << 10,
     C_PHYSICS = 1 << 11,
+    C_COLLIDER = 1 << 12,
 };
 
 enum tile_types_t {
@@ -146,4 +147,14 @@ struct c_physics_t {
     bool isKinematic;
     bool useGravity;
     bool isGrounded;
+    float mass;
+    float linearDrag;
+    float gravityScale;
+};
+
+struct c_collider_t {
+    sf::Vector2f center;
+    sf::Vector2f offset;
+    sf::Vector2f size;
+    bool isTrigger;
 };
