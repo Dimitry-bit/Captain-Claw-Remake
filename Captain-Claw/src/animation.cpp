@@ -41,10 +41,10 @@ void AnimAnimatorInit(Animator* animator, sf::Sprite* sprite)
 void AnimPlay(Animator* animator, const Animation* animation)
 {
     AnimStop(animator);
-    animator->currentFrame = 0;
     animator->state = ANIMATOR_STATE_PLAYING;
-    animator->elapsedTime = 0;
+    animator->elapsedTime = -1.0f; // NOTE(Tony): force update texture and texture rect
     animator->anim = *animation;
+    animator->currentFrame = 0;
 
     animators.push_back(animator);
 }
@@ -75,11 +75,18 @@ void AnimUpdate(Animator* animator, float deltaTime)
     animator->elapsedTime += deltaTime;
 
     // TODO(Zeyad): Division by zero
-    if (animator->elapsedTime >= animatorUpdateRate / animator->anim.speed) {
+    if (animator->elapsedTime >= animatorUpdateRate / animator->anim.speed || animator->elapsedTime <= 0.0f) {
         animator->elapsedTime = 0;
 
-        sf::Sprite& sprite = *animator->sprite;
         const spriteSheet_t& spriteSheet = *animator->anim.spriteSheet;
+
+        if (animator->anim.isLoop) {
+            animator->currentFrame %= spriteSheet.frameCount;
+        } else if (animator->currentFrame >= spriteSheet.frameCount) {
+            animatorsToRemove.push_back(animator);
+        }
+
+        sf::Sprite& sprite = *animator->sprite;
         const sf::IntRect& area = spriteSheet.frames[animator->currentFrame].area;
         const sf::Vector2f& pivot = spriteSheet.frames[animator->currentFrame].pivot;
 
@@ -95,11 +102,6 @@ void AnimUpdate(Animator* animator, float deltaTime)
         sprite.setOrigin(pivot.x * area.width, pivot.y * area.height);
 
         animator->currentFrame++;
-        if (animator->anim.isLoop) {
-            animator->currentFrame %= spriteSheet.frameCount;
-        } else if (animator->currentFrame >= spriteSheet.frameCount) {
-            animatorsToRemove.push_back(animator);
-        }
     }
 }
 
