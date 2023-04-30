@@ -22,17 +22,17 @@ static void ReadEntityData(scene_context_t* world, entity_t* entity, FILE* fp)
     entity->logic.resize(len);
     fread(entity->logic.data(), sizeof(*entity->logic.data()), len, fp);
 
-    entity_transform transform;
-    fread(&transform.position.x, sizeof(transform.position.x), 2, fp);
-    fread(&transform.origin.x, sizeof(transform.origin.x), 2, fp);
+    sf::Vector2f pos;
+    fread(&pos.x, sizeof(pos.x), 2, fp);
+    entity->transform.setPosition(pos);
+    sf::Vector2f origin;
+    fread(&origin.x, sizeof(origin.x), 2, fp);
 
     fread(&entity->render.type, sizeof(entity->render.type), 1, fp);
     fread(&len, sizeof(len), 1, fp);
     entity->render.graphicsID.resize(len);
     fread(entity->render.graphicsID.data(), sizeof(*entity->render.graphicsID.data()), len, fp);
     EntityInit(entity, entity->logic, entity->render.type, entity->render.graphicsID);
-    EntitySetPos(entity, transform.position);
-    EntitySetOrigin(entity, transform.origin);
 
     switch (entity->type) {
         case C_TILE: {
@@ -43,12 +43,12 @@ static void ReadEntityData(scene_context_t* world, entity_t* entity, FILE* fp)
         case C_PICKUP: {
             fread(&entity->pickup.type, sizeof(entity->pickup.type), 1, fp);
             fread(&entity->pickup.value, sizeof(entity->pickup.value), 1, fp);
-            PickupInit(&world->ecs, entity);
+            ECSSetFlag(&world->ecs, entity->ID, C_PICKUP);
         }
             break;
         case C_CHECKPOINT: {
             fread(&entity->checkpoint.keepInventory, sizeof(entity->checkpoint.keepInventory), 1, fp);
-            CheckpointInit(&world->ecs, entity);
+            ECSSetFlag(&world->ecs, entity->ID, C_CHECKPOINT);
         }
             break;
         case C_ENEMY: {
@@ -63,14 +63,10 @@ static void ReadEntityData(scene_context_t* world, entity_t* entity, FILE* fp)
             fread(&entity->platform.a.x, sizeof(entity->platform.a.x), 2, fp);
             fread(&entity->platform.b.x, sizeof(entity->platform.b.x), 2, fp);
             fread(&entity->platform.time, sizeof(entity->platform.time), 1, fp);
-            PlatformInit(&world->ecs, entity);
+            ECSSetFlag(&world->ecs, entity->ID, C_PLATFORM);
         }
             break;
         default:break;
-    }
-
-    if (!(entity->type & C_TILE)) {
-        ECSAdd(&world->ecs, entity->ID, C_RENDER, &entity->render);
     }
 }
 

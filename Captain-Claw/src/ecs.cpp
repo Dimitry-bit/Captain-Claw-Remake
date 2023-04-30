@@ -20,7 +20,11 @@ entity_t* ECSEntityAlloc(ECS* self)
     e->ID = self->nextEntityID++;
     self->entitiesRegistry[e->ID] = e;
     AnimAnimatorInit(&e->animator, &e->render.sprite);
-    ECSAdd(self, e->ID, C_ANIMATOR, &e->animator);
+
+    ECSSetFlag(self, e->ID, C_ANIMATOR);
+    ECSSetFlag(self, e->ID, C_TRANSFORM);
+    ECSSetFlag(self, e->ID, C_RENDER);
+
     return e;
 }
 
@@ -33,6 +37,16 @@ void ECSAdd(ECS* self, unsigned long long id, entity_components_t t, const void*
     self->componentList[t].systemType = t;
     self->componentList[t].entityIDs.insert(id);
     EntitySet(self->entitiesRegistry[id], t, v);
+}
+
+void ECSSetFlag(ECS* self, unsigned long long id, entity_components_t t)
+{
+    if (!IsValidEntityID(self, id)) {
+        return;
+    }
+
+    self->componentList[t].systemType = t;
+    self->componentList[t].entityIDs.insert(id);
 }
 
 void ECSDealloc(ECS* self)
@@ -80,7 +94,6 @@ void* ECSGet(ECS* self, unsigned long long id, entity_components_t t)
         case C_CHECKPOINT:return &e->checkpoint;
         case C_ENEMY:return &e->enemy;
         case C_PLATFORM:return &e->platform;
-        case C_SOUND:return &e->sound;
         case C_RENDER:return &e->render;
         case C_DAMAGEABLE:return &e->damageable;
         case C_INVENTORY:return &e->inventory;
@@ -88,6 +101,7 @@ void* ECSGet(ECS* self, unsigned long long id, entity_components_t t)
         case C_PLAYER:return &e->player;
         case C_PHYSICS:return &e->physics;
         case C_COLLIDER:return &e->collider;
+        case C_TRANSFORM:return &e->transform;
     }
 
     return nullptr;

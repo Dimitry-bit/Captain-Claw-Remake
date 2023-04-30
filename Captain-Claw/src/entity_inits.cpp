@@ -15,11 +15,7 @@ void TileInit(ECS* ecs, entity_t* entity)
 
 void EnemyInit(ECS* ecs, entity_t* entity)
 {
-    ECSAdd(ecs, entity->ID, C_ENEMY, &entity->enemy);
-    entity->enemy.state = ENEMY_STATE_IDLE;
-    entity->enemy.idleTimer = 0;
-    entity->enemy.idlePeriod = 0;
-    entity->enemy.targetPoint = sf::Vector2f(0.0f, 0.0f);
+    ECSSetFlag(ecs, entity->ID, C_ENEMY);
     entity->enemy.startPos = entity->render.sprite.getPosition();
 
     // NOTE(Tony): Random number for testing only
@@ -30,25 +26,4 @@ void EnemyInit(ECS* ecs, entity_t* entity)
         .lives = 1,
     };
     ECSAdd(ecs, entity->ID, C_DAMAGEABLE, &damageable);
-}
-
-void PlayerInit(ECS* ecs, entity_t* entity)
-{
-
-}
-
-void PlatformInit(ECS* ecs, entity_t* entity)
-{
-    ECSAdd(ecs, entity->ID, C_PLATFORM, &entity->platform);
-}
-
-void CheckpointInit(ECS* ecs, entity_t* entity)
-{
-    entity->checkpoint.isActive = false;
-    ECSAdd(ecs, entity->ID, C_CHECKPOINT, &entity->checkpoint);
-}
-
-void PickupInit(ECS* ecs, entity_t* entity)
-{
-    ECSAdd(ecs, entity->ID, C_PICKUP, &entity->pickup);
 }

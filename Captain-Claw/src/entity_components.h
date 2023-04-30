@@ -12,14 +12,14 @@ enum entity_components_t {
     C_CHECKPOINT = 1 << 2,
     C_ENEMY = 1 << 3,
     C_PLATFORM = 1 << 4,
-    C_SOUND = 1 << 5,
-    C_RENDER = 1 << 6,
-    C_DAMAGEABLE = 1 << 7,
-    C_INVENTORY = 1 << 8,
-    C_ANIMATOR = 1 << 9,
-    C_PLAYER = 1 << 10,
-    C_PHYSICS = 1 << 11,
-    C_COLLIDER = 1 << 12,
+    C_RENDER = 1 << 5,
+    C_DAMAGEABLE = 1 << 6,
+    C_INVENTORY = 1 << 7,
+    C_ANIMATOR = 1 << 8,
+    C_PLAYER = 1 << 9,
+    C_PHYSICS = 1 << 10,
+    C_COLLIDER = 1 << 11,
+    C_TRANSFORM = 1 << 12,
 };
 
 enum tile_types_t {
@@ -92,11 +92,6 @@ struct c_checkpoint_t {
     bool isActive;
 };
 
-struct c_sound_t {
-    string soundFile;
-    bool isLoop;
-};
-
 enum render_types_t {
     RENDER_NONE = 0,
     RENDER_SPRITE,
@@ -107,7 +102,6 @@ enum render_types_t {
 struct c_render_t {
     render_types_t type;
     string graphicsID;
-    int drawLayer;
     sf::Sprite sprite;
     sf::RectangleShape rectangleShape;
     sf::CircleShape circleShape;

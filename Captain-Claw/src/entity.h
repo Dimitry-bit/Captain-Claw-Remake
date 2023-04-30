@@ -15,6 +15,7 @@ struct entity_t {
 
     Animator animator;
 
+    sf::Transformable transform;
     c_player_t player;
     c_inventory_t inventory;
     c_damageable_t damageable;
@@ -24,15 +25,8 @@ struct entity_t {
     c_checkpoint_t checkpoint;
     c_pickup_t pickup;
     c_enemy_t enemy;
-    c_sound_t sound;
     c_physics_t physics;
     c_collider_t collider;
-};
-
-struct entity_transform {
-    sf::FloatRect bounds;
-    sf::Vector2f position;
-    sf::Vector2f origin;
 };
 
 entity_t* EntityAlloc();
@@ -41,9 +35,3 @@ void EntityInit(entity_t* self, const string& logic, const render_types_t& rType
 
 bool EntityHas(entity_t* self, const entity_components_t& cType);
 void EntitySet(entity_t* self, const entity_components_t& cType, const void* cValue);
-void EntitySetPos(entity_t* self, float x, float y);
-void EntitySetPos(entity_t* self, const sf::Vector2f& pos);
-void EntitySetOrigin(entity_t* self, float x, float y);
-void EntitySetOrigin(entity_t* self, const sf::Vector2f& origin);
-entity_transform EntityGetTransform(const entity_t* self);
-void EntityUpdate(entity_t* self, const entity_t* to);

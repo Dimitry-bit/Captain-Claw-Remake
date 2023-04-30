@@ -77,13 +77,9 @@ void ClawAlloc(ECS* ecs)
     const spriteSheet_t& spriteSheet = ResSpriteSheetGet(CHAR_CLAW_IDLE);
     captainClaw->render.sprite.setTexture(spriteSheet.texture);
     captainClaw->render.type = RENDER_SPRITE;
-    ECSAdd(ecs, captainClaw->ID, C_RENDER, &captainClaw->render);
     Animation clawIdle = AnimAnimationCreate(&spriteSheet);
     AnimPlay(&captainClaw->animator, &clawIdle);
     captainClaw->render.sprite.setPosition(300.0f, 250.0f);
-
-    c_inventory_t inv{};
-    ECSAdd(ecs, captainClaw->ID, C_INVENTORY, &inv);
 
     c_damageable_t damageable = {
         .swordCollider= {10, -90.0f, 120, 90},
@@ -93,13 +89,15 @@ void ClawAlloc(ECS* ecs)
     };
     ECSAdd(ecs, captainClaw->ID, C_DAMAGEABLE, &damageable);
 
-    c_player_t player = {.state = PLAYER_STATE_IDLE};
-    ECSAdd(ecs, captainClaw->ID, C_PLAYER, &player);
+    c_collider_t hitCollider =
+        PhysicsCreateCollider(sf::Vector2f(70.0f, 115.0f), sf::Vector2f(0.0f, -115.0f / 2.0f), false);
+    ECSAdd(ecs, captainClaw->ID, C_COLLIDER, &hitCollider);
+
     c_physics_t physics = {.isKinematic = false, .useGravity = true};
     ECSAdd(ecs, captainClaw->ID, C_PHYSICS, &physics);
-    c_collider_t
-        hitCollider = PhysicsCreateCollider(sf::Vector2f(70.0f, 115.0f), sf::Vector2f(0.0f, -115.0f / 2.0f), false);
-    ECSAdd(ecs, captainClaw->ID, C_COLLIDER, &hitCollider);
+
+    ECSSetFlag(ecs, captainClaw->ID, C_INVENTORY);
+    ECSSetFlag(ecs, captainClaw->ID, C_PLAYER);
 }
 
 void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf::Time deltaTime)
@@ -152,8 +150,6 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
     // Render second pass
     for (auto& component: world->ecs.componentList) {
         switch (component.second.systemType) {
-            case C_NONE:break;
-            case C_TILE:break;
             case C_PICKUP: {
                 PickupUpdate(captainClaw->ID, component.second.entityIDs, &world->ecs);
             }
@@ -168,16 +164,10 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
                 CombatSystemUpdate(captainClaw->ID, component.second.entityIDs, &world->ecs, deltaTime.asSeconds());
             }
                 break;
-            case C_PLATFORM:break;
-            case C_SOUND:break;
             case C_RENDER: {
                 DrawEntities(component.second.entityIDs, &world->ecs);
             }
                 break;
-            case C_DAMAGEABLE:break;
-            case C_INVENTORY:break;
-            case C_ANIMATOR:break;
-            case C_PLAYER:break;
             case C_PHYSICS: {
                 PhysicsUpdate(component.second.entityIDs, &world->ecs, world, deltaTime.asSeconds());
             }
