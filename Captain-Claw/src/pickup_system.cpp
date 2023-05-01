@@ -5,6 +5,7 @@
 #include "sound_sys.h"
 #include "ecs.h"
 #include "renderer.h"
+#include "c_physics.h"
 
 sf::Sprite glitter;
 Animator glitterAnimator;
@@ -16,8 +17,10 @@ void PickupUpdate(unsigned long long playerID, std::unordered_set<unsigned long 
     for (auto& eID: entityIDs) {
         c_pickup_t* pickup = (c_pickup_t*) ECSGet(ecs, eID, C_PICKUP);
         c_render_t* render = (c_render_t*) ECSGet(ecs, eID, C_RENDER);
+        c_collider_t* collider = (c_collider_t*) ECSGet(ecs, eID, C_COLLIDER);
+        sf::Transformable* transform = (sf::Transformable*) ECSGet(ecs, eID, C_TRANSFORM);
 
-        if (!claw->render.sprite.getGlobalBounds().intersects(render->sprite.getGlobalBounds())) {
+        if (!CheckCollision(*collider, claw->collider, nullptr)) {
             continue;
         }
 
@@ -37,7 +40,7 @@ void PickupUpdate(unsigned long long playerID, std::unordered_set<unsigned long 
         Animation animation_store = AnimAnimationCreate(&ResSpriteSheetGet(VFX_GLITTER), false);
         AnimPlay(&glitterAnimator, &animation_store);
 
-        sf::Vector2f pos = render->sprite.getPosition();
+        sf::Vector2f pos = transform->getPosition();
         sf::IntRect texRect = render->sprite.getTextureRect();
         // Center glitter
         glitter.setPosition(pos.x + texRect.width / 2.0f, pos.y + texRect.height / 2.0f);

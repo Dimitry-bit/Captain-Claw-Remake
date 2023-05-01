@@ -31,7 +31,11 @@ const float jumpImpulseVel = 270.0f;
 const float jumpAccel = 25.0f;
 const float MAX_AIR_TIME = 0.4f;
 
-void PlayerLocomotion(c_player_t* player, c_physics_t* physics, c_render_t* render, float deltaTime)
+void PlayerLocomotion(c_player_t* player,
+                      c_physics_t* physics,
+                      sf::Transformable* transform,
+                      c_render_t* render,
+                      float deltaTime)
 {
     physics->acceleration = {};
 
@@ -45,17 +49,17 @@ void PlayerLocomotion(c_player_t* player, c_physics_t* physics, c_render_t* rend
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
             physics->acceleration.x = 1.0f;
 
-            sf::Vector2f scale = render->sprite.getScale();
+            sf::Vector2f scale = transform->getScale();
             if (scale.x < 0.0f) {
-                render->sprite.setScale(-1.0f * scale.x, scale.y);
+                transform->setScale(-1.0f * scale.x, scale.y);
             }
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
             physics->acceleration.x = -1.0f;
 
-            sf::Vector2f scale = render->sprite.getScale();
+            sf::Vector2f scale = transform->getScale();
             if (scale.x > 0.0f) {
-                render->sprite.setScale(-1.0f * scale.x, scale.y);
+                transform->setScale(-1.0f * scale.x, scale.y);
             }
         }
         if (Keyboard::isKeyPressed(Keyboard::Space)) {
@@ -79,8 +83,9 @@ void PlayerUpdate(entity_t* player, float deltaTime)
 {
     Animator* animator = &player->animator;
     c_player_t* playerComponent = &player->player;
+    sf::Transformable* transform = &player->transform;
 
-    PlayerLocomotion(playerComponent, &player->physics, &player->render, deltaTime);
+    PlayerLocomotion(playerComponent, &player->physics, transform, &player->render, deltaTime);
 
     // TODO(Tony): Find a better way
     if (playerComponent->state != PLAYER_STATE_ATTACK) {

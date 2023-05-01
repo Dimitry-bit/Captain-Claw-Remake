@@ -160,7 +160,7 @@ void DrawCollider(const c_collider_t& collider)
 {
     sf::FloatRect rect = ColliderGetGlobalBounds(collider);
     DrawOutlineFloatRect(sf::FloatRect(rect.left - rect.width / 2.0f, rect.top - rect.height / 2.0f,
-                                       rect.width, rect.height));
+                                       rect.width, rect.height), sf::Color::Green);
 }
 
 sf::FloatRect ColliderGetLocalBounds(const c_collider_t& self)

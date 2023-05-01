@@ -37,8 +37,8 @@ void CheckPointUpdate(unsigned long long playerID, std::unordered_set<unsigned l
 
     // NOTE(Tony): Maybe this should be moved into a separate file ?
     if (claw->damageable.health <= 0 && claw->damageable.lives <= 0) {
-        c_render_t* render = (c_render_t*) ECSGet(ecs, latestCheckPointID, C_RENDER);
-        claw->render.sprite.setPosition(render->sprite.getPosition());
+        sf::Transformable* transform = (sf::Transformable*) ECSGet(ecs, latestCheckPointID, C_TRANSFORM);
+        claw->transform.setPosition(transform->getPosition());
         claw->damageable.health = 100;
         claw->damageable.lives = 6;
     }

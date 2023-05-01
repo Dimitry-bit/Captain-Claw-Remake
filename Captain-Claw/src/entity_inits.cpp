@@ -16,7 +16,7 @@ void TileInit(ECS* ecs, entity_t* entity)
 void EnemyInit(ECS* ecs, entity_t* entity)
 {
     ECSSetFlag(ecs, entity->ID, C_ENEMY);
-    entity->enemy.startPos = entity->render.sprite.getPosition();
+    entity->enemy.startPos = entity->transform.getPosition();
 
     // NOTE(Tony): Random number for testing only
     c_damageable_t damageable = {

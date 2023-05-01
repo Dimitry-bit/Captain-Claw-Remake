@@ -27,6 +27,7 @@ static void ReadEntityData(scene_context_t* world, entity_t* entity, FILE* fp)
     entity->transform.setPosition(pos);
     sf::Vector2f origin;
     fread(&origin.x, sizeof(origin.x), 2, fp);
+//    entity->transform.setOrigin(origin);
 
     fread(&entity->render.type, sizeof(entity->render.type), 1, fp);
     fread(&len, sizeof(len), 1, fp);

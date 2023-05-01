@@ -11,7 +11,7 @@ void RendererInit(render_context_t* renderContext, int rWidth, int rHeight)
     renderContext->worldView.setCenter(rWindow->getSize().x / 2.0f, rWindow->getSize().y / 2.0f);
 }
 
-void DrawOutlineFloatRect(const sf::FloatRect& rect, sf::Color color)
+void DrawOutlineFloatRect(const sf::FloatRect& rect, sf::Color color, const sf::RenderStates& states)
 {
     sf::Vertex vertices[6] = {};
     for (auto& vertex: vertices) {
@@ -25,13 +25,12 @@ void DrawOutlineFloatRect(const sf::FloatRect& rect, sf::Color color)
     vertices[4].position = sf::Vector2f(rect.left, rect.top);
     vertices[5].position = sf::Vector2f(rect.left + rect.width, rect.top + rect.height);
 
-    rWindow->draw(vertices, 6, sf::LineStrip);
+    rWindow->draw(vertices, 6, sf::LineStrip, states);
 }
 
-void DrawOutlinePoint(const sf::Vector2f& position, float radius, int pointCount, sf::Color color,
-                      const sf::RenderStates& states)
+void DrawOutlinePoint(const sf::Vector2f& position, float radius, sf::Color color, const sf::RenderStates& states)
 {
-    sf::CircleShape origin(radius, pointCount);
+    sf::CircleShape origin(radius, 10);
     origin.setOrigin(radius, radius);
     origin.setPosition(position);
     origin.setFillColor(sf::Color::Transparent);
