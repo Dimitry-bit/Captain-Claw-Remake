@@ -28,7 +28,8 @@ void DrawOutlineFloatRect(const sf::FloatRect& rect, sf::Color color)
     rWindow->draw(vertices, 6, sf::LineStrip);
 }
 
-void DrawOutlinePoint(const sf::Vector2f& position, float radius, int pointCount, sf::Color color)
+void DrawOutlinePoint(const sf::Vector2f& position, float radius, int pointCount, sf::Color color,
+                      const sf::RenderStates& states)
 {
     sf::CircleShape origin(radius, pointCount);
     origin.setOrigin(radius, radius);
@@ -37,5 +38,5 @@ void DrawOutlinePoint(const sf::Vector2f& position, float radius, int pointCount
     origin.setOutlineColor(color);
     origin.setOutlineThickness(1.0f);
 
-    rWindow->draw(origin);
+    rWindow->draw(origin, states);
 }

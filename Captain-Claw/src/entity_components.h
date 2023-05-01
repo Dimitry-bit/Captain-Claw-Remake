@@ -147,7 +147,7 @@ struct c_physics_t {
 };
 
 struct c_collider_t {
-    sf::Vector2f center;
+    sf::Transformable transform;
     sf::Vector2f offset;
     sf::Vector2f size;
     bool isTrigger;

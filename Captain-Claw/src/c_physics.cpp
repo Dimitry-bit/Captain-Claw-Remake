@@ -1,16 +1,12 @@
+#include <cmath>
 #include "SFML/Graphics.hpp"
 
 #include "c_physics.h"
 #include "scene_manager.h"
 
+// Note(Tony): Should be related to the world not physics
 const float dampMultiplier = 4.0f;
 const float gravityMultiplier = 0.08f;
-
-// TODO(Tony): Pull in a separate file
-float Squaref(float a)
-{
-    return a * a;
-}
 
 bool CheckCollision(c_collider_t& a, c_collider_t& b, sf::Vector2i* hitNormal)
 {
@@ -19,13 +15,19 @@ bool CheckCollision(c_collider_t& a, c_collider_t& b, sf::Vector2i* hitNormal)
         *hitNormal = normal;
     }
 
-    sf::Vector2f aHalfExtent = a.size / 2.0f;
-    sf::Vector2f bHalfExtent = b.size / 2.0f;
+    sf::FloatRect aBounds = ColliderGetGlobalBounds(a);
+    sf::FloatRect bBounds = ColliderGetGlobalBounds(b);
 
-    float dX = b.center.x - a.center.x;
-    float dY = b.center.y - a.center.y;
-    float intersectX = abs(dX) - (bHalfExtent.x + aHalfExtent.x);
-    float intersectY = abs(dY) - (bHalfExtent.y + aHalfExtent.y);
+    sf::Vector2f aHalfExtent = sf::Vector2f(aBounds.width / 2.0f, aBounds.height / 2.0f);
+    sf::Vector2f bHalfExtent = sf::Vector2f(bBounds.width / 2.0f, bBounds.height / 2.0f);
+
+    sf::Vector2f aPos = sf::Vector2f(aBounds.left, aBounds.top);
+    sf::Vector2f bPos = sf::Vector2f(bBounds.left, bBounds.top);
+
+    float dX = bPos.x - aPos.x;
+    float dY = bPos.y - aPos.y;
+    float intersectX = abs((int) dX) - (bHalfExtent.x + aHalfExtent.x);
+    float intersectY = abs((int) dY) - (bHalfExtent.y + aHalfExtent.y);
 
     if (intersectX < 0.0f && intersectY < 0.0f) {
 //        inertia = std::clamp(inertia, 0.0f, 1.0f);
@@ -64,15 +66,17 @@ bool CheckCollision(c_collider_t& a, c_collider_t& b, sf::Vector2i* hitNormal)
 
 void CollisionResponse(unsigned long long eID, ECS* ecs, scene_context_t* world)
 {
+    // TODO(Tony): Cleanup collision response code
     if (!ECSHas(ecs, eID, C_COLLIDER)) {
         return;
     }
 
     c_physics_t* physics = (c_physics_t*) ECSGet(ecs, eID, C_PHYSICS);
-    c_render_t* render = (c_render_t*) ECSGet(ecs, eID, C_RENDER);
+    sf::Transformable* transform = (sf::Transformable*) ECSGet(ecs, eID, C_TRANSFORM);
     c_collider_t* collider = (c_collider_t*) ECSGet(ecs, eID, C_COLLIDER);
 
-    collider->center = render->sprite.getPosition() + collider->offset;
+    collider->transform = *transform;
+    collider->transform.move(collider->offset);
 
     physics->isGrounded = false;
     for (int y = 0; y < world->tileGridHeight; ++y) {
@@ -82,9 +86,9 @@ void CollisionResponse(unsigned long long eID, ECS* ecs, scene_context_t* world)
                 continue;
             }
             c_collider_t* tileCollider = &tileEntity->collider;
-            c_render_t* tileRender = &tileEntity->render;
 
-            tileCollider->center = tileRender->sprite.getPosition() + tileEntity->collider.offset;
+            tileCollider->transform = tileEntity->transform;
+            tileCollider->transform.move(tileCollider->offset);
 
             if (collider->isTrigger || tileCollider->isTrigger) {
                 continue;
@@ -125,10 +129,9 @@ void CollisionResponse(unsigned long long eID, ECS* ecs, scene_context_t* world)
 
 void PhysicsUpdate(std::unordered_set<unsigned long long>& entityIDS, ECS* ecs, scene_context_t* world, float deltaTime)
 {
-    // TODO(Tony): Cleanup collision response code
     for (auto& eID: entityIDS) {
         c_physics_t* physics = (c_physics_t*) ECSGet(ecs, eID, C_PHYSICS);
-        c_render_t* render = (c_render_t*) ECSGet(ecs, eID, C_RENDER);
+        sf::Transformable* transform = (sf::Transformable*) ECSGet(ecs, eID, C_TRANSFORM);
 
         CollisionResponse(eID, ecs, world);
 
@@ -137,17 +140,16 @@ void PhysicsUpdate(std::unordered_set<unsigned long long>& entityIDS, ECS* ecs, 
         }
 
         physics->acceleration.x += -dampMultiplier * physics->velocity.x;
-        sf::Vector2f displacement = 0.5f * physics->acceleration * Squaref(deltaTime) + physics->velocity * deltaTime;
+        sf::Vector2f displacement = 0.5f * physics->acceleration * powf(deltaTime, 2) + physics->velocity * deltaTime;
         physics->velocity += physics->acceleration * deltaTime;
 
-        render->sprite.move(displacement);
+        transform->move(displacement);
     }
 }
 
 c_collider_t PhysicsCreateCollider(const sf::Vector2f& size, const sf::Vector2f& offset, bool isTrigger)
 {
     return c_collider_t{
-        .center = sf::Vector2f(0.0f, 0.0f),
         .offset = offset,
         .size = size,
         .isTrigger = isTrigger,
@@ -156,7 +158,24 @@ c_collider_t PhysicsCreateCollider(const sf::Vector2f& size, const sf::Vector2f&
 
 void DrawCollider(const c_collider_t& collider)
 {
-    DrawOutlineFloatRect(sf::FloatRect{collider.center.x - collider.size.x / 2.0f,
-                                       collider.center.y - collider.size.y / 2.0f,
-                                       collider.size.x, collider.size.y});
+    sf::FloatRect rect = ColliderGetGlobalBounds(collider);
+    DrawOutlineFloatRect(sf::FloatRect(rect.left - rect.width / 2.0f, rect.top - rect.height / 2.0f,
+                                       rect.width, rect.height));
+}
+
+sf::FloatRect ColliderGetLocalBounds(const c_collider_t& self)
+{
+    const float width = self.size.x;
+    const float height = self.size.y;
+
+    return {0.0f, 0.0f, width, height};
+}
+
+sf::FloatRect ColliderGetGlobalBounds(const c_collider_t& self)
+{
+    sf::FloatRect localBounds = ColliderGetLocalBounds(self);
+    // NOTE(Tony): Not sure if this is the right way to translate scale, but hey it works!
+    localBounds.width *= (self.transform.getScale().x < 0) ? -1.0f : 1.0f;
+    localBounds.height *= (self.transform.getScale().y < 0) ? -1.0f : 1.0f;
+    return self.transform.getTransform().transformRect(localBounds);
 }

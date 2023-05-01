@@ -1,5 +1,3 @@
-#include <memory>
-
 #include "entity.h"
 #include "renderer.h"
 #include "resource_manager.h"
@@ -107,5 +105,6 @@ static void EntityInitRender(entity_t* self, const render_types_t& rType, const 
         }
 
         self->render.sprite.setTexture(*tex);
+        self->render.sprite.setPosition(self->transform.getPosition());
     }
 }
