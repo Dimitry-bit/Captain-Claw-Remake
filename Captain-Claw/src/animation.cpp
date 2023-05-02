@@ -94,7 +94,7 @@ void AnimUpdate(Animator* animator, float deltaTime)
         sprite.setTexture(spriteSheet.texture);
         sprite.setTextureRect(spriteSheet.frames[animator->currentFrame].area);
 
-        // NOTE(Tony): Not sure why this works, revisit matrix
+        // NOTE(Tony): Not sure why this works, revisit matrix (if it works does it matter?)
         sf::Vector2f newOrigin = sf::Vector2f(pivot.x * area.width, pivot.y * area.height) / 2.0f;
         if (animator->adjustOrigin) {
             if (fabs(sprite.getOrigin().x - newOrigin.x) >= originAlignmentThresholdX) {
