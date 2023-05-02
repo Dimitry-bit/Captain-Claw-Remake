@@ -84,6 +84,18 @@ c_collider_t ColliderCreate(const sf::Vector2f& size, const sf::Vector2f& offset
     };
 }
 
+c_collider_t ColliderCreate(const sf::Sprite& sprite, bool isTrigger)
+{
+    const sf::IntRect& texRect = sprite.getTextureRect();
+    sf::Vector2f size((float) texRect.width, (float) texRect.height);
+
+    return c_collider_t{
+        .offset = size / 2.0f,
+        .size = size,
+        .isTrigger = isTrigger,
+    };
+}
+
 sf::FloatRect ColliderGetLocalBounds(const c_collider_t& self)
 {
     const float width = self.size.x;
