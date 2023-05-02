@@ -7,7 +7,7 @@
 
 // Note(Tony): Should be related to the world not physics
 const float dampMultiplier = 4.0f;
-const float gravityMultiplier = 0.08f;
+const float gravityMultiplier = 1.0f;
 
 void CollisionResponse(unsigned long long eID, ECS* ecs, scene_context_t* world)
 {
@@ -81,7 +81,7 @@ void PhysicsUpdate(std::unordered_set<unsigned long long>& entityIDS, ECS* ecs, 
         CollisionResponse(eID, ecs, world);
 
         if (physics->useGravity && !physics->isGrounded) {
-            physics->velocity.y += 9.8f * gravityMultiplier;
+            physics->velocity.y += 980.0f * gravityMultiplier * deltaTime;
         }
 
         physics->acceleration.x += -dampMultiplier * physics->velocity.x;
