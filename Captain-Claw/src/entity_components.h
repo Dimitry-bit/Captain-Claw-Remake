@@ -147,6 +147,7 @@ enum player_state_t {
     PLAYER_STATE_JUMP,
     PLAYER_STATE_FALLING,
     Player_STATE_LANDING,
+    Player_STATE_CLIMBING,
 };
 
 struct c_player_t {

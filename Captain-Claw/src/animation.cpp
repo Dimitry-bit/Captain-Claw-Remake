@@ -112,7 +112,7 @@ void AnimUpdate(Animator* animator, float deltaTime)
 
 float AnimGetNormalizedTime(const Animator* animator)
 {
-    return ((float) animator->currentFrame / (float) animator->anim.spriteSheet->frameCount);
+    return ((float) animator->currentFrame / (float) (animator->anim.spriteSheet->frameCount + 1));
 }
 
 string AnimGetRunningAnimName(const Animator* animator)
@@ -127,6 +127,10 @@ string AnimGetRunningAnimName(const Animator* animator)
 void AnimSystemUpdate(float deltaTime)
 {
     for (auto& animator: animators) {
+        if (animator->state != ANIMATOR_STATE_PLAYING) {
+            continue;
+        }
+
         AnimUpdate(animator, deltaTime);
     }
 

@@ -1,4 +1,5 @@
 #include <cmath>
+#include <unordered_map>
 
 #include "c_player.h"
 #include "resource_manager.h"
@@ -21,7 +22,7 @@ const int clawHitSoundsCount = 5;
 const float recoverPeriod = 0.5f;
 float recoverTimer = 0.0f;
 const float attackPeriod = 0.5f;
-float attackTimer;
+float attackTimer = 0.0f;
 const int swordDmg = 25;
 
 const float playerSpeed = 1000.0f;
@@ -33,11 +34,73 @@ const float jumpImpulseVel = 270.0f;
 const float jumpAccel = 25.0f;
 const float MAX_AIR_TIME = 0.4f;
 
-// NOTE(Tony): hmmmmm
+// NOTE(Tony): hmm!
 const float climbSpeed = 200000.0f;
 
-void PlayerLocomotion(c_player_t* player, c_physics_t* physics, sf::Transformable* transform,
-                      c_render_t* render, float deltaTime)
+typedef void (* state_update)(ECS*, unsigned long long, float);
+typedef void (* state_invoke)(ECS*, unsigned long long);
+
+void PlayerUpdateIdle(ECS* ecs, unsigned long long id, float deltaTime);
+void PlayerUpdateMove(ECS* ecs, unsigned long long id, float deltaTime);
+void PlayerUpdateClimbing(ECS* ecs, unsigned long long id, float deltaTime);
+void PlayerUpdateJump(ECS* ecs, unsigned long long id, float deltaTime);
+void PlayerUpdateLanding(ECS* ecs, unsigned long long id, float deltaTime);
+void PlayerUpdateFalling(ECS* ecs, unsigned long long id, float deltaTime);
+void PlayerUpdateAttack(ECS* ecs, unsigned long long id, float deltaTime);
+void PlayerUpdateRecover(ECS* ecs, unsigned long long id, float deltaTime);
+void PlayerUpdateDeath(ECS* ecs, unsigned long long id, float deltaTime);
+
+void PlayerStartIdle(ECS* ecs, unsigned long long id);
+void PlayerStartMove(ECS* ecs, unsigned long long id);
+void PlayerStartClimbing(ECS* ecs, unsigned long long id);
+void PlayerStartAttack(ECS* ecs, unsigned long long id);
+void PlayerStartHit(ECS* ecs, unsigned long long id);
+
+void PlayerExitClimbing(ECS* ecs, unsigned long long id);
+void PlayerExitAttack(ECS* ecs, unsigned long long id);
+
+const std::unordered_map<player_state_t, state_invoke> stateOnEnter = {
+    {PLAYER_STATE_IDLE, PlayerStartIdle},
+    {PLAYER_STATE_MOVING, PlayerStartMove},
+    {Player_STATE_CLIMBING, PlayerStartClimbing},
+    {PLAYER_STATE_JUMP, nullptr},
+    {Player_STATE_LANDING, nullptr},
+    {PLAYER_STATE_FALLING, nullptr},
+    {PLAYER_STATE_ATTACK, PlayerStartAttack},
+    {PLAYER_STATE_HIT, PlayerStartHit},
+    {PLAYER_STATE_RECOVER, nullptr},
+    {PLAYER_STATE_DEATH, nullptr},
+};
+
+const std::unordered_map<player_state_t, state_update> stateUpdate = {
+    {PLAYER_STATE_IDLE, PlayerUpdateIdle},
+    {PLAYER_STATE_MOVING, PlayerUpdateMove},
+    {Player_STATE_CLIMBING, PlayerUpdateClimbing},
+    {PLAYER_STATE_JUMP, PlayerUpdateJump},
+    {Player_STATE_LANDING, PlayerUpdateLanding},
+    {PLAYER_STATE_FALLING, PlayerUpdateFalling},
+    {PLAYER_STATE_ATTACK, PlayerUpdateAttack},
+    {PLAYER_STATE_HIT, nullptr},
+    {PLAYER_STATE_RECOVER, PlayerUpdateRecover},
+    {PLAYER_STATE_DEATH, PlayerUpdateDeath},
+};
+
+const std::unordered_map<player_state_t, state_invoke> stateOnExit = {
+    {PLAYER_STATE_IDLE, nullptr},
+    {PLAYER_STATE_MOVING, nullptr},
+    {Player_STATE_CLIMBING, PlayerExitClimbing},
+    {PLAYER_STATE_JUMP, nullptr},
+    {Player_STATE_LANDING, nullptr},
+    {PLAYER_STATE_FALLING, nullptr},
+    {PLAYER_STATE_ATTACK, PlayerExitAttack},
+    {PLAYER_STATE_HIT, nullptr},
+    {PLAYER_STATE_RECOVER, nullptr},
+    {PLAYER_STATE_DEATH, nullptr},
+};
+
+void PlayerFSMUpdate(ECS* ecs, unsigned long long id, c_player_t* player, float deltaTime);
+
+void PlayerLocomotion(c_player_t* player, c_physics_t* physics, sf::Transformable* transform, float deltaTime)
 {
     physics->acceleration = {};
 
@@ -54,21 +117,92 @@ void PlayerLocomotion(c_player_t* player, c_physics_t* physics, sf::Transformabl
         physics->gravityScale = 1.0f;
     }
 
-    if (player->state == PLAYER_STATE_IDLE || player->state == PLAYER_STATE_MOVING) {
+    if (player->state == PLAYER_STATE_IDLE || player->state == PLAYER_STATE_MOVING
+        || player->state == Player_STATE_CLIMBING) {
+        if (!physics->isClimb) {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+                physics->acceleration.x = 1.0f;
+
+                sf::Vector2f scale = transform->getScale();
+                if (scale.x < 0.0f) {
+                    transform->setScale(-1.0f * scale.x, scale.y);
+                }
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+                physics->acceleration.x = -1.0f;
+
+                sf::Vector2f scale = transform->getScale();
+                if (scale.x > 0.0f) {
+                    transform->setScale(-1.0f * scale.x, scale.y);
+                }
+            }
+            if (Keyboard::isKeyPressed(Keyboard::Space)) {
+                if (timeInAir < jumpImpulseTime) {
+                    physics->velocity.y = -jumpImpulseVel;
+                    physics->useGravity = false;
+                } else if (timeInAir < MAX_AIR_TIME) {
+                    physics->acceleration.y = -jumpAccel;
+                } else {
+                    physics->useGravity = true;
+                }
+            } else {
+                physics->useGravity = true;
+            }
+        }
+        if (Keyboard::isKeyPressed(sf::Keyboard::Up) && physics->isClimb) {
+            physics->velocity.y = -1.0f * climbSpeed * deltaTime;
+        }
+        if (Keyboard::isKeyPressed(sf::Keyboard::Down) && physics->isClimb) {
+            physics->velocity.y = 1.0f * climbSpeed * deltaTime;
+        }
+    }
+
+    physics->acceleration.x *= (physics->isGrounded) ? playerSpeed : 0.8f * playerSpeed;
+}
+
+void PlayerUpdate(ECS* ecs, unsigned long long id, float deltaTime)
+{
+    sf::Transformable* transform = (sf::Transformable*) ECSGet(ecs, id, C_TRANSFORM);
+    c_player_t* cPlayer = (c_player_t*) ECSGet(ecs, id, C_PLAYER);
+    c_physics_t* physics = (c_physics_t*) ECSGet(ecs, id, C_PHYSICS);
+
+//    PlayerLocomotion(cPlayer, physics, transform, deltaTime);
+
+    physics->acceleration = {};
+
+    if (physics->isGrounded) {
+        timeInAir = 0.0f;
+    } else {
+        timeInAir += deltaTime;
+    }
+
+    if (physics->isClimb) {
+        physics->gravityScale = 0.0f;
+        physics->velocity.y = 0;
+    } else {
+        physics->gravityScale = 1.0f;
+    }
+
+    if (cPlayer->state == PLAYER_STATE_IDLE || cPlayer->state == PLAYER_STATE_MOVING
+        || cPlayer->state == Player_STATE_CLIMBING) {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
             physics->acceleration.x = 1.0f;
 
-            sf::Vector2f scale = transform->getScale();
-            if (scale.x < 0.0f) {
-                transform->setScale(-1.0f * scale.x, scale.y);
+            if (cPlayer->state != Player_STATE_CLIMBING) {
+                sf::Vector2f scale = transform->getScale();
+                if (scale.x < 0.0f) {
+                    transform->setScale(-1.0f * scale.x, scale.y);
+                }
             }
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
             physics->acceleration.x = -1.0f;
 
-            sf::Vector2f scale = transform->getScale();
-            if (scale.x > 0.0f) {
-                transform->setScale(-1.0f * scale.x, scale.y);
+            if (cPlayer->state != Player_STATE_CLIMBING) {
+                sf::Vector2f scale = transform->getScale();
+                if (scale.x > 0.0f) {
+                    transform->setScale(-1.0f * scale.x, scale.y);
+                }
             }
         }
         if (Keyboard::isKeyPressed(Keyboard::Space)) {
@@ -84,97 +218,198 @@ void PlayerLocomotion(c_player_t* player, c_physics_t* physics, sf::Transformabl
             physics->useGravity = true;
         }
         if (Keyboard::isKeyPressed(sf::Keyboard::Up) && physics->isClimb) {
-//            physics->acceleration.y = -1.0f * playerSpeed;
             physics->velocity.y = -1.0f * climbSpeed * deltaTime;
+            PlayerFSMSwitch(ecs, id, Player_STATE_CLIMBING);
         }
         if (Keyboard::isKeyPressed(sf::Keyboard::Down) && physics->isClimb) {
-//            physics->acceleration.y = 1.0f * playerSpeed;
             physics->velocity.y = 1.0f * climbSpeed * deltaTime;
+            PlayerFSMSwitch(ecs, id, Player_STATE_CLIMBING);
         }
     }
 
     physics->acceleration.x *= (physics->isGrounded) ? playerSpeed : 0.8f * playerSpeed;
-}
-
-void PlayerUpdate(entity_t* player, float deltaTime)
-{
-    Animator* animator = &player->animator;
-    c_player_t* playerComponent = &player->player;
-    sf::Transformable* transform = &player->transform;
-
-    PlayerLocomotion(playerComponent, &player->physics, transform, &player->render, deltaTime);
 
     // TODO(Tony): Find a better way
-    if (playerComponent->state != PLAYER_STATE_ATTACK) {
-        if (abs(player->physics.velocity.x) <= stopMovingThreshold) {
-            playerComponent->state = PLAYER_STATE_IDLE;
-        } else {
-            playerComponent->state = PLAYER_STATE_MOVING;
-        }
+    if (abs(physics->velocity.x) <= stopMovingThreshold) {
+        PlayerFSMSwitch(ecs, id, PLAYER_STATE_IDLE);
+    } else {
+        PlayerFSMSwitch(ecs, id, PLAYER_STATE_MOVING);
     }
 
-    switch (player->player.state) {
-        case PLAYER_STATE_IDLE: {
-            if (AnimGetRunningAnimName(animator) != CHAR_CLAW_IDLE) {
-                Animation anim = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_IDLE), true);
-                AnimPlay(animator, &anim);
-            }
+    PlayerFSMUpdate(ecs, id, cPlayer, deltaTime);
+}
+
+void PlayerStartIdle(ECS* ecs, unsigned long long id)
+{
+    c_player_t* cPlayer = (c_player_t*) ECSGet(ecs, id, C_PLAYER);
+
+    if (cPlayer->state == PLAYER_STATE_MOVING) {
+        cPlayer->state = PLAYER_STATE_IDLE;
+    }
+}
+
+void PlayerUpdateIdle(ECS* ecs, unsigned long long id, float deltaTime)
+{
+    Animator* animator = (Animator*) ECSGet(ecs, id, C_ANIMATOR);
+
+    if (AnimGetRunningAnimName(animator) != CHAR_CLAW_IDLE) {
+        Animation anim = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_IDLE), true);
+        AnimPlay(animator, &anim);
+    }
+}
+
+void PlayerStartMove(ECS* ecs, unsigned long long id)
+{
+    c_player_t* cPlayer = (c_player_t*) ECSGet(ecs, id, C_PLAYER);
+
+    if (cPlayer->state == PLAYER_STATE_IDLE) {
+        cPlayer->state = PLAYER_STATE_MOVING;
+    }
+}
+
+void PlayerUpdateMove(ECS* ecs, unsigned long long id, float deltaTime)
+{
+    Animator* animator = (Animator*) ECSGet(ecs, id, C_ANIMATOR);
+
+    if (AnimGetRunningAnimName(animator) != CHAR_CLAW_RUN) {
+        Animation anim = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_RUN), true);
+        AnimPlay(animator, &anim);
+    }
+}
+
+void PlayerStartClimbing(ECS* ecs, unsigned long long id)
+{
+    c_player_t* cPlayer = (c_player_t*) ECSGet(ecs, id, C_PLAYER);
+    Animator* animator = (Animator*) ECSGet(ecs, id, C_ANIMATOR);
+
+    if (cPlayer->state == PLAYER_STATE_IDLE || cPlayer->state == PLAYER_STATE_MOVING) {
+        cPlayer->state = Player_STATE_CLIMBING;
+
+        if (AnimGetRunningAnimName(animator) != CHAR_CLAW_CLIMBING) {
+            Animation anim = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_CLIMBING), true);
+            AnimPlay(animator, &anim);
         }
-            break;
-        case PLAYER_STATE_MOVING: {
-            if (AnimGetRunningAnimName(animator) != CHAR_CLAW_RUN) {
-                Animation anim = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_RUN), true);
-                AnimPlay(animator, &anim);
-            }
+    }
+}
+
+void PlayerUpdateClimbing(ECS* ecs, unsigned long long id, float deltaTime)
+{
+    c_physics_t* physics = (c_physics_t*) ECSGet(ecs, id, C_PHYSICS);
+    Animator* animator = (Animator*) ECSGet(ecs, id, C_ANIMATOR);
+
+    if (physics->isClimb) {
+        if (abs(physics->velocity.y) == 0) {
+            AnimPause(animator);
+        } else if (animator->state == ANIMATOR_STATE_PAUSED) {
+            AnimResume(animator);
         }
-            break;
-        case PLAYER_STATE_HIT: {
-            Animation animation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_HURT), false);
-            SoundPlay(&ResSoundBuffGet(clawHitSounds[rand() % clawHitSoundsCount]));
-            AnimPlay(animator, &animation);
-            playerComponent->state = PLAYER_STATE_RECOVER;
-        }
-            break;
-        case PLAYER_STATE_RECOVER: {
-            recoverTimer += deltaTime;
-            if (AnimGetNormalizedTime(animator) >= 1.0f && recoverTimer >= recoverPeriod) {
-                recoverTimer = 0.0f;
-                playerComponent->state = PLAYER_STATE_IDLE;
-            }
-        }
-            break;
-        case PLAYER_STATE_ATTACK: {
-            if (AnimGetNormalizedTime(animator) >= 1.0f) {
-                playerComponent->state = PLAYER_STATE_IDLE;
-            }
-        }
-            break;
-        case PLAYER_STATE_DEATH: {
-            if (AnimGetRunningAnimName(animator) != CHAR_CLAW_DEATH) {
-                Animation animation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_DEATH), false);
-                SoundPlay(&ResSoundBuffGet(clawHitSounds[rand() % clawHitSoundsCount]));
-                AnimPlay(animator, &animation);
-            }
-        }
-            break;
-        case PLAYER_STATE_JUMP: {
-            if (AnimGetRunningAnimName(animator) != CHAR_CLAW_JUMP) {
-                Animation animation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_JUMP), false);
-                AnimPlay(animator, &animation);
-            }
-        }
-            break;
-        case PLAYER_STATE_FALLING: {
-            if (AnimGetRunningAnimName(animator) != CHAR_CLAW_FALLING) {
-                Animation animation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_FALLING));
-                AnimPlay(animator, &animation);
-            }
-        }
-            break;
-        case Player_STATE_LANDING: {
-            playerComponent->state = PLAYER_STATE_IDLE;
-        }
-            break;
+    } else {
+        PlayerFSMSwitch(ecs, id, PLAYER_STATE_IDLE);
+    }
+}
+
+void PlayerExitClimbing(ECS* ecs, unsigned long long id)
+{
+    c_physics_t* physics = (c_physics_t*) ECSGet(ecs, id, C_PHYSICS);
+
+    if (!physics->isClimb) {
+        c_player_t* cPlayer = (c_player_t*) ECSGet(ecs, id, C_PLAYER);
+        cPlayer->state = PLAYER_STATE_IDLE;
+    }
+}
+
+void PlayerUpdateJump(ECS* ecs, unsigned long long id, float deltaTime)
+{
+    Animator* animator = (Animator*) ECSGet(ecs, id, C_ANIMATOR);
+
+    if (AnimGetRunningAnimName(animator) != CHAR_CLAW_JUMP) {
+        Animation animation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_JUMP), false);
+        AnimPlay(animator, &animation);
+    }
+}
+
+void PlayerUpdateLanding(ECS* ecs, unsigned long long id, float deltaTime)
+{
+    PlayerFSMSwitch(ecs, id, PLAYER_STATE_IDLE);
+}
+
+void PlayerUpdateFalling(ECS* ecs, unsigned long long id, float deltaTime)
+{
+    Animator* animator = (Animator*) ECSGet(ecs, id, C_ANIMATOR);
+
+    if (AnimGetRunningAnimName(animator) != CHAR_CLAW_FALLING) {
+        Animation animation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_FALLING));
+        AnimPlay(animator, &animation);
+    }
+}
+
+void PlayerStartAttack(ECS* ecs, unsigned long long id)
+{
+    c_player_t* cPlayer = (c_player_t*) ECSGet(ecs, id, C_PLAYER);
+
+    if (cPlayer->state == PLAYER_STATE_IDLE || cPlayer->state == PLAYER_STATE_MOVING) {
+        cPlayer->state = PLAYER_STATE_ATTACK;
+    }
+}
+
+void PlayerUpdateAttack(ECS* ecs, unsigned long long id, float deltaTime)
+{
+    Animator* animator = (Animator*) ECSGet(ecs, id, C_ANIMATOR);
+
+    if (AnimGetNormalizedTime(animator) >= 1.0f) {
+        PlayerFSMSwitch(ecs, id, PLAYER_STATE_IDLE);
+    }
+}
+
+void PlayerExitAttack(ECS* ecs, unsigned long long id)
+{
+    c_player_t* cPlayer = (c_player_t*) ECSGet(ecs, id, C_PLAYER);
+    Animator* animator = (Animator*) ECSGet(ecs, id, C_ANIMATOR);
+
+    if (AnimGetNormalizedTime(animator) >= 1.0f) {
+        cPlayer->state = PLAYER_STATE_IDLE;
+    }
+}
+
+void PlayerStartHit(ECS* ecs, unsigned long long id)
+{
+    c_player_t* cPlayer = (c_player_t*) ECSGet(ecs, id, C_PLAYER);
+    cPlayer->state = PLAYER_STATE_HIT;
+
+    Animator* animator = (Animator*) ECSGet(ecs, id, C_ANIMATOR);
+    Animation animation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_HURT), false);
+    SoundPlay(&ResSoundBuffGet(clawHitSounds[rand() % clawHitSoundsCount]));
+    AnimPlay(animator, &animation);
+
+    PlayerFSMSwitch(ecs, id, PLAYER_STATE_RECOVER);
+}
+
+void PlayerUpdateRecover(ECS* ecs, unsigned long long id, float deltaTime)
+{
+    Animator* animator = (Animator*) ECSGet(ecs, id, C_ANIMATOR);
+
+    recoverTimer += deltaTime;
+    if (AnimGetNormalizedTime(animator) >= 1.0f && recoverTimer >= recoverPeriod) {
+        recoverTimer = 0.0f;
+        PlayerFSMSwitch(ecs, id, PLAYER_STATE_IDLE);
+    }
+}
+
+void PlayerUpdateDeath(ECS* ecs, unsigned long long id, float deltaTime)
+{
+    Animator* animator = (Animator*) ECSGet(ecs, id, C_ANIMATOR);
+
+    if (AnimGetRunningAnimName(animator) != CHAR_CLAW_DEATH) {
+        Animation animation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_DEATH), false);
+        SoundPlay(&ResSoundBuffGet(clawHitSounds[rand() % clawHitSoundsCount]));
+        AnimPlay(animator, &animation);
+    }
+}
+
+void PlayerFSMUpdate(ECS* ecs, unsigned long long id, c_player_t* player, float deltaTime)
+{
+    if (stateUpdate.at(player->state)) {
+        stateUpdate.at(player->state)(ecs, id, deltaTime);
     }
 }
 
@@ -183,7 +418,6 @@ void PlayerStateAttack(unsigned long long playerID, std::unordered_set<unsigned 
 {
     attackTimer += deltaTime;
     c_damageable_t* playerDamageable = (c_damageable_t*) ECSGet(ecs, playerID, C_DAMAGEABLE);
-    c_player_t* player = (c_player_t*) ECSGet(ecs, playerID, C_PLAYER);
     c_inventory_t* inventory = (c_inventory_t*) ECSGet(ecs, playerID, C_INVENTORY);
     sf::Transformable* transform = (sf::Transformable*) ECSGet(ecs, playerID, C_TRANSFORM);
     Animator* animator = (Animator*) ECSGet(ecs, playerID, C_ANIMATOR);
@@ -199,10 +433,10 @@ void PlayerStateAttack(unsigned long long playerID, std::unordered_set<unsigned 
             }
         }
 
-        Animation pistolAnimation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_SWORD_ATTACK), false);
-        AnimPlay(animator, &pistolAnimation);
+        Animation swordAnimation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_SWORD_ATTACK), false);
+        AnimPlay(animator, &swordAnimation);
         SoundPlay(&ResSoundBuffGet(WAV_CLAW_SWORDSWISH));
-        player->state = PLAYER_STATE_ATTACK;
+        PlayerFSMSwitch(ecs, playerID, PLAYER_STATE_ATTACK);
         attackTimer = 0.0f;
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1) && attackTimer >= attackPeriod) {
         if (inventory->ammo_pistol > 0) {
@@ -212,25 +446,23 @@ void PlayerStateAttack(unsigned long long playerID, std::unordered_set<unsigned 
 
             Animation pistolAnimation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_PISTOL_ATTACK), false);
             AnimPlay(animator, &pistolAnimation);
-            player->state = PLAYER_STATE_ATTACK;
+            PlayerFSMSwitch(ecs, playerID, PLAYER_STATE_ATTACK);
         } else {
             SoundPlay(&ResSoundBuffGet(WAV_CLAW_DRYGUNSHOT1));
         }
 
         attackTimer = 0.0f;
     }
-#if 0
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2) && attackTimer >= attackPeriod) {
+}
 
-        sf::Vector2f direction = {};
-        if (transform->getScale().x > 0) {
-            direction.x = 1;
-        } else if (transform->getScale().x < 0) {
-            direction.x = -1;
-        }
-        sf::Vector2f bulletPos = transform->getTransform().transformPoint(playerDamageable->pistolOffset);
-        BulletCreate(bulletPos, direction, true);
-        attackTimer = 0.0f;
+void PlayerFSMSwitch(ECS* ecs, unsigned long long id, player_state_t state)
+{
+    c_player_t* cPlayer = (c_player_t*) ECSGet(ecs, id, C_PLAYER);
+    if (stateOnExit.at(cPlayer->state)) {
+        stateOnExit.at(cPlayer->state)(ecs, id);
     }
-#endif
+
+    if (stateOnEnter.at(state)) {
+        stateOnEnter.at(state)(ecs, id);
+    }
 }

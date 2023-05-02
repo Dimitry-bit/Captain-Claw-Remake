@@ -66,6 +66,7 @@ void CombatDamage(unsigned long long eID, ECS* ecs, int damage)
                 enemyData->state = ENEMY_STATE_DEATH;
                 entitiesMarkedForRemoval.insert(eID);
             } else if (playerData) {
+                // TODO(Tony): Convert to PlayerFSMSwitch
                 playerData->state = PLAYER_STATE_DEATH;
             }
         } else {
