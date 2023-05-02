@@ -25,6 +25,7 @@ void CollisionResponse(unsigned long long eID, ECS* ecs, scene_context_t* world)
     collider->transform.move(collider->offset);
 
     physics->isGrounded = false;
+    physics->isClimb = false;
 
     // NOTE(Tony): Note sure if I should use culling here (BOOST FPS)
     sf::IntRect cullBox = RendererCalculateCulling(world);
@@ -39,12 +40,16 @@ void CollisionResponse(unsigned long long eID, ECS* ecs, scene_context_t* world)
             tileCollider->transform = tileEntity->transform;
             tileCollider->transform.move(tileCollider->offset);
 
-            if (collider->isTrigger || tileCollider->isTrigger) {
-                continue;
-            }
-
             sf::Vector2i normal;
             if (CheckCollision(*collider, tileEntity->collider, &normal)) {
+                if (!physics->isClimb) {
+                    physics->isClimb = tileEntity->tile.type == TILE_CLIMBABLE;
+                }
+
+                if (collider->isTrigger || tileCollider->isTrigger) {
+                    continue;
+                }
+
                 if (tileEntity->tile.type == TILE_CLEAR) {
                     continue;
                 }
@@ -85,7 +90,7 @@ void PhysicsUpdate(std::unordered_set<unsigned long long>& entityIDS, ECS* ecs, 
         CollisionResponse(eID, ecs, world);
 
         if (physics->useGravity && !physics->isGrounded) {
-            physics->velocity.y += 980.0f * gravityMultiplier * deltaTime;
+            physics->velocity.y += 980.0f * gravityMultiplier * physics->gravityScale * deltaTime;
         }
 
         physics->acceleration.x += -dampMultiplier * physics->velocity.x;

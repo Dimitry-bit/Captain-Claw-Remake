@@ -33,11 +33,11 @@ const float jumpImpulseVel = 270.0f;
 const float jumpAccel = 25.0f;
 const float MAX_AIR_TIME = 0.4f;
 
-void PlayerLocomotion(c_player_t* player,
-                      c_physics_t* physics,
-                      sf::Transformable* transform,
-                      c_render_t* render,
-                      float deltaTime)
+// NOTE(Tony): hmmmmm
+const float climbSpeed = 200000.0f;
+
+void PlayerLocomotion(c_player_t* player, c_physics_t* physics, sf::Transformable* transform,
+                      c_render_t* render, float deltaTime)
 {
     physics->acceleration = {};
 
@@ -45,6 +45,13 @@ void PlayerLocomotion(c_player_t* player,
         timeInAir = 0.0f;
     } else {
         timeInAir += deltaTime;
+    }
+
+    if (physics->isClimb) {
+        physics->gravityScale = 0.0f;
+        physics->velocity.y = 0;
+    } else {
+        physics->gravityScale = 1.0f;
     }
 
     if (player->state == PLAYER_STATE_IDLE || player->state == PLAYER_STATE_MOVING) {
@@ -75,6 +82,14 @@ void PlayerLocomotion(c_player_t* player,
             }
         } else {
             physics->useGravity = true;
+        }
+        if (Keyboard::isKeyPressed(sf::Keyboard::Up) && physics->isClimb) {
+//            physics->acceleration.y = -1.0f * playerSpeed;
+            physics->velocity.y = -1.0f * climbSpeed * deltaTime;
+        }
+        if (Keyboard::isKeyPressed(sf::Keyboard::Down) && physics->isClimb) {
+//            physics->acceleration.y = 1.0f * playerSpeed;
+            physics->velocity.y = 1.0f * climbSpeed * deltaTime;
         }
     }
 

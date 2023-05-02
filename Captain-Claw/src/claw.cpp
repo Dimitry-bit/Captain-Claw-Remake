@@ -85,7 +85,8 @@ void ClawAlloc(ECS* ecs)
     Animation clawIdle = AnimAnimationCreate(&spriteSheet);
     AnimPlay(&captainClaw->animator, &clawIdle);
 
-    captainClaw->transform.setPosition(650.0f, 150.0f);
+    captainClaw->transform.setPosition(480.0f, 5850.0f);
+//    captainClaw->transform.setPosition(650.0f, 150.0f);
 //    captainClaw->render.sprite.setPosition(35.0f / 2.0f, 115.0f / 2.0f);
 
     c_collider_t hitCollider = ColliderCreate(sf::Vector2f(70.0f, 115.0f), sf::Vector2f(0.0f, -115.0f / 2.0f), false);
@@ -118,6 +119,7 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
     AnimSystemUpdate(deltaTime.asSeconds());
     SoundSystemUpdate();
     PlayerUpdate(captainClaw, deltaTime.asSeconds());
+    renderContext->worldView.setCenter(captainClaw->transform.getPosition()) ;
 
 #if 0
     captainClaw->render.sprite.setPosition(rWindow->mapPixelToCoords(sf::Vector2i(sf::Mouse::getPosition(*rWindow))));

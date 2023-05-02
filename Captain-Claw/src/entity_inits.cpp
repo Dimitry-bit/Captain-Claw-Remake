@@ -8,7 +8,10 @@ void TileInit(ECS* ecs, entity_t* entity)
 {
     EntitySet(entity, C_TILE, &entity->tile);
 
-    if (entity->tile.type != TILE_CLEAR) {
+    if (entity->tile.type == TILE_CLIMBABLE) {
+        c_collider_t tileCollider = ColliderCreate(entity->render.sprite, true);
+        EntitySet(entity, C_COLLIDER, &tileCollider);
+    } else if (entity->tile.type != TILE_CLEAR) {
         c_collider_t tileCollider = ColliderCreate(entity->render.sprite, false);
         EntitySet(entity, C_COLLIDER, &tileCollider);
     }

@@ -11,7 +11,7 @@ struct c_physics_t {
     bool isKinematic;
     bool useGravity;
     bool isGrounded;
-    float mass;
+    bool isClimb;
     float linearDrag;
     float gravityScale;
 };
