@@ -87,17 +87,21 @@ void ClawAlloc(ECS* ecs)
     captainClaw->transform.setPosition(650.0f, 150.0f);
 //    captainClaw->render.sprite.setPosition(35.0f / 2.0f, 115.0f / 2.0f);
 
+    c_collider_t hitCollider =
+        PhysicsCreateCollider(sf::Vector2f(70.0f, 115.0f), sf::Vector2f(0.0f, -115.0f / 2.0f), false);
+    ECSAdd(ecs, captainClaw->ID, C_COLLIDER, &hitCollider);
+
+    c_collider_t swordCollider =
+        PhysicsCreateCollider(sf::Vector2f(100.0f, 100.0f),
+                              sf::Vector2f(hitCollider.size.x, -hitCollider.size.y) / 2.0f, true);
+
     c_damageable_t damageable = {
-        .swordCollider= {10, -90.0f, 120, 90},
+        .swordCollider= swordCollider,
         .pistolOffset = {30.0f, -90.0f,},
         .health = 100,
         .lives = 1,
     };
     ECSAdd(ecs, captainClaw->ID, C_DAMAGEABLE, &damageable);
-
-    c_collider_t hitCollider =
-        PhysicsCreateCollider(sf::Vector2f(70.0f, 115.0f), sf::Vector2f(0.0f, -115.0f / 2.0f), false);
-    ECSAdd(ecs, captainClaw->ID, C_COLLIDER, &hitCollider);
 
     c_physics_t physics = {.isKinematic = false, .useGravity = true};
     ECSAdd(ecs, captainClaw->ID, C_PHYSICS, &physics);
@@ -200,6 +204,7 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
 #if DEBUG
     SceneDrawDebug(world);
     DrawCollider(captainClaw->collider);
+    DrawCollider(captainClaw->damageable.swordCollider);
     DrawOutlinePoint(sf::Vector2f(0.0f, 0.0f), 3.0f, sf::Color::Cyan,
                      captainClaw->collider.transform.getTransform());
     DrawOutlinePoint(sf::Vector2f(0.0f, 0.0f), 3.0f, sf::Color::Magenta, captainClaw->transform.getTransform());

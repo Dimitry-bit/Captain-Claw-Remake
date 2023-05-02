@@ -153,6 +153,13 @@ void ColliderSync(std::unordered_set<unsigned long long>& entityIDS, ECS* ecs)
         c_collider_t* collider = (c_collider_t*) ECSGet(ecs, eID, C_COLLIDER);
         sf::Transformable* transform = (sf::Transformable*) ECSGet(ecs, eID, C_TRANSFORM);
 
+        // NOTE(Tony): Find better solution
+        if (ECSHas(ecs, eID, C_DAMAGEABLE)) {
+            c_damageable_t* damageable = (c_damageable_t*) ECSGet(ecs, eID, C_DAMAGEABLE);
+            damageable->swordCollider.transform = *transform;
+            damageable->swordCollider.transform.move(damageable->swordCollider.offset);
+        }
+
         collider->transform = *transform;
         collider->transform.move(collider->offset);
     }

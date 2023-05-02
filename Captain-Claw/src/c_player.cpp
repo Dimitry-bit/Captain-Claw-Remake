@@ -6,6 +6,7 @@
 #include "animation.h"
 #include "sound_sys.h"
 #include "combat_system.h"
+#include "c_physics.h"
 
 const char* clawHitSounds[] = {
     WAV_CLAW_HIT1,
@@ -165,54 +166,44 @@ void PlayerStateAttack(unsigned long long playerID, std::unordered_set<unsigned 
                        ECS* ecs, float deltaTime)
 {
     attackTimer += deltaTime;
-    entity_t* claw = ecs->entitiesRegistry[playerID];
+    c_damageable_t* playerDamageable = (c_damageable_t*) ECSGet(ecs, playerID, C_DAMAGEABLE);
+    c_player_t* player = (c_player_t*) ECSGet(ecs, playerID, C_PLAYER);
+    c_inventory_t* inventory = (c_inventory_t*) ECSGet(ecs, playerID, C_INVENTORY);
+    sf::Transformable* transform = (sf::Transformable*) ECSGet(ecs, playerID, C_TRANSFORM);
+    Animator* animator = (Animator*) ECSGet(ecs, playerID, C_ANIMATOR);
 
     if ((sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl))
         && attackTimer >= attackPeriod) {
         for (auto& eID: entityIDs) {
-            c_render_t* render = (c_render_t*) ECSGet(ecs, eID, C_RENDER);
+            c_collider_t* enemyCollider = (c_collider_t*) ECSGet(ecs, eID, C_COLLIDER);
 
             // TODO(Tony): Lerp collider size for smoother effect
-            sf::FloatRect swordHitCollider;
-            swordHitCollider.width = claw->damageable.swordCollider.width;
-            swordHitCollider.height = claw->damageable.swordCollider.height;
-            swordHitCollider.left = claw->render.sprite.getPosition().x;
-            swordHitCollider.top = claw->render.sprite.getPosition().y + claw->damageable.swordCollider.top;
-            if (claw->render.sprite.getScale().x > 0) {
-                swordHitCollider.left += claw->damageable.swordCollider.left;
-            } else {
-                swordHitCollider.left -= (claw->damageable.swordCollider.left + claw->damageable.swordCollider.width);
-            }
-
-            if (swordHitCollider.intersects(render->sprite.getGlobalBounds())) {
+            if (CheckCollision(playerDamageable->swordCollider, *enemyCollider, nullptr)) {
                 CombatDamage(eID, ecs, swordDmg);
             }
         }
 
         Animation pistolAnimation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_SWORD_ATTACK), false);
-        AnimPlay(&claw->animator, &pistolAnimation);
+        AnimPlay(animator, &pistolAnimation);
         SoundPlay(&ResSoundBuffGet(WAV_CLAW_SWORDSWISH));
-        claw->player.state = PLAYER_STATE_ATTACK;
+        player->state = PLAYER_STATE_ATTACK;
         attackTimer = 0.0f;
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1) && attackTimer >= attackPeriod) {
-        if (claw->inventory.ammo_pistol > 0) {
+        if (inventory->ammo_pistol > 0) {
             sf::Vector2f direction = {};
-            if (claw->render.sprite.getScale().x > 0) {
+            if (transform->getScale().x > 0) {
                 direction.x = 1;
-            } else if (claw->render.sprite.getScale().x < 0) {
+            } else if (transform->getScale().x < 0) {
                 direction.x = -1;
             }
-            sf::Vector2f bulletPos;
-            bulletPos.y = claw->damageable.pistolOffset.y + claw->render.sprite.getPosition().y;
-            bulletPos.x = claw->render.sprite.getPosition().x;
-            bulletPos.x += direction.x * claw->damageable.pistolOffset.x;
+            sf::Vector2f bulletPos = transform->getTransform().transformPoint(playerDamageable->pistolOffset);
 
             BulletCreate(bulletPos, direction, false);
-            claw->inventory.ammo_pistol--;
+            inventory->ammo_pistol--;
 
             Animation pistolAnimation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_PISTOL_ATTACK), false);
-            AnimPlay(&claw->animator, &pistolAnimation);
-            claw->player.state = PLAYER_STATE_ATTACK;
+            AnimPlay(animator, &pistolAnimation);
+            player->state = PLAYER_STATE_ATTACK;
         } else {
             SoundPlay(&ResSoundBuffGet(WAV_CLAW_DRYGUNSHOT1));
         }
@@ -223,15 +214,12 @@ void PlayerStateAttack(unsigned long long playerID, std::unordered_set<unsigned 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2) && attackTimer >= attackPeriod) {
 
         sf::Vector2f direction = {};
-        if (claw->render.sprite.getScale().x > 0) {
+        if (transform->getScale().x > 0) {
             direction.x = 1;
-        } else if (claw->render.sprite.getScale().x < 0) {
+        } else if (transform->getScale().x < 0) {
             direction.x = -1;
         }
-        sf::Vector2f bulletPos;
-        bulletPos.y = claw->damageable.pistolOffset.y + claw->render.sprite.getPosition().y;
-        bulletPos.x = claw->render.sprite.getPosition().x;
-        bulletPos.x += direction.x * claw->damageable.pistolOffset.x;
+        sf::Vector2f bulletPos = transform->getTransform().transformPoint(playerDamageable->pistolOffset);
         BulletCreate(bulletPos, direction, true);
         attackTimer = 0.0f;
     }

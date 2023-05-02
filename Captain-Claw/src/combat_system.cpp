@@ -10,6 +10,7 @@
 #include "sound_sys.h"
 #include "ecs.h"
 #include "entity_components.h"
+#include "c_physics.h"
 
 using namespace sf;
 
@@ -17,6 +18,7 @@ using namespace sf;
 
 struct Bullet {
     Sprite sprite;
+    c_collider_t collider;
     Vector2f direction;
     bool isActive;
     bool isEnemy;
@@ -96,6 +98,9 @@ void BulletInit(Bullet& bullet, const Vector2f& vector, const Vector2f& directio
     bullet.direction = VectorNormalize(direction);
     bullet.isActive = true;
     bullet.isEnemy = isEnemy;
+    bullet.collider =
+        PhysicsCreateCollider(sf::Vector2f(bullet.sprite.getTextureRect().width, bullet.sprite.getTextureRect().height),
+                              sf::Vector2f(0.0f, 0.0f), true);
 }
 
 void BulletCreate(const Vector2f& position, const Vector2f& direction, bool isEnemy)
@@ -112,16 +117,17 @@ void BulletsUpdate(unsigned long long playerID, std::unordered_set<unsigned long
     Vector2f getCenter = rWindow->getView().getCenter();
     Vector2f getSize = rWindow->getView().getSize();
 
-    entity_t* player = ecs->entitiesRegistry[playerID];
+    c_collider_t* playerCollider = (c_collider_t*) ECSGet(ecs, playerID, C_COLLIDER);
     for (int i = 0; i < bulletArrSize; ++i) {
         if (!bullets[i].isActive)
             continue;
 
         bullets[i].sprite.move(bullets[i].direction * deltaTime * bulletSpeed);
+        bullets[i].collider.transform = bullets[i].sprite;
 
         if (bullets[i].isEnemy) {
             Vector2f bulletPos = bullets[i].sprite.getPosition();
-            if (bullets[i].sprite.getGlobalBounds().intersects(player->render.sprite.getGlobalBounds())) {
+            if (CheckCollision(bullets[i].collider, *playerCollider, nullptr)) {
                 CombatDamage(playerID, ecs, bulletDmg);
                 bullets[i].isActive = false;
             } else if ((bulletPos.x > getSize.x / 2.0f + getCenter.x) ||
@@ -136,7 +142,7 @@ void BulletsUpdate(unsigned long long playerID, std::unordered_set<unsigned long
     }
 
     for (auto& eID: entityIDs) {
-        c_render_t* render = (c_render_t*) ECSGet(ecs, eID, C_RENDER);
+        c_collider_t* collider = (c_collider_t*) ECSGet(ecs, eID, C_COLLIDER);
 
         for (int i = 0; i < bulletArrSize; ++i) {
             if (!bullets[i].isActive || bullets[i].isEnemy) {
@@ -144,7 +150,7 @@ void BulletsUpdate(unsigned long long playerID, std::unordered_set<unsigned long
             }
 
             Vector2f bulletPos = bullets[i].sprite.getPosition();
-            if (bullets[i].sprite.getGlobalBounds().intersects(render->sprite.getGlobalBounds())) {
+            if (CheckCollision(bullets[i].collider, *collider, nullptr)) {
                 CombatDamage(eID, ecs, bulletDmg);
                 bullets[i].isActive = false;
             } else if ((bulletPos.x > getSize.x / 2.0f + getCenter.x) ||

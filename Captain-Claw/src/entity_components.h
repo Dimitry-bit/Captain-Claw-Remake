@@ -5,6 +5,24 @@
 
 using std::string;
 
+struct c_physics_t {
+    sf::Vector2f velocity;
+    sf::Vector2f acceleration;
+    bool isKinematic;
+    bool useGravity;
+    bool isGrounded;
+    float mass;
+    float linearDrag;
+    float gravityScale;
+};
+
+struct c_collider_t {
+    sf::Transformable transform;
+    sf::Vector2f offset;
+    sf::Vector2f size;
+    bool isTrigger;
+};
+
 enum entity_components_t {
     C_NONE = 0,
     C_TILE = 1 << 0,
@@ -113,7 +131,7 @@ struct c_inventory_t {
 };
 
 struct c_damageable_t {
-    sf::FloatRect swordCollider;
+    c_collider_t swordCollider;
     sf::Vector2f pistolOffset;
     int health;
     int lives;
@@ -133,22 +151,4 @@ enum player_state_t {
 
 struct c_player_t {
     player_state_t state;
-};
-
-struct c_physics_t {
-    sf::Vector2f velocity;
-    sf::Vector2f acceleration;
-    bool isKinematic;
-    bool useGravity;
-    bool isGrounded;
-    float mass;
-    float linearDrag;
-    float gravityScale;
-};
-
-struct c_collider_t {
-    sf::Transformable transform;
-    sf::Vector2f offset;
-    sf::Vector2f size;
-    bool isTrigger;
 };

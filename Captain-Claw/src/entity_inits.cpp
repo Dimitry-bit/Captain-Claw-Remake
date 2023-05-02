@@ -18,9 +18,13 @@ void EnemyInit(ECS* ecs, entity_t* entity)
     ECSSetFlag(ecs, entity->ID, C_ENEMY);
     entity->enemy.startPos = entity->transform.getPosition();
 
+    c_collider_t
+        swordCollider = PhysicsCreateCollider(sf::Vector2f(50.0f, 50.0f),
+                                            sf::Vector2f(entity->render.sprite.getTextureRect().width,
+                                                         entity->render.sprite.getTextureRect().height), true);
     // NOTE(Tony): Random number for testing only
     c_damageable_t damageable = {
-        .swordCollider = {0, 0, 50, 50},
+        .swordCollider = swordCollider,
         .pistolOffset = {30.0f, 30.0f},
         .health = 100,
         .lives = 1,
