@@ -10,7 +10,7 @@
 #include "sound_sys.h"
 #include "ecs.h"
 #include "entity_components.h"
-#include "c_physics.h"
+#include "c_collider.h"
 
 using namespace sf;
 
@@ -98,9 +98,9 @@ void BulletInit(Bullet& bullet, const Vector2f& vector, const Vector2f& directio
     bullet.direction = VectorNormalize(direction);
     bullet.isActive = true;
     bullet.isEnemy = isEnemy;
-    bullet.collider =
-        PhysicsCreateCollider(sf::Vector2f(bullet.sprite.getTextureRect().width, bullet.sprite.getTextureRect().height),
-                              sf::Vector2f(0.0f, 0.0f), true);
+    bullet.collider = ColliderCreate(sf::Vector2f(bullet.sprite.getTextureRect().width,
+                                                  bullet.sprite.getTextureRect().height),
+                                     sf::Vector2f(0.0f, 0.0f), true);
 }
 
 void BulletCreate(const Vector2f& position, const Vector2f& direction, bool isEnemy)

@@ -1,6 +1,6 @@
 #include "c_render.h"
 #include "renderer.h"
-#include "c_physics.h"
+#include "c_collider.h"
 
 void DrawEntities(const std::unordered_set<unsigned long long>& entityIDs, ECS* ecs)
 {

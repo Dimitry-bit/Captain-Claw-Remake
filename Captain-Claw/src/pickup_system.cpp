@@ -5,7 +5,7 @@
 #include "sound_sys.h"
 #include "ecs.h"
 #include "renderer.h"
-#include "c_physics.h"
+#include "c_collider.h"
 
 sf::Sprite glitter;
 Animator glitterAnimator;

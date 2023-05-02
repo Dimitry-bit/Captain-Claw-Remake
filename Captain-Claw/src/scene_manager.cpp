@@ -4,7 +4,7 @@
 #include "renderer.h"
 #include "resource_manager.h"
 #include "entity.h"
-#include "c_physics.h"
+#include "c_collider.h"
 
 void SceneAllocAssets(scene_context_t* world)
 {

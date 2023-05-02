@@ -3,7 +3,7 @@
 #include "asset_constants.h"
 #include "animation.h"
 #include "sound_sys.h"
-#include "c_physics.h"
+#include "c_collider.h"
 
 unsigned long long latestCheckPointID;
 

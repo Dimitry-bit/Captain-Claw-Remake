@@ -6,7 +6,8 @@
 #include "animation.h"
 #include "sound_sys.h"
 #include "combat_system.h"
-#include "c_physics.h"
+#include "c_collider.h"
+#include "transform_utils.h"
 
 const char* clawHitSounds[] = {
     WAV_CLAW_HIT1,
@@ -190,15 +191,8 @@ void PlayerStateAttack(unsigned long long playerID, std::unordered_set<unsigned 
         attackTimer = 0.0f;
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1) && attackTimer >= attackPeriod) {
         if (inventory->ammo_pistol > 0) {
-            sf::Vector2f direction = {};
-            if (transform->getScale().x > 0) {
-                direction.x = 1;
-            } else if (transform->getScale().x < 0) {
-                direction.x = -1;
-            }
             sf::Vector2f bulletPos = transform->getTransform().transformPoint(playerDamageable->pistolOffset);
-
-            BulletCreate(bulletPos, direction, false);
+            BulletCreate(bulletPos, TransformForward(*transform), false);
             inventory->ammo_pistol--;
 
             Animation pistolAnimation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_PISTOL_ATTACK), false);
