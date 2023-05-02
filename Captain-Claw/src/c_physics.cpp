@@ -4,6 +4,7 @@
 #include "c_physics.h"
 #include "c_collider.h"
 #include "scene_manager.h"
+#include "renderer.h"
 
 // Note(Tony): Should be related to the world not physics
 const float dampMultiplier = 4.0f;
@@ -24,8 +25,11 @@ void CollisionResponse(unsigned long long eID, ECS* ecs, scene_context_t* world)
     collider->transform.move(collider->offset);
 
     physics->isGrounded = false;
-    for (int y = 0; y < world->tileGridHeight; ++y) {
-        for (int x = 0; x < world->tileGridWidth; ++x) {
+
+    // NOTE(Tony): Note sure if I should use culling here (BOOST FPS)
+    sf::IntRect cullBox = RendererCalculateCulling(world);
+    for (int y = cullBox.top; y < cullBox.height; ++y) {
+        for (int x = cullBox.left; x < cullBox.width; ++x) {
             entity_t* tileEntity = SceneGetTileWithIndex(world, 1, x, y);
             if (!tileEntity) {
                 continue;
@@ -41,7 +45,7 @@ void CollisionResponse(unsigned long long eID, ECS* ecs, scene_context_t* world)
 
             sf::Vector2i normal;
             if (CheckCollision(*collider, tileEntity->collider, &normal)) {
-                if (tileEntity->tile.type == TILE_CLIMBABLE || tileEntity->tile.type == TILE_CLEAR) {
+                if (tileEntity->tile.type == TILE_CLEAR) {
                     continue;
                 }
 

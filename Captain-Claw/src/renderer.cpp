@@ -1,6 +1,7 @@
 #include "SFML/Graphics.hpp"
 
 #include "renderer.h"
+#include "scene_manager.h"
 
 sf::RenderWindow* rWindow;
 
@@ -9,6 +10,26 @@ void RendererInit(render_context_t* renderContext, int rWidth, int rHeight)
     renderContext->uiView = sf::View(sf::FloatRect(0.0f, 0.0f, rWidth, rHeight));
     renderContext->worldView.setSize(rWidth, rHeight);
     renderContext->worldView.setCenter(rWindow->getSize().x / 2.0f, rWindow->getSize().y / 2.0f);
+}
+
+sf::IntRect RendererCalculateCulling(const scene_context_t* world)
+{
+    const sf::Vector2f drawCenter = rWindow->getView().getCenter();
+    const sf::Vector2f viewSize = rWindow->getView().getSize();
+    const float width = viewSize.x / 2;
+    const float height = viewSize.y / 2;
+
+    int fromX = (drawCenter.x - width) / world->tileSize - 2;
+    int toX = (drawCenter.x + width) / world->tileSize + 2;
+    int fromY = (drawCenter.y - height) / world->tileSize - 2;
+    int toY = (drawCenter.y + height) / world->tileSize + 2;
+
+    fromX = std::clamp(fromX, 0, (int) world->tileGridWidth - 1);
+    toX = std::clamp(toX, 0, (int) world->tileGridWidth);
+    fromY = std::clamp(fromY, 0, (int) world->tileGridHeight - 1);
+    toY = std::clamp(toY, 0, (int) world->tileGridHeight);
+
+    return {fromX, fromY, toX, toY};
 }
 
 void DrawOutlineFloatRect(const sf::FloatRect& rect, sf::Color color, const sf::RenderStates& states)

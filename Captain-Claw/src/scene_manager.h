@@ -4,7 +4,6 @@
 #include "SFML/Graphics.hpp"
 
 #include "ecs.h"
-#include "renderer.h"
 
 #define MAX_GRID_WIDTH 300
 #define MAX_GRID_HEIGHT 100
