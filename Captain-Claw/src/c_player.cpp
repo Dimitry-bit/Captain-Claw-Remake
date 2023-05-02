@@ -34,8 +34,8 @@ const float jumpImpulseVel = 270.0f;
 const float jumpAccel = 25.0f;
 const float MAX_AIR_TIME = 0.4f;
 
-// NOTE(Tony): hmm!
-const float climbSpeed = 200000.0f;
+// FIXME(Tony): hmm! This could be frame dependent
+const float climbSpeed = 100000.0f;
 
 typedef void (* state_update)(ECS*, unsigned long long, float);
 typedef void (* state_invoke)(ECS*, unsigned long long);
@@ -100,73 +100,11 @@ const std::unordered_map<player_state_t, state_invoke> stateOnExit = {
 
 void PlayerFSMUpdate(ECS* ecs, unsigned long long id, c_player_t* player, float deltaTime);
 
-void PlayerLocomotion(c_player_t* player, c_physics_t* physics, sf::Transformable* transform, float deltaTime)
-{
-    physics->acceleration = {};
-
-    if (physics->isGrounded) {
-        timeInAir = 0.0f;
-    } else {
-        timeInAir += deltaTime;
-    }
-
-    if (physics->isClimb) {
-        physics->gravityScale = 0.0f;
-        physics->velocity.y = 0;
-    } else {
-        physics->gravityScale = 1.0f;
-    }
-
-    if (player->state == PLAYER_STATE_IDLE || player->state == PLAYER_STATE_MOVING
-        || player->state == Player_STATE_CLIMBING) {
-        if (!physics->isClimb) {
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-                physics->acceleration.x = 1.0f;
-
-                sf::Vector2f scale = transform->getScale();
-                if (scale.x < 0.0f) {
-                    transform->setScale(-1.0f * scale.x, scale.y);
-                }
-            }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-                physics->acceleration.x = -1.0f;
-
-                sf::Vector2f scale = transform->getScale();
-                if (scale.x > 0.0f) {
-                    transform->setScale(-1.0f * scale.x, scale.y);
-                }
-            }
-            if (Keyboard::isKeyPressed(Keyboard::Space)) {
-                if (timeInAir < jumpImpulseTime) {
-                    physics->velocity.y = -jumpImpulseVel;
-                    physics->useGravity = false;
-                } else if (timeInAir < MAX_AIR_TIME) {
-                    physics->acceleration.y = -jumpAccel;
-                } else {
-                    physics->useGravity = true;
-                }
-            } else {
-                physics->useGravity = true;
-            }
-        }
-        if (Keyboard::isKeyPressed(sf::Keyboard::Up) && physics->isClimb) {
-            physics->velocity.y = -1.0f * climbSpeed * deltaTime;
-        }
-        if (Keyboard::isKeyPressed(sf::Keyboard::Down) && physics->isClimb) {
-            physics->velocity.y = 1.0f * climbSpeed * deltaTime;
-        }
-    }
-
-    physics->acceleration.x *= (physics->isGrounded) ? playerSpeed : 0.8f * playerSpeed;
-}
-
 void PlayerUpdate(ECS* ecs, unsigned long long id, float deltaTime)
 {
     sf::Transformable* transform = (sf::Transformable*) ECSGet(ecs, id, C_TRANSFORM);
     c_player_t* cPlayer = (c_player_t*) ECSGet(ecs, id, C_PLAYER);
     c_physics_t* physics = (c_physics_t*) ECSGet(ecs, id, C_PHYSICS);
-
-//    PlayerLocomotion(cPlayer, physics, transform, deltaTime);
 
     physics->acceleration = {};
 
@@ -281,6 +219,7 @@ void PlayerStartClimbing(ECS* ecs, unsigned long long id)
 {
     c_player_t* cPlayer = (c_player_t*) ECSGet(ecs, id, C_PLAYER);
     Animator* animator = (Animator*) ECSGet(ecs, id, C_ANIMATOR);
+    c_physics_t* physics = (c_physics_t*) ECSGet(ecs, id, C_PHYSICS);
 
     if (cPlayer->state == PLAYER_STATE_IDLE || cPlayer->state == PLAYER_STATE_MOVING) {
         cPlayer->state = Player_STATE_CLIMBING;

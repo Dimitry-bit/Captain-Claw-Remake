@@ -85,7 +85,7 @@ void ClawAlloc(ECS* ecs)
     Animation clawIdle = AnimAnimationCreate(&spriteSheet);
     AnimPlay(&captainClaw->animator, &clawIdle);
 
-    captainClaw->transform.setPosition(650.0f, 150.0f);
+    captainClaw->transform.setPosition(480.0f, 5850.0f);
 
     c_collider_t hitCollider = ColliderCreate(sf::Vector2f(70.0f, 115.0f), sf::Vector2f(0.0f, -115.0f / 2.0f), false);
     ECSAdd(ecs, captainClaw->ID, C_COLLIDER, &hitCollider);
