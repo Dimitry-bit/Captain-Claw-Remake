@@ -147,6 +147,17 @@ void PhysicsUpdate(std::unordered_set<unsigned long long>& entityIDS, ECS* ecs, 
     }
 }
 
+void ColliderSync(std::unordered_set<unsigned long long>& entityIDS, ECS* ecs)
+{
+    for (auto& eID: entityIDS) {
+        c_collider_t* collider = (c_collider_t*) ECSGet(ecs, eID, C_COLLIDER);
+        sf::Transformable* transform = (sf::Transformable*) ECSGet(ecs, eID, C_TRANSFORM);
+
+        collider->transform = *transform;
+        collider->transform.move(collider->offset);
+    }
+}
+
 c_collider_t PhysicsCreateCollider(const sf::Vector2f& size, const sf::Vector2f& offset, bool isTrigger)
 {
     return c_collider_t{

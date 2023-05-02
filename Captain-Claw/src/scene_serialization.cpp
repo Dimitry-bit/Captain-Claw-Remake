@@ -45,11 +45,13 @@ static void ReadEntityData(scene_context_t* world, entity_t* entity, FILE* fp)
             fread(&entity->pickup.type, sizeof(entity->pickup.type), 1, fp);
             fread(&entity->pickup.value, sizeof(entity->pickup.value), 1, fp);
             ECSSetFlag(&world->ecs, entity->ID, C_PICKUP);
+            PickupInit(&world->ecs, entity);
         }
             break;
         case C_CHECKPOINT: {
             fread(&entity->checkpoint.keepInventory, sizeof(entity->checkpoint.keepInventory), 1, fp);
             ECSSetFlag(&world->ecs, entity->ID, C_CHECKPOINT);
+            CheckpointInit(&world->ecs, entity);
         }
             break;
         case C_ENEMY: {
@@ -65,6 +67,7 @@ static void ReadEntityData(scene_context_t* world, entity_t* entity, FILE* fp)
             fread(&entity->platform.b.x, sizeof(entity->platform.b.x), 2, fp);
             fread(&entity->platform.time, sizeof(entity->platform.time), 1, fp);
             ECSSetFlag(&world->ecs, entity->ID, C_PLATFORM);
+            PlatformInit(&world->ecs, entity);
         }
             break;
         default:break;

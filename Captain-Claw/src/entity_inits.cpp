@@ -26,4 +26,46 @@ void EnemyInit(ECS* ecs, entity_t* entity)
         .lives = 1,
     };
     ECSAdd(ecs, entity->ID, C_DAMAGEABLE, &damageable);
+
+    c_collider_t hitCollider = PhysicsCreateCollider(sf::Vector2f(entity->render.sprite.getTextureRect().width,
+                                                                  entity->render.sprite.getTextureRect().height),
+                                                     sf::Vector2f(entity->render.sprite.getTextureRect().width,
+                                                                  entity->render.sprite.getTextureRect().height) / 2.0f,
+                                                     true);
+
+    ECSAdd(ecs, entity->ID, C_COLLIDER, &hitCollider);
+}
+
+void CheckpointInit(ECS* ecs, entity_t* entity)
+{
+    c_collider_t hitCollider = PhysicsCreateCollider(sf::Vector2f(entity->render.sprite.getTextureRect().width * 2.0f,
+                                                                  entity->render.sprite.getTextureRect().height),
+                                                     sf::Vector2f(entity->render.sprite.getTextureRect().width,
+                                                                  entity->render.sprite.getTextureRect().height) / 2.0f,
+                                                     true);
+
+    ECSAdd(ecs, entity->ID, C_COLLIDER, &hitCollider);
+}
+
+void PickupInit(ECS* ecs, entity_t* entity)
+{
+    c_collider_t hitCollider = PhysicsCreateCollider(sf::Vector2f(entity->render.sprite.getTextureRect().width,
+                                                                  entity->render.sprite.getTextureRect().height),
+                                                     sf::Vector2f(entity->render.sprite.getTextureRect().width,
+                                                                  entity->render.sprite.getTextureRect().height) / 2.0f,
+                                                     true);
+
+    ECSAdd(ecs, entity->ID, C_COLLIDER, &hitCollider);
+}
+
+void PlatformInit(ECS* ecs, entity_t* entity)
+{
+    c_collider_t hitCollider = PhysicsCreateCollider(sf::Vector2f(entity->render.sprite.getTextureRect().width,
+                                                                  entity->render.sprite.getTextureRect().height),
+                                                     sf::Vector2f(entity->render.sprite.getTextureRect().width,
+                                                                  entity->render.sprite.getTextureRect().height) / 2.0f,
+                                                     true);
+
+    ECSAdd(ecs, entity->ID, C_COLLIDER, &hitCollider);
+
 }

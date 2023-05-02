@@ -79,9 +79,12 @@ void ClawAlloc(ECS* ecs)
     const spriteSheet_t& spriteSheet = ResSpriteSheetGet(CHAR_CLAW_IDLE);
     captainClaw->render.sprite.setTexture(spriteSheet.texture);
     captainClaw->render.type = RENDER_SPRITE;
+
+    captainClaw->animator.adjustOrigin = false;
     Animation clawIdle = AnimAnimationCreate(&spriteSheet);
     AnimPlay(&captainClaw->animator, &clawIdle);
-    captainClaw->transform.setPosition(550.0f, 150.0f);
+
+    captainClaw->transform.setPosition(650.0f, 150.0f);
 //    captainClaw->render.sprite.setPosition(35.0f / 2.0f, 115.0f / 2.0f);
 
     c_damageable_t damageable = {
@@ -177,6 +180,9 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
                 PhysicsUpdate(component.second.entityIDs, &world->ecs, world, deltaTime.asSeconds());
             }
                 break;
+            case C_COLLIDER: {
+                ColliderSync(component.second.entityIDs, &world->ecs);
+            }
         }
     }
 

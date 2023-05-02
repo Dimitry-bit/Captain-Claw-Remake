@@ -3,6 +3,7 @@
 #include "asset_constants.h"
 #include "animation.h"
 #include "sound_sys.h"
+#include "c_physics.h"
 
 unsigned long long latestCheckPointID;
 
@@ -12,13 +13,14 @@ void CheckPointUpdate(unsigned long long playerID, std::unordered_set<unsigned l
 
     for (auto& eID: entityIDs) {
         c_checkpoint_t* checkpoint = (c_checkpoint_t*) ECSGet(ecs, eID, C_CHECKPOINT);
-        c_render_t* render = (c_render_t*) ECSGet(ecs, eID, C_RENDER);
         Animator* animator = (Animator*) ECSGet(ecs, eID, C_ANIMATOR);
+        c_collider_t* collider = (c_collider_t*) ECSGet(ecs, eID, C_COLLIDER);
+
         if (checkpoint->isActive) {
             continue;
         }
 
-        if (claw->render.sprite.getGlobalBounds().intersects(render->sprite.getGlobalBounds())) {
+        if (CheckCollision(claw->collider, *collider, nullptr)) {
             if (animator->state == ANIMATOR_STATE_STOPPED) {
                 Animation animation = AnimAnimationCreate(&ResSpriteSheetGet(OBJ_SUPERCHECKPOINT_FLAGRISE), false);
                 AnimPlay(animator, &animation);

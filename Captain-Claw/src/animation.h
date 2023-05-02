@@ -26,6 +26,7 @@ struct Animator {
     sf::Sprite* sprite;
     unsigned int currentFrame;
     float elapsedTime;
+    bool adjustOrigin;
 };
 
 Animation AnimAnimationCreate(const spriteSheet_t* spriteSheet, bool isLoop = true, float speed = 1.0f);

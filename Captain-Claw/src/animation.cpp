@@ -36,6 +36,7 @@ void AnimAnimatorInit(Animator* animator, sf::Sprite* sprite)
     animator->elapsedTime = 0;
     animator->state = ANIMATOR_STATE_STOPPED;
     animator->sprite = sprite;
+    animator->adjustOrigin = true;
 }
 
 void AnimPlay(Animator* animator, const Animation* animation)
@@ -94,7 +95,16 @@ void AnimUpdate(Animator* animator, float deltaTime)
         sprite.setTextureRect(spriteSheet.frames[animator->currentFrame].area);
 
         // NOTE(Tony): Not sure why this works, revisit matrix
-        sprite.setOrigin(pivot.x * area.width / 2.0f, pivot.y * area.height / 2.0f);
+        sf::Vector2f newOrigin = sf::Vector2f(pivot.x * area.width, pivot.y * area.height) / 2.0f;
+        if (animator->adjustOrigin) {
+            if (fabs(sprite.getOrigin().x - newOrigin.x) >= originAlignmentThresholdX) {
+                sprite.move(newOrigin.x - sprite.getOrigin().x, 0);
+            }
+            if (fabs(sprite.getOrigin().y - newOrigin.y) >= originAlignmentThresholdY) {
+                sprite.move(0, newOrigin.y - sprite.getOrigin().y);
+            }
+        }
+        sprite.setOrigin(newOrigin);
 
         animator->currentFrame++;
     }
