@@ -91,6 +91,10 @@ void SceneAllocAssets(scene_context_t* world)
 
     AssetPushType(ASSET_SOUNDBUFFER);
     ResLoadFromFile(WAV_AMBIENT_CAVEMEDIUM2);
+    ResLoadFromFile(WAV_AMBIENT_ANVIL);
+    ResLoadFromFile(WAV_AMBIENT_TITLE);
+    ResLoadFromFile(WAV_AMBIENT_MAPLOOP);
+    ResLoadFromFile(WAV_AMBIENT_AMULET);
     ResLoadFromFile(WAV_CLAW_DRYGUNSHOT1);
     ResLoadFromFile(WAV_CLAW_FALLDEATH);
     ResLoadFromFile(WAV_CLAW_GUNSHOT);
