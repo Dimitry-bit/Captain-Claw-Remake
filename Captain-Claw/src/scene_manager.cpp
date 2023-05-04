@@ -217,7 +217,6 @@ bool SceneAddTile(scene_context_t* world, entity_t* entity, int x, int y)
 
     tilemap_t* tileMap = &world->tileMaps[world->tileMapIndex];
     tileMap->tileGrid[y * world->tileGridWidth + x] = entity;
-    printf("[INFO][SceneManager]: Tile Placed.\n");
     return true;
 }
 

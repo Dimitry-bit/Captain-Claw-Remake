@@ -1,12 +1,10 @@
 #include "entity.h"
-#include "renderer.h"
 #include "resource_manager.h"
 
 static void EntityInitRender(entity_t* self, const render_types_t& rType, const string& graphicID = "");
 
 entity_t* EntityAlloc()
 {
-    printf("[INFO][Entity]: Entity Created.\n");
     entity_t* entity = new entity_t();
     return entity;
 }
