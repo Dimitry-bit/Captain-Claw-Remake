@@ -21,6 +21,13 @@ const char* clawHitSounds[] = {
 };
 const int clawHitSoundsCount = 5;
 
+const char* clawWalkSounds[] = {
+    WAV_CLAW_RIGHTFOOT1,
+    WAV_CLAW_LEFTFOOT1
+};
+const int clawWalkSoundsCount = 2;
+float walkSoundTimer;
+
 const float recoverPeriod = 0.5f;
 float recoverTimer = 0.0f;
 const float attackPeriod = 0.5f;
@@ -214,6 +221,12 @@ void PlayerUpdateMove(ECS* ecs, unsigned long long id, float deltaTime)
     if (AnimGetRunningAnimName(animator) != CHAR_CLAW_RUN) {
         Animation anim = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_RUN), true);
         AnimPlay(animator, &anim);
+    }
+
+    walkSoundTimer += deltaTime;
+    if (walkSoundTimer >= 0.3f) {
+        walkSoundTimer = 0.0f;
+        SoundPlay(&ResSoundBuffGet(clawWalkSounds[rand() % clawWalkSoundsCount]), false);
     }
 }
 
