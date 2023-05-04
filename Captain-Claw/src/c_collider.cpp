@@ -75,6 +75,65 @@ bool CheckCollision(c_collider_t& a, c_collider_t& b, sf::Vector2i* hitNormal)
     return false;
 }
 
+bool CheckCollision(c_collider_t& a, c_collider_t& b, sf::Vector2i* hitNormal,
+                    sf::Transformable* tA, sf::Transformable* tB, float inertia)
+{
+    sf::Vector2i normal = sf::Vector2i(0, 0);
+    if (hitNormal) {
+        *hitNormal = normal;
+    }
+
+    sf::FloatRect aBounds = ColliderGetGlobalBounds(a);
+    sf::FloatRect bBounds = ColliderGetGlobalBounds(b);
+
+    sf::Vector2f aHalfExtent = sf::Vector2f(aBounds.width / 2.0f, aBounds.height / 2.0f);
+    sf::Vector2f bHalfExtent = sf::Vector2f(bBounds.width / 2.0f, bBounds.height / 2.0f);
+
+    sf::Vector2f aPos = sf::Vector2f(aBounds.left, aBounds.top);
+    sf::Vector2f bPos = sf::Vector2f(bBounds.left, bBounds.top);
+
+    float dX = bPos.x - aPos.x;
+    float dY = bPos.y - aPos.y;
+    float intersectX = abs((int) dX) - (bHalfExtent.x + aHalfExtent.x);
+    float intersectY = abs((int) dY) - (bHalfExtent.y + aHalfExtent.y);
+
+    if (intersectX < 0.0f && intersectY < 0.0f) {
+        inertia = std::clamp(inertia, 0.0f, 1.0f);
+
+        if (!a.isTrigger && !b.isTrigger) {
+            if (intersectX <= intersectY) {
+                if (dY > 0.0f) {
+                    normal = sf::Vector2i(0, -1);
+                    tA->move(0.0f, intersectY * (1.0f - inertia));
+                    tB->move(0.0f, -intersectY * inertia);
+                } else {
+                    normal = sf::Vector2i(0, 1);
+                    tA->move(0.0f, -intersectY * (1.0f - inertia));
+                    tB->move(0.0f, intersectY * inertia);
+                }
+            } else {
+                if (dX > 0.0f) {
+                    normal = sf::Vector2i(-1, 0);
+                    tA->move(intersectX * (1.0f - inertia), 0.0f);
+                    tB->move(-intersectX * inertia, 0.0f);
+                } else {
+                    normal = sf::Vector2i(1, 0);
+                    tA->move(-intersectX * (1.0f - inertia), 0.0f);
+                    tB->move(intersectX * inertia, 0.0f);
+                }
+            }
+        }
+
+        if (hitNormal) {
+            *hitNormal = normal;
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
 c_collider_t ColliderCreate(const sf::Vector2f& size, const sf::Vector2f& offset, bool isTrigger)
 {
     return c_collider_t{

@@ -40,8 +40,12 @@ void CollisionResponse(unsigned long long eID, ECS* ecs, scene_context_t* world)
             tileCollider->transform = tileEntity->transform;
             tileCollider->transform.move(tileCollider->offset);
 
+            if (tileEntity->tile.type == TILE_CLEAR) {
+                continue;
+            }
+
             sf::Vector2i normal;
-            if (CheckCollision(*collider, tileEntity->collider, &normal)) {
+            if (CheckCollision(*collider, tileEntity->collider, &normal, transform, &tileEntity->transform, 0.0f)) {
                 if (!physics->isClimb) {
                     physics->isClimb = tileEntity->tile.type == TILE_CLIMBABLE;
                 }
@@ -69,11 +73,11 @@ void CollisionResponse(unsigned long long eID, ECS* ecs, scene_context_t* world)
                     }
                 } else if (normal.x > 0) {
                     if (physics->velocity.x < 0.0f) {
-                        physics->velocity.x = 0.0f;
+//                        physics->velocity.x = 0.0f;
                     }
                 } else if (normal.x < 0) {
                     if (physics->velocity.x > 0.0f) {
-                        physics->velocity.x = 0.0f;
+//                        physics->velocity.x = 0.0f;
                     }
                 }
             }
