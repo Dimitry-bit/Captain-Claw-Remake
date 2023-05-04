@@ -9,6 +9,8 @@
 #include "combat_system.h"
 #include "c_collider.h"
 #include "transform_utils.h"
+#include "renderer.h"
+#include "vector_math.h"
 
 const char* clawHitSounds[] = {
     WAV_CLAW_HIT1,
@@ -403,5 +405,30 @@ void PlayerFSMSwitch(ECS* ecs, unsigned long long id, player_state_t state)
 
     if (stateOnEnter.at(state)) {
         stateOnEnter.at(state)(ecs, id);
+    }
+}
+
+void PlayerCameraFollow(const sf::Transformable* transform, render_context_t* renderContext, float deltaTime)
+{
+    const float speed = 250.0f;
+    const float moveThresholdX = 10.0f;
+    const float moveThresholdY = 3.0f;
+    const float maxThreshold = 100.0f;
+    float absDeltaX = fabs(transform->getPosition().x - renderContext->worldView.getCenter().x);
+    float absDeltaY = fabs(transform->getPosition().y - renderContext->worldView.getCenter().y);
+
+    if (absDeltaX >= maxThreshold || absDeltaY >= maxThreshold) {
+        renderContext->worldView.setCenter(transform->getPosition());
+    }
+
+    if (absDeltaX >= moveThresholdX) {
+        sf::Vector2f moveTemp = transform->getPosition() - renderContext->worldView.getCenter();
+        moveTemp = VectorNormalize(moveTemp);
+        renderContext->worldView.move(moveTemp.x * speed * deltaTime, 0.0f);
+    }
+
+    if (absDeltaY >= moveThresholdY) {
+        sf::Vector2f moveTemp = transform->getPosition() - renderContext->worldView.getCenter();
+        renderContext->worldView.move(0.0f, moveTemp.y);
     }
 }

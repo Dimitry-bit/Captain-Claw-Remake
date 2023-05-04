@@ -117,7 +117,7 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
     AnimSystemUpdate(deltaTime.asSeconds());
     SoundSystemUpdate();
     PlayerUpdate(&world->ecs, captainClaw->ID, deltaTime.asSeconds());
-    renderContext->worldView.setCenter(captainClaw->transform.getPosition());
+    PlayerCameraFollow(&captainClaw->transform, renderContext, deltaTime.asSeconds());
 
 #if 0
     captainClaw->render.sprite.setPosition(rWindow->mapPixelToCoords(sf::Vector2i(sf::Mouse::getPosition(*rWindow))));
@@ -174,6 +174,7 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
             }
         }
     }
+    DrawEntity(&captainClaw->render, captainClaw->transform.getTransform() * captainClaw->render.sprite.getTransform());
 
     // Render third pass
     for (int y = cullBox.top; y < cullBox.height; ++y) {
