@@ -52,8 +52,13 @@ void ClawMain()
     SceneAllocAssets(&world);
     ClawAlloc(&world.ecs);
 
+    unsigned int ambientHandle = SoundPlay(&ResSoundBuffGet(WAV_AMBIENT_TITLE), false);
     sf::Clock deltaClock;
     while (window.isOpen()) {
+        if (SoundGetStatus(ambientHandle) != sf::Sound::Status::Playing) {
+            ambientHandle = SoundPlay(&ResSoundBuffGet(WAV_AMBIENT_MAPLOOP), true);
+        }
+
         UpdateAndRender(&renderContext, &world, deltaClock.restart());
     }
 
