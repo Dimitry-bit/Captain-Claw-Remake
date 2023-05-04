@@ -221,7 +221,6 @@ void PlayerStartClimbing(ECS* ecs, unsigned long long id)
 {
     c_player_t* cPlayer = (c_player_t*) ECSGet(ecs, id, C_PLAYER);
     Animator* animator = (Animator*) ECSGet(ecs, id, C_ANIMATOR);
-    c_physics_t* physics = (c_physics_t*) ECSGet(ecs, id, C_PHYSICS);
 
     if (cPlayer->state == PLAYER_STATE_IDLE || cPlayer->state == PLAYER_STATE_MOVING) {
         cPlayer->state = Player_STATE_CLIMBING;
@@ -362,9 +361,16 @@ void PlayerStateAttack(unsigned long long playerID, std::unordered_set<unsigned 
     c_inventory_t* inventory = (c_inventory_t*) ECSGet(ecs, playerID, C_INVENTORY);
     sf::Transformable* transform = (sf::Transformable*) ECSGet(ecs, playerID, C_TRANSFORM);
     Animator* animator = (Animator*) ECSGet(ecs, playerID, C_ANIMATOR);
+    c_player_t* cPlayer = (c_player_t*) ECSGet(ecs, playerID, C_PLAYER);
 
     if ((sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl))
         && attackTimer >= attackPeriod) {
+        PlayerFSMSwitch(ecs, playerID, PLAYER_STATE_ATTACK);
+
+        if (cPlayer->state != PLAYER_STATE_ATTACK) {
+            return;
+        }
+
         for (auto& eID: entityIDs) {
             c_collider_t* enemyCollider = (c_collider_t*) ECSGet(ecs, eID, C_COLLIDER);
 
@@ -377,9 +383,14 @@ void PlayerStateAttack(unsigned long long playerID, std::unordered_set<unsigned 
         Animation swordAnimation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_SWORD_ATTACK), false);
         AnimPlay(animator, &swordAnimation);
         SoundPlay(&ResSoundBuffGet(WAV_CLAW_SWORDSWISH));
-        PlayerFSMSwitch(ecs, playerID, PLAYER_STATE_ATTACK);
+
         attackTimer = 0.0f;
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1) && attackTimer >= attackPeriod) {
+        PlayerFSMSwitch(ecs, playerID, PLAYER_STATE_ATTACK);
+        if (cPlayer->state != PLAYER_STATE_ATTACK) {
+            return;
+        }
+
         if (inventory->ammo_pistol > 0) {
             sf::Vector2f bulletPos = transform->getTransform().transformPoint(playerDamageable->pistolOffset);
             BulletCreate(bulletPos, TransformForward(*transform), false);
@@ -387,7 +398,6 @@ void PlayerStateAttack(unsigned long long playerID, std::unordered_set<unsigned 
 
             Animation pistolAnimation = AnimAnimationCreate(&ResSpriteSheetGet(CHAR_CLAW_PISTOL_ATTACK), false);
             AnimPlay(animator, &pistolAnimation);
-            PlayerFSMSwitch(ecs, playerID, PLAYER_STATE_ATTACK);
         } else {
             SoundPlay(&ResSoundBuffGet(WAV_CLAW_DRYGUNSHOT1));
         }
