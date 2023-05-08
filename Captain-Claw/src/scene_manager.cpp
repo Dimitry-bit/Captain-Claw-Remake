@@ -20,6 +20,7 @@ void SceneAllocAssets(scene_context_t* world)
 
     AssetPushType(ASSET_FONT);
     ResLoadFromFile(FONT_JETBRAINS);
+    ResLoadFromFile(FONT_MAGICDEC);
     AssetPopType();
 
     AssetPushType(ASSET_SPRITESHEET); // ASSET_PUSH
