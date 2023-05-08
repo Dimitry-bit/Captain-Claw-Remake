@@ -44,7 +44,7 @@ const float jumpAccel = 25.0f;
 const float MAX_AIR_TIME = 0.4f;
 
 // FIXME(Tony): hmm! This could be frame dependent
-const float climbSpeed = 100000.0f;
+const float climbSpeed = 10000.0f;
 
 typedef void (* state_update)(ECS*, unsigned long long, float);
 typedef void (* state_invoke)(ECS*, unsigned long long);

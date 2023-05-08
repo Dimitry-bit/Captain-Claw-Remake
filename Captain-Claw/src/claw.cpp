@@ -20,7 +20,7 @@
 #define DEBUG 1
 
 // TODO(Tony): Fix deltaTime
-const sf::Time fixedDeltaTime = sf::seconds(1.0f / 120.0f);
+const sf::Time fixedDeltaTime = sf::seconds(1.0f / 60.0f);
 sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
 void HandleEvent(render_context_t* renderContext);
@@ -132,7 +132,6 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
     rWindow->clear();
 
     // NOTE(Tony): decrease input delay
-    PlayerUpdate(&world->ecs, captainClaw->ID, deltaTime.asSeconds());
     AnimSystemUpdate(deltaTime.asSeconds());
     SoundSystemUpdate();
 
@@ -141,6 +140,7 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
         timeSinceLastUpdate -= fixedDeltaTime;
 
         HandleEvent(renderContext);
+        PlayerUpdate(&world->ecs, captainClaw->ID, fixedDeltaTime.asSeconds());
 
         for (auto& component: world->ecs.componentList) {
             switch (component.second.systemType) {
