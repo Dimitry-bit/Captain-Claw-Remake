@@ -17,6 +17,7 @@
 #include "c_physics.h"
 #include "c_collider.h"
 #include "menu.h"
+#include "Game_UI.h"
 
 #define DEBUG 1
 
@@ -66,6 +67,10 @@ void ClawMain()
 
     ClawAlloc(&world.ecs);
     MenuInit();
+    UI_Treasure_init();
+    UI_Health_init();
+    UI_ammo_init();
+    UI_lives_init();
 
     unsigned int ambientHandle = SoundPlay(&ResSoundBuffGet(WAV_AMBIENT_TITLE), false);
     sf::Clock deltaClock;
@@ -238,6 +243,10 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
 
     rWindow->setView(renderContext->uiView);
     // TODO(Tony): Draw UI stuff
+    UI_Treasure_Update(&world->ecs,captainClaw->ID);
+    UI_Health_Update(&world->ecs,captainClaw->ID);
+    UI_ammo_Update(&world->ecs,captainClaw->ID);
+    UI_lives_Update(&world->ecs,captainClaw->ID);
     if (isGamePaused) {
         MenuUpdate(deltaTime.asSeconds());
     }
