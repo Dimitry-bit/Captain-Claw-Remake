@@ -2,6 +2,4 @@
 #include "scene_manager.h"
 #include "entity.h"
 
-
-
-void PlatformsMovement(sf::Sprite platform,float deltaTime,float start,float end);
+void PlatformMoving(c_platform_t *platform,float deltaTime,sf::Transformable *transform);

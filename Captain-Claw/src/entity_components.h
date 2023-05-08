@@ -100,6 +100,7 @@ enum platform_types_t {
 
 struct c_platform_t {
     platform_types_t type;
+    sf::Vector2f starting;
     sf::Vector2f a;
     sf::Vector2f b;
     int time; // time in millisecond
