@@ -58,7 +58,6 @@ void ClawMain()
     }
 
     ClawAlloc(&world.ecs);
-    MenuInit();
     UI_Treasure_init();
     UI_Health_init();
     UI_ammo_init();

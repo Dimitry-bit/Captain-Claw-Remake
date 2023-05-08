@@ -9,6 +9,7 @@
 #include "resource_manager.h"
 #include "asset_constants.h"
 #include "claw.h"
+#include "sound_sys.h"
 
 enum class MenuState { Main, Help, Endgame };
 enum ItemState { BLANK, SELECTED };
@@ -16,17 +17,6 @@ enum ItemState { BLANK, SELECTED };
 const int ITEMS_STATES = 2;
 const int NUM_MAIN_ITEMS = 3;
 const int NUM_END_ITEMS = 2;
-
-sf::Sound clickSound;
-sf::Sound selectSound;
-
-sf::Texture mainTexture[NUM_MAIN_ITEMS][ITEMS_STATES];
-sf::Texture endTexture[NUM_END_ITEMS + 1][ITEMS_STATES];
-
-sf::Sprite mainMenu[NUM_MAIN_ITEMS];
-sf::Sprite endMenu[NUM_END_ITEMS + 1];
-sf::Sprite helpSprite;
-sf::Sprite menuSprite;
 
 // Set the default selected item to the first item in the main menu
 int selectedMainMenuItemIndex = 0;
@@ -38,10 +28,15 @@ const float pressPeriod = 0.1f;
 // Set the initial menu state to the main menu
 MenuState menuState = MenuState::Main;
 
-void MenuInit()
+void MenuUpdate(float deltaTime)
 {
-    clickSound.setBuffer(ResSoundBuffGet(WAV_UI_CLICK));
-    selectSound.setBuffer(ResSoundBuffGet(WAV_UI_SELECT));
+    sf::Texture mainTexture[NUM_MAIN_ITEMS][ITEMS_STATES];
+    sf::Texture endTexture[NUM_END_ITEMS + 1][ITEMS_STATES];
+
+    sf::Sprite mainMenu[NUM_MAIN_ITEMS];
+    sf::Sprite endMenu[NUM_END_ITEMS + 1];
+    sf::Sprite helpSprite;
+    sf::Sprite menuSprite;
 
     sf::Vector2u windowSize = rWindow->getSize();
     menuSprite.setTexture(ResTextureGet(UI_MENU));
@@ -94,12 +89,8 @@ void MenuInit()
 
     // Set the default selected item to the first item in the main menu
     endMenu[selectedEndMenuItemIndex].setTexture(mainTexture[selectedEndMenuItemIndex][SELECTED]);
-}
 
-void MenuUpdate(float deltaTime)
-{
     pressTimer += deltaTime;
-
     if (pressTimer >= pressPeriod) {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
             pressTimer = 0.0f;
@@ -107,7 +98,7 @@ void MenuUpdate(float deltaTime)
             if (menuState == MenuState::Main) {
                 // Move up in the main menu
                 if (selectedMainMenuItemIndex > 0) {
-                    clickSound.play();
+                    SoundPlay(&ResSoundBuffGet(WAV_UI_CLICK));
                     mainMenu[selectedMainMenuItemIndex].setTexture(
                         mainTexture[selectedMainMenuItemIndex][BLANK]);
                     selectedMainMenuItemIndex--;
@@ -116,7 +107,7 @@ void MenuUpdate(float deltaTime)
                 }
             } else if (menuState == MenuState::Endgame) {
                 if (selectedEndMenuItemIndex > 0) {
-                    clickSound.play();
+                    SoundPlay(&ResSoundBuffGet(WAV_UI_CLICK));
                     endMenu[selectedEndMenuItemIndex].setTexture(
                         endTexture[selectedEndMenuItemIndex][BLANK]);
                     selectedEndMenuItemIndex--;
@@ -132,7 +123,7 @@ void MenuUpdate(float deltaTime)
             if (menuState == MenuState::Main) {
                 // Move down in the main menu
                 if (selectedMainMenuItemIndex < NUM_MAIN_ITEMS - 1) {
-                    clickSound.play();
+                    SoundPlay(&ResSoundBuffGet(WAV_UI_CLICK));
                     mainMenu[selectedMainMenuItemIndex].setTexture(
                         mainTexture[selectedMainMenuItemIndex][0]);
                     selectedMainMenuItemIndex++;
@@ -141,7 +132,7 @@ void MenuUpdate(float deltaTime)
                 }
             } else if (menuState == MenuState::Endgame) {
                 if (selectedEndMenuItemIndex < NUM_END_ITEMS - 1) {
-                    clickSound.play();
+                    SoundPlay(&ResSoundBuffGet(WAV_UI_CLICK));
                     endMenu[selectedEndMenuItemIndex].setTexture(
                         endTexture[selectedEndMenuItemIndex][BLANK]);
                     selectedEndMenuItemIndex++;
@@ -155,7 +146,7 @@ void MenuUpdate(float deltaTime)
             pressTimer = 0.0f;
 
             if (menuState == MenuState::Main) {
-                selectSound.play();
+                SoundPlay(&ResSoundBuffGet(WAV_UI_SELECT));
                 // Check which main menu item was selected
                 switch (selectedMainMenuItemIndex) {
                     case 0:isGamePaused = false;
@@ -177,7 +168,7 @@ void MenuUpdate(float deltaTime)
                 switch (selectedEndMenuItemIndex) {
                     case 0:rWindow->close();
                         break;
-                    case 1:selectSound.play();
+                    case 1:SoundPlay(&ResSoundBuffGet(WAV_UI_SELECT));
                         menuState = MenuState::Main;
                         endMenu[selectedEndMenuItemIndex].setTexture(endTexture[selectedEndMenuItemIndex][BLANK]);
                         selectedMainMenuItemIndex = 0;
@@ -193,7 +184,7 @@ void MenuUpdate(float deltaTime)
 
             if (menuState == MenuState::Main) {
                 // Switch back to the main menu
-                selectSound.play();
+                SoundPlay(&ResSoundBuffGet(WAV_UI_SELECT));
                 menuState = MenuState::Endgame;
                 mainMenu[selectedMainMenuItemIndex].setTexture(mainTexture[selectedMainMenuItemIndex][BLANK]);
                 selectedEndMenuItemIndex = 0;
@@ -201,14 +192,14 @@ void MenuUpdate(float deltaTime)
                     endTexture[selectedEndMenuItemIndex][SELECTED]);
             } else if (menuState == MenuState::Help) {
                 // Switch back to the main menu
-                selectSound.play();
+                SoundPlay(&ResSoundBuffGet(WAV_UI_SELECT));
                 menuState = MenuState::Main;
                 selectedMainMenuItemIndex = 0;
                 mainMenu[selectedMainMenuItemIndex].setTexture(
                     mainTexture[selectedMainMenuItemIndex][SELECTED]);
             } else if (menuState == MenuState::Endgame) {
                 // Switch back to the main menu
-                selectSound.play();
+                SoundPlay(&ResSoundBuffGet(WAV_UI_SELECT));
                 menuState = MenuState::Main;
                 endMenu[selectedEndMenuItemIndex].setTexture(endTexture[selectedEndMenuItemIndex][BLANK]);
                 selectedMainMenuItemIndex = 0;

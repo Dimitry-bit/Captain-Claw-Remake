@@ -4,5 +4,4 @@
 
 #pragma once
 
-void MenuInit();
 void MenuUpdate(float deltaTime);
