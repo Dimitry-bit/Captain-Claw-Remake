@@ -58,6 +58,19 @@
 #define UI_POWERUPS "ui/UI_POWERUPS.png"
 #define UI_STOPWATCH "ui/UI_STOPWATCH.png"
 #define UI_TREASURECHEST "ui/UI_TREASURECHEST.png"
+#define UI_MENU "menu/main/MENU.png"
+#define UI_RETURN_1 "../resources/textures/menu/main/001_RETURN.png"
+#define UI_RETURN_2 "../resources/textures/menu/main/002_RETURN.png"
+#define UI_HELP_0 "menu/main/HELP.png"
+#define UI_HELP_1 "../resources/textures/menu/main/001_HELP.png"
+#define UI_HELP_2 "../resources/textures/menu/main/002_HELP.png"
+#define UI_END_1 "../resources/textures/menu/main/001_ENDGAME.png"
+#define UI_END_2 "../resources/textures/menu/main/002_ENDGAME.png"
+#define UI_YES_1 "../resources/textures/menu/main/endgame/001_YES.png"
+#define UI_YES_2 "../resources/textures/menu/main/endgame/002_YES.png"
+#define UI_NO_1 "../resources/textures/menu/main/endgame/001_NO.png"
+#define UI_NO_2 "../resources/textures/menu/main/endgame/002_NO.png"
+#define UI_AREYOUSURE "../resources/textures/menu/main/endgame/AREYOUSURE.png"
 
 #define WAV_GAME_DEATHTILE "LEVEL1/DEATHTILE.wav"
 #define WAV_GAME_KILLOFF "LEVEL1/KILLOFF.wav"
@@ -111,5 +124,8 @@
 #define WAV_SOLDIER_HIT4 "LEVEL1/SOLDIER/00340016.wav"
 #define WAV_SOLDIER_BASH_ATTACK "LEVEL1/SOLDIER/RFHEADBT8-22.wav"
 #define WAV_SOLDIER_GUN_ATTACK "LEVEL1/SOLDIER/SOLGUNFR8-22.wav"
+
+#define WAV_UI_CLICK "GAME/CLICK.wav"
+#define WAV_UI_SELECT "GAME/SELECT.wav"
 
 #define LEVEL_ROCA "../resources/LEVELS/LEVEL1.cscene"

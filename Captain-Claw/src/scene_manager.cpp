@@ -72,6 +72,12 @@ void SceneAllocAssets(scene_context_t* world)
     ResLoadFromFile(UI_LIVESHEAD, ASSET_TAG_ANIMATION);
     AssetPopType(); // ASSET_POP
 
+    AssetPushType(ASSET_TEXTURE);
+    ResLoadFromFile(UI_MENU);
+    ResLoadFromFile(UI_HELP_0);
+    AssetPopType();
+
+
     ResTextureLoadFromSpriteSheet(TILE_LEVEL1_TILES);
     ResTextureLoadFromSpriteSheet(OBJ_LEVEL1_OBJECTS);
     ResTextureLoadFromSpriteSheet(OBJ_SPRITESHEET_GAME);
@@ -140,6 +146,8 @@ void SceneAllocAssets(scene_context_t* world)
     ResLoadFromFile(WAV_GAME_PEGCRUMBLE);
     ResLoadFromFile(WAV_GAME_SOLHITHI);
     ResLoadFromFile(WAV_GAME_SOLHITL2);
+    ResLoadFromFile(WAV_UI_SELECT);
+    ResLoadFromFile(WAV_UI_CLICK);
     AssetPopType();
 
     // Load level1
