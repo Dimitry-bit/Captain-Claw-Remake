@@ -16,12 +16,15 @@
 #include "c_player.h"
 #include "c_physics.h"
 #include "c_collider.h"
+#include "menu.h"
 
-#define DEBUG 1
+#define DEBUG 0
 
 // TODO(Tony): Fix deltaTime
 const sf::Time fixedDeltaTime = sf::seconds(1.0f / 60.0f);
 sf::Time timeSinceLastUpdate = sf::Time::Zero;
+
+bool isGamePaused = true;
 
 void HandleEvent(render_context_t* renderContext);
 void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf::Time deltaTime);
@@ -62,6 +65,7 @@ void ClawMain()
     }
 
     ClawAlloc(&world.ecs);
+    MenuInit();
 
     unsigned int ambientHandle = SoundPlay(&ResSoundBuffGet(WAV_AMBIENT_TITLE), false);
     sf::Clock deltaClock;
@@ -131,31 +135,36 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
     rWindow->setView(renderContext->worldView);
     rWindow->clear();
 
-    // NOTE(Tony): decrease input delay
-    AnimSystemUpdate(deltaTime.asSeconds());
-    SoundSystemUpdate();
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+        isGamePaused = true;
+    }
 
-    timeSinceLastUpdate += deltaTime;
-    while (timeSinceLastUpdate >= fixedDeltaTime) {
-        timeSinceLastUpdate -= fixedDeltaTime;
+    HandleEvent(renderContext);
+    if (!isGamePaused) {
+        AnimSystemUpdate(deltaTime.asSeconds());
+        SoundSystemUpdate();
 
-        HandleEvent(renderContext);
-        PlayerUpdate(&world->ecs, captainClaw->ID, fixedDeltaTime.asSeconds());
+        timeSinceLastUpdate += deltaTime;
+        while (timeSinceLastUpdate >= fixedDeltaTime) {
+            timeSinceLastUpdate -= fixedDeltaTime;
 
-        for (auto& component: world->ecs.componentList) {
-            switch (component.second.systemType) {
-                case C_PHYSICS: {
-                    PhysicsUpdate(component.second.entityIDs, &world->ecs, world, fixedDeltaTime.asSeconds());
+            PlayerUpdate(&world->ecs, captainClaw->ID, fixedDeltaTime.asSeconds());
+
+            for (auto& component: world->ecs.componentList) {
+                switch (component.second.systemType) {
+                    case C_PHYSICS: {
+                        PhysicsUpdate(component.second.entityIDs, &world->ecs, world, fixedDeltaTime.asSeconds());
+                    }
+                        break;
+                    case C_COLLIDER: {
+                        ColliderSync(component.second.entityIDs, &world->ecs);
+                    }
+                        break;
                 }
-                    break;
-                case C_COLLIDER: {
-                    ColliderSync(component.second.entityIDs, &world->ecs);
-                }
-                    break;
             }
-        }
 
-        PlayerCameraFollow(&captainClaw->transform, renderContext, fixedDeltaTime.asSeconds());
+            PlayerCameraFollow(&captainClaw->transform, renderContext, fixedDeltaTime.asSeconds());
+        }
     }
 
     // Render first pass
@@ -180,22 +189,24 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
         }
     }
 
-    for (auto& component: world->ecs.componentList) {
-        switch (component.second.systemType) {
-            case C_PICKUP: {
-                PickupUpdate(captainClaw->ID, component.second.entityIDs, &world->ecs);
+    if (!isGamePaused) {
+        for (auto& component: world->ecs.componentList) {
+            switch (component.second.systemType) {
+                case C_PICKUP: {
+                    PickupUpdate(captainClaw->ID, component.second.entityIDs, &world->ecs);
+                }
+                    break;
+                case C_CHECKPOINT: {
+                    CheckPointUpdate(captainClaw->ID, component.second.entityIDs, &world->ecs);
+                }
+                    break;
+                case C_ENEMY: {
+                    EnemyAIUpdate(captainClaw->ID, component.second.entityIDs, &world->ecs, deltaTime.asSeconds());
+                    PlayerStateAttack(captainClaw->ID, component.second.entityIDs, &world->ecs, deltaTime.asSeconds());
+                    CombatSystemUpdate(captainClaw->ID, component.second.entityIDs, &world->ecs, deltaTime.asSeconds());
+                }
+                    break;
             }
-                break;
-            case C_CHECKPOINT: {
-                CheckPointUpdate(captainClaw->ID, component.second.entityIDs, &world->ecs);
-            }
-                break;
-            case C_ENEMY: {
-                EnemyAIUpdate(captainClaw->ID, component.second.entityIDs, &world->ecs, deltaTime.asSeconds());
-                PlayerStateAttack(captainClaw->ID, component.second.entityIDs, &world->ecs, deltaTime.asSeconds());
-                CombatSystemUpdate(captainClaw->ID, component.second.entityIDs, &world->ecs, deltaTime.asSeconds());
-            }
-                break;
         }
     }
 
@@ -227,6 +238,9 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
 
     rWindow->setView(renderContext->uiView);
     // TODO(Tony): Draw UI stuff
+    if (isGamePaused) {
+        MenuUpdate(deltaTime.asSeconds());
+    }
 
     rWindow->display();
 }
