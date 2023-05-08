@@ -19,6 +19,10 @@
 
 #define DEBUG 1
 
+// TODO(Tony): Fix deltaTime
+const sf::Time fixedDeltaTime = sf::seconds(1.0f / 120.0f);
+sf::Time timeSinceLastUpdate = sf::Time::Zero;
+
 void HandleEvent(render_context_t* renderContext);
 void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf::Time deltaTime);
 void ClawAlloc(ECS* ecs);
@@ -50,6 +54,13 @@ void ClawMain()
     world.tileMapIndex = 0;
     world.ecs = {};
     SceneAllocAssets(&world);
+    SceneSetTileIndex(&world, 1);
+    for (auto& component: world.ecs.componentList) {
+        if (component.second.systemType == C_COLLIDER) {
+            ColliderSync(component.second.entityIDs, &world.ecs);
+        }
+    }
+
     ClawAlloc(&world.ecs);
 
     unsigned int ambientHandle = SoundPlay(&ResSoundBuffGet(WAV_AMBIENT_TITLE), false);
@@ -117,32 +128,45 @@ void ClawAlloc(ECS* ecs)
 
 void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf::Time deltaTime)
 {
-    SceneSetTileIndex(world, 1);
-    HandleEvent(renderContext);
+    rWindow->setView(renderContext->worldView);
+    rWindow->clear();
+
+    // NOTE(Tony): decrease input delay
+    PlayerUpdate(&world->ecs, captainClaw->ID, deltaTime.asSeconds());
     AnimSystemUpdate(deltaTime.asSeconds());
     SoundSystemUpdate();
-    PlayerUpdate(&world->ecs, captainClaw->ID, deltaTime.asSeconds());
-    PlayerCameraFollow(&captainClaw->transform, renderContext, deltaTime.asSeconds());
 
-#if 0
-    captainClaw->render.sprite.setPosition(rWindow->mapPixelToCoords(sf::Vector2i(sf::Mouse::getPosition(*rWindow))));
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-        captainClaw->render.sprite.setScale(-captainClaw->render.sprite.getScale().x,
-                                            captainClaw->render.sprite.getScale().y);
+    timeSinceLastUpdate += deltaTime;
+    while (timeSinceLastUpdate >= fixedDeltaTime) {
+        timeSinceLastUpdate -= fixedDeltaTime;
+
+        HandleEvent(renderContext);
+
+        for (auto& component: world->ecs.componentList) {
+            switch (component.second.systemType) {
+                case C_PHYSICS: {
+                    PhysicsUpdate(component.second.entityIDs, &world->ecs, world, fixedDeltaTime.asSeconds());
+                }
+                    break;
+                case C_COLLIDER: {
+                    ColliderSync(component.second.entityIDs, &world->ecs);
+                }
+                    break;
+            }
+        }
+
+        PlayerCameraFollow(&captainClaw->transform, renderContext, fixedDeltaTime.asSeconds());
     }
-#endif
 
-    rWindow->clear();
-    rWindow->setView(renderContext->worldView);
-
-    sf::IntRect cullBox = RendererCalculateCulling(world);
     // Render first pass
+    sf::IntRect cullBox = RendererCalculateCulling(world);
     for (int i = 0; i < world->tileMapCount - 1; ++i) {
         for (int y = cullBox.top; y < cullBox.height; ++y) {
             for (int x = cullBox.left; x < cullBox.width; ++x) {
                 entity_t* tile = SceneGetTileWithIndex(world, i, x, y);
-                if (!tile)
+                if (!tile) {
                     continue;
+                }
 
                 DrawEntity(&tile->render, tile->transform.getTransform() * tile->render.sprite.getTransform());
             }
@@ -150,6 +174,12 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
     }
 
     // Render second pass
+    for (auto& component: world->ecs.componentList) {
+        if (component.second.systemType == C_RENDER) {
+            DrawEntities(component.second.entityIDs, &world->ecs);
+        }
+    }
+
     for (auto& component: world->ecs.componentList) {
         switch (component.second.systemType) {
             case C_PICKUP: {
@@ -161,26 +191,15 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
             }
                 break;
             case C_ENEMY: {
-                PlayerStateAttack(captainClaw->ID, component.second.entityIDs, &world->ecs, deltaTime.asSeconds());
                 EnemyAIUpdate(captainClaw->ID, component.second.entityIDs, &world->ecs, deltaTime.asSeconds());
+                PlayerStateAttack(captainClaw->ID, component.second.entityIDs, &world->ecs, deltaTime.asSeconds());
                 CombatSystemUpdate(captainClaw->ID, component.second.entityIDs, &world->ecs, deltaTime.asSeconds());
             }
                 break;
-            case C_RENDER: {
-                DrawEntities(component.second.entityIDs, &world->ecs);
-            }
-                break;
-            case C_PHYSICS: {
-                PhysicsUpdate(component.second.entityIDs, &world->ecs, world, deltaTime.asSeconds());
-            }
-                break;
-            case C_COLLIDER: {
-                ColliderSync(component.second.entityIDs, &world->ecs);
-            }
         }
     }
-    DrawEntity(&captainClaw->render, captainClaw->transform.getTransform() * captainClaw->render.sprite.getTransform());
 
+    DrawEntity(&captainClaw->render, captainClaw->transform.getTransform() * captainClaw->render.sprite.getTransform());
     // Render third pass
     for (int y = cullBox.top; y < cullBox.height; ++y) {
         for (int x = cullBox.left; x < cullBox.width; ++x) {
