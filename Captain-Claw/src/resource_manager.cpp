@@ -22,10 +22,10 @@ const string imageDir(parentDir + "images/");
 const string textureDir(parentDir + "textures/");
 const string soundDir(parentDir + "sounds/");
 
-const sf::Font defaultFont = sf::Font();
-const sf::Texture defaultTexture = sf::Texture();
-const sf::Image defaultImage = sf::Image();
-const sf::SoundBuffer defaultSoundBuffer = sf::SoundBuffer();
+const sf::Font* defaultFont = nullptr;
+const sf::Texture* defaultTexture = nullptr;
+const sf::Image* defaultImage = nullptr;
+const sf::SoundBuffer* defaultSoundBuffer = nullptr;
 
 static asset_context_t assetContext;
 
@@ -217,7 +217,10 @@ const sf::Font& ResFontGet(const char* identifier)
     asset_slot_t* slot = AssetGet(assetContext.fontTBL, identifier);
 
     if (!slot || !slot->font) {
-        return defaultFont;
+        if (!defaultFont) {
+            defaultFont = new sf::Font();
+        }
+        return *defaultFont;
     }
 
     return *slot->font;
@@ -228,7 +231,10 @@ const sf::Image& ResImageGet(const char* identifier)
     asset_slot_t* slot = AssetGet(assetContext.imageTBL, identifier);
 
     if (!slot || !slot->image) {
-        return defaultImage;
+        if (!defaultImage) {
+            defaultImage = new sf::Image();
+        }
+        return *defaultImage;
     }
 
     return *slot->image;
@@ -239,7 +245,10 @@ const sf::Texture& ResTextureGet(const char* identifier)
     asset_slot_t* slot = AssetGet(assetContext.textureTBL, identifier);
 
     if (!slot || !slot->texture) {
-        return defaultTexture;
+        if (!defaultTexture) {
+            defaultTexture = new sf::Texture();
+        }
+        return *defaultTexture;
     }
 
     return *slot->texture;
@@ -250,7 +259,10 @@ const sf::SoundBuffer& ResSoundBuffGet(const char* identifier)
     asset_slot_t* slot = AssetGet(assetContext.soundTBL, identifier);
 
     if (!slot || !slot->soundBuffer) {
-        return defaultSoundBuffer;
+        if (!defaultSoundBuffer) {
+            defaultSoundBuffer = new sf::SoundBuffer();
+        }
+        return *defaultSoundBuffer;
     }
 
     return *slot->soundBuffer;
@@ -336,4 +348,9 @@ void ResUnloadAll()
         ResSpriteSheetUnload(asset.first.c_str(), false);
     }
     assetContext.spriteSheetTBL.clear();
+
+    delete defaultFont;
+    delete defaultImage;
+    delete defaultSoundBuffer;
+    delete defaultTexture;
 }
