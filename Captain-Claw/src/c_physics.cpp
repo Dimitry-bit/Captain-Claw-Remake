@@ -50,10 +50,10 @@ void CollisionResponse(unsigned long long eID, std::unordered_set<unsigned long 
         }
     }
 
-    // NOTE(Tony): Note sure if I should use culling here (BOOST FPS)
-    sf::IntRect cullBox = RendererCalculateCulling(world);
-    for (int y = cullBox.top; y < cullBox.height; ++y) {
-        for (int x = cullBox.left; x < cullBox.width; ++x) {
+    // NOTE(Tony): Not sure if I should use culling here (BOOST FPS)
+//    sf::IntRect cullBox = RendererCalculateCulling(world);
+    for (int y = 0; y < world->tileGridHeight; ++y) {
+        for (int x = 0; x < world->tileGridWidth; ++x) {
             entity_t* tileEntity = SceneGetTileWithIndex(world, 1, x, y);
             if (!tileEntity) {
                 continue;

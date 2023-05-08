@@ -51,13 +51,15 @@ void PlatformUpdate(unsigned long long playerID, std::unordered_set<unsigned lon
                         if (animator->state != ANIMATOR_STATE_PLAYING) {
                             Animation animation = AnimAnimationCreate(&ResSpriteSheetGet(OBJ_CRUMBLINGPEG), false);
                             AnimPlay(animator, &animation);
-                        } else if (AnimGetNormalizedTime(animator) >= 0.9f) {
-                            ECSEntityDealloc(ecs, eID);
                         }
                     }
                 }
             } else {
                 platform->timer = 0.0f;
+            }
+
+            if (animator->state == ANIMATOR_STATE_PLAYING && AnimGetNormalizedTime(animator) >= 0.9f) {
+                ECSEntityDealloc(ecs, eID);
             }
         }
     }
