@@ -103,7 +103,9 @@ struct c_platform_t {
     sf::Vector2f starting;
     sf::Vector2f a;
     sf::Vector2f b;
+    sf::Vector2f offset;
     int time; // time in millisecond
+    float timer;
 };
 
 struct c_checkpoint_t {

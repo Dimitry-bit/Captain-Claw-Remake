@@ -10,7 +10,8 @@
 const float dampMultiplier = 4.0f;
 const float gravityMultiplier = 1.0f;
 
-void CollisionResponse(unsigned long long eID, ECS* ecs, scene_context_t* world)
+void CollisionResponse(unsigned long long eID, std::unordered_set<unsigned long long>& platformIDs,
+                       ECS* ecs, scene_context_t* world)
 {
     // TODO(Tony): Cleanup collision response code
     if (!ECSHas(ecs, eID, C_COLLIDER)) {
@@ -26,6 +27,28 @@ void CollisionResponse(unsigned long long eID, ECS* ecs, scene_context_t* world)
 
     physics->isGrounded = false;
     physics->isClimb = false;
+
+    for (auto& platformID: platformIDs) {
+        c_collider_t* platformcollider = (c_collider_t*) ECSGet(ecs, platformID, C_COLLIDER);
+
+        sf::Vector2i normal;
+        if (CheckCollision(*collider, *platformcollider, &normal)) {
+            if (normal.y < 0) {
+                if (physics->isGrounded)
+                    continue;
+
+                if (physics->velocity.y > 0.0f) {
+                    physics->velocity.y = 0.0f;
+                }
+
+                physics->isGrounded = true;
+            } else if (normal.y > 0) {
+                if (physics->velocity.y < 0.0f) {
+                    physics->velocity.y = 0.0f;
+                }
+            }
+        }
+    }
 
     // NOTE(Tony): Note sure if I should use culling here (BOOST FPS)
     sf::IntRect cullBox = RendererCalculateCulling(world);
@@ -66,9 +89,9 @@ void CollisionResponse(unsigned long long eID, ECS* ecs, scene_context_t* world)
                     if (physics->isGrounded)
                         continue;
 
-                        if (physics->velocity.y > 0.0f) {
-                            physics->velocity.y = 0.0f;
-                        }
+                    if (physics->velocity.y > 0.0f) {
+                        physics->velocity.y = 0.0f;
+                    }
 
                     physics->isGrounded = true;
                 } else if (normal.y > 0) {
@@ -89,20 +112,23 @@ void CollisionResponse(unsigned long long eID, ECS* ecs, scene_context_t* world)
     }
 }
 
-void PhysicsUpdate(std::unordered_set<unsigned long long>& entityIDS, ECS* ecs, scene_context_t* world, float deltaTime)
+void PhysicsUpdate(std::unordered_set<unsigned long long>& entityIDS,
+                   std::unordered_set<unsigned long long>& platformIDs,
+                   ECS* ecs, scene_context_t* world, float deltaTime)
 {
     for (auto& eID: entityIDS) {
         c_physics_t* physics = (c_physics_t*) ECSGet(ecs, eID, C_PHYSICS);
         sf::Transformable* transform = (sf::Transformable*) ECSGet(ecs, eID, C_TRANSFORM);
 
-        CollisionResponse(eID, ecs, world);
+        CollisionResponse(eID, platformIDs, ecs, world);
 
         if (physics->useGravity && !physics->isGrounded) {
             physics->velocity.y += 980.0f * gravityMultiplier * physics->gravityScale * deltaTime;
         }
 
         physics->acceleration.x += -dampMultiplier * physics->velocity.x;
-        sf::Vector2f displacement = 0.5f * physics->acceleration * powf(deltaTime, 2) + physics->velocity * deltaTime;
+        sf::Vector2f
+            displacement = 0.5f * physics->acceleration * powf(deltaTime, 2) + physics->velocity * deltaTime;
         physics->velocity += physics->acceleration * deltaTime;
 
         transform->move(displacement);

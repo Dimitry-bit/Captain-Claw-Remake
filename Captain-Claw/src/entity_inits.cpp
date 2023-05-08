@@ -55,6 +55,8 @@ void PickupInit(ECS* ecs, entity_t* entity)
 
 void PlatformInit(ECS* ecs, entity_t* entity)
 {
-    c_collider_t hitCollider = ColliderCreate(entity->render.sprite, true);
+    entity->platform.starting = entity->transform.getPosition();
+    entity->platform.offset = entity->platform.a;
+    c_collider_t hitCollider = ColliderCreate(entity->render.sprite, false);
     ECSAdd(ecs, entity->ID, C_COLLIDER, &hitCollider);
 }

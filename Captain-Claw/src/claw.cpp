@@ -18,8 +18,9 @@
 #include "c_collider.h"
 #include "menu.h"
 #include "Game_UI.h"
+#include "platforms.h"
 
-#define DEBUG 1
+#define DEBUG 0
 
 // TODO(Tony): Fix deltaTime
 const sf::Time fixedDeltaTime = sf::seconds(1.0f / 60.0f);
@@ -158,11 +159,24 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
             for (auto& component: world->ecs.componentList) {
                 switch (component.second.systemType) {
                     case C_PHYSICS: {
-                        PhysicsUpdate(component.second.entityIDs, &world->ecs, world, fixedDeltaTime.asSeconds());
+                        std::unordered_set<unsigned long long>* platformIDs = {};
+                        for (auto& c2: world->ecs.componentList) {
+                            if (c2.second.systemType == C_PLATFORM) {
+                                platformIDs = &c2.second.entityIDs;
+                            }
+                        }
+
+                        PhysicsUpdate(component.second.entityIDs, *platformIDs, &world->ecs,
+                                      world, fixedDeltaTime.asSeconds());
                     }
                         break;
                     case C_COLLIDER: {
                         ColliderSync(component.second.entityIDs, &world->ecs);
+                    }
+                        break;
+                    case C_PLATFORM: {
+                        PlatformUpdate(captainClaw->ID, component.second.entityIDs, &world->ecs,
+                                       fixedDeltaTime.asSeconds());
                     }
                         break;
                 }
@@ -243,10 +257,10 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
 
     rWindow->setView(renderContext->uiView);
     // TODO(Tony): Draw UI stuff
-    UI_Treasure_Update(&world->ecs,captainClaw->ID);
-    UI_Health_Update(&world->ecs,captainClaw->ID);
-    UI_ammo_Update(&world->ecs,captainClaw->ID);
-    UI_lives_Update(&world->ecs,captainClaw->ID);
+    UI_Treasure_Update(&world->ecs, captainClaw->ID);
+    UI_Health_Update(&world->ecs, captainClaw->ID);
+    UI_ammo_Update(&world->ecs, captainClaw->ID);
+    UI_lives_Update(&world->ecs, captainClaw->ID);
     if (isGamePaused) {
         MenuUpdate(deltaTime.asSeconds());
     }

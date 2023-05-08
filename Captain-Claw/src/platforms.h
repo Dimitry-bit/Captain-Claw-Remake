@@ -1,6 +1,5 @@
 #include <iostream>
-#include "scene_manager.h"
-#include "entity.h"
+#include "ecs.h"
 
-void PlatformMovingVertical(c_platform_t *platform,float deltaTime,sf::Transformable *transform);
-void PlatformMovingHorizontal(c_platform_t *platform,float deltaTime,sf::Transformable *transform)
+void PlatformUpdate(unsigned long long playerID, std::unordered_set<unsigned long long>& entityIDs, ECS* ecs,
+                    float deltaTime);
