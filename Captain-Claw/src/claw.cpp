@@ -18,7 +18,7 @@
 #include "c_collider.h"
 #include "menu.h"
 
-#define DEBUG 0
+#define DEBUG 1
 
 // TODO(Tony): Fix deltaTime
 const sf::Time fixedDeltaTime = sf::seconds(1.0f / 60.0f);
@@ -148,7 +148,7 @@ void UpdateAndRender(render_context_t* renderContext, scene_context_t* world, sf
         while (timeSinceLastUpdate >= fixedDeltaTime) {
             timeSinceLastUpdate -= fixedDeltaTime;
 
-            PlayerUpdate(&world->ecs, captainClaw->ID, fixedDeltaTime.asSeconds());
+            PlayerUpdate(world, captainClaw->ID, fixedDeltaTime.asSeconds());
 
             for (auto& component: world->ecs.componentList) {
                 switch (component.second.systemType) {

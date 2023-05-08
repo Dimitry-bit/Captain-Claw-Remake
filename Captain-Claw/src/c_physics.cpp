@@ -50,6 +50,10 @@ void CollisionResponse(unsigned long long eID, ECS* ecs, scene_context_t* world)
                     physics->isClimb = tileEntity->tile.type == TILE_CLIMBABLE;
                 }
 
+                if (tileEntity->tile.type == TILE_CLIMBABLE) {
+                    physics->isGrounded = true;
+                }
+
                 if (collider->isTrigger || tileCollider->isTrigger) {
                     continue;
                 }
@@ -62,9 +66,9 @@ void CollisionResponse(unsigned long long eID, ECS* ecs, scene_context_t* world)
                     if (physics->isGrounded)
                         continue;
 
-                    if (physics->velocity.y > 0.0f) {
-                        physics->velocity.y = 0.0f;
-                    }
+                        if (physics->velocity.y > 0.0f) {
+                            physics->velocity.y = 0.0f;
+                        }
 
                     physics->isGrounded = true;
                 } else if (normal.y > 0) {

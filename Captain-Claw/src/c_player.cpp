@@ -11,6 +11,7 @@
 #include "transform_utils.h"
 #include "renderer.h"
 #include "vector_math.h"
+#include "scene_manager.h"
 
 const char* clawHitSounds[] = {
     WAV_CLAW_HIT1,
@@ -107,10 +108,14 @@ const std::unordered_map<player_state_t, state_invoke> stateOnExit = {
     {PLAYER_STATE_DEATH, nullptr},
 };
 
+scene_context_t* worldRef;
+
 void PlayerFSMUpdate(ECS* ecs, unsigned long long id, c_player_t* player, float deltaTime);
 
-void PlayerUpdate(ECS* ecs, unsigned long long id, float deltaTime)
+void PlayerUpdate(scene_context_t* world, unsigned long long id, float deltaTime)
 {
+    worldRef = world;
+    ECS* ecs = &world->ecs;
     sf::Transformable* transform = (sf::Transformable*) ECSGet(ecs, id, C_TRANSFORM);
     c_player_t* cPlayer = (c_player_t*) ECSGet(ecs, id, C_PLAYER);
     c_physics_t* physics = (c_physics_t*) ECSGet(ecs, id, C_PHYSICS);
@@ -132,23 +137,25 @@ void PlayerUpdate(ECS* ecs, unsigned long long id, float deltaTime)
 
     if (cPlayer->state == PLAYER_STATE_IDLE || cPlayer->state == PLAYER_STATE_MOVING
         || cPlayer->state == Player_STATE_CLIMBING) {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-            physics->acceleration.x = 1.0f;
+        if (cPlayer->state != Player_STATE_CLIMBING) {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+                physics->acceleration.x = 1.0f;
 
-            if (cPlayer->state != Player_STATE_CLIMBING) {
-                sf::Vector2f scale = transform->getScale();
-                if (scale.x < 0.0f) {
-                    transform->setScale(-1.0f * scale.x, scale.y);
+                if (cPlayer->state != Player_STATE_CLIMBING) {
+                    sf::Vector2f scale = transform->getScale();
+                    if (scale.x < 0.0f) {
+                        transform->setScale(-1.0f * scale.x, scale.y);
+                    }
                 }
             }
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-            physics->acceleration.x = -1.0f;
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+                physics->acceleration.x = -1.0f;
 
-            if (cPlayer->state != Player_STATE_CLIMBING) {
-                sf::Vector2f scale = transform->getScale();
-                if (scale.x > 0.0f) {
-                    transform->setScale(-1.0f * scale.x, scale.y);
+                if (cPlayer->state != Player_STATE_CLIMBING) {
+                    sf::Vector2f scale = transform->getScale();
+                    if (scale.x > 0.0f) {
+                        transform->setScale(-1.0f * scale.x, scale.y);
+                    }
                 }
             }
         }
@@ -249,6 +256,7 @@ void PlayerUpdateClimbing(ECS* ecs, unsigned long long id, float deltaTime)
 {
     c_physics_t* physics = (c_physics_t*) ECSGet(ecs, id, C_PHYSICS);
     Animator* animator = (Animator*) ECSGet(ecs, id, C_ANIMATOR);
+    sf::Transformable* transfrom = (sf::Transformable*) ECSGet(ecs, id, C_TRANSFORM);
 
     if (physics->isClimb) {
         if (abs(physics->velocity.y) == 0) {
@@ -256,6 +264,31 @@ void PlayerUpdateClimbing(ECS* ecs, unsigned long long id, float deltaTime)
         } else if (animator->state == ANIMATOR_STATE_PAUSED) {
             AnimResume(animator);
         }
+
+        entity_t* closestTile = nullptr;
+        sf::IntRect cullBox = RendererCalculateCulling(worldRef);
+        for (int y = cullBox.top; y < cullBox.height; ++y) {
+            for (int x = cullBox.left; x < cullBox.width; ++x) {
+                entity_t* tile = SceneGetTileWithIndex(worldRef, 1, x, y);
+                if (!tile) {
+                    continue;
+                }
+                if (!closestTile) {
+                    closestTile = tile;
+                }
+
+                if (tile->tile.type == TILE_CLIMBABLE) {
+                    if (fabs(tile->transform.getPosition().x - transfrom->getPosition().x)
+                        < fabs(closestTile->transform.getPosition().x - transfrom->getPosition().x)) {
+                        closestTile = tile;
+                    }
+                }
+            }
+        }
+
+        float disp = (closestTile->transform.getPosition().x + worldRef->tileSize / 2.0f);
+        transfrom->setPosition(disp, transfrom->getPosition().y);
+
     } else {
         PlayerFSMSwitch(ecs, id, PLAYER_STATE_IDLE);
     }
