@@ -8,6 +8,14 @@
 
 void SceneAllocAssets(scene_context_t* world)
 {
+    entity_t** tileGrid00 = new entity_t* [MAX_GRID_HEIGHT * MAX_GRID_WIDTH]();
+    entity_t** tileGrid01 = new entity_t* [MAX_GRID_HEIGHT * MAX_GRID_WIDTH]();
+    entity_t** tileGrid02 = new entity_t* [MAX_GRID_HEIGHT * MAX_GRID_WIDTH]();
+    world->tileMaps = new tilemap_t[3]();
+    world->tileMaps[0].tileGrid = tileGrid00;
+    world->tileMaps[1].tileGrid = tileGrid01;
+    world->tileMaps[2].tileGrid = tileGrid02;
+
     // This is fine if we only load 1--2 levels
 
     AssetPushType(ASSET_FONT);
@@ -76,7 +84,6 @@ void SceneAllocAssets(scene_context_t* world)
     ResLoadFromFile(UI_MENU);
     ResLoadFromFile(UI_HELP_0);
     AssetPopType();
-
 
     ResTextureLoadFromSpriteSheet(TILE_LEVEL1_TILES);
     ResTextureLoadFromSpriteSheet(OBJ_LEVEL1_OBJECTS);
@@ -163,7 +170,10 @@ void SceneDealloc(scene_context_t* world)
                 EntityDealloc(&tileMap->tileGrid[y * world->tileGridWidth + x]);
             }
         }
+        delete[] world->tileMaps[i].tileGrid;
+        world->tileMaps[i].tileGrid = nullptr;
     }
+    delete[] world->tileMaps;
 
     ECSDealloc(&world->ecs);
 

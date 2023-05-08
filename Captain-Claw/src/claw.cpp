@@ -47,15 +47,6 @@ void ClawMain()
     world.tileGridHeight = MAX_GRID_HEIGHT;
     world.tileSize = 64; // TODO(Tony): replace by #define
     world.tileMapCount = 3;
-    entity_t* tileGrid00[MAX_GRID_HEIGHT][MAX_GRID_WIDTH] = {};
-    entity_t* tileGrid01[MAX_GRID_HEIGHT][MAX_GRID_WIDTH] = {};
-    entity_t* tileGrid02[MAX_GRID_HEIGHT][MAX_GRID_WIDTH] = {};
-    tilemap_t tileMaps[3] = {
-        {(entity_t**) tileGrid00},
-        {(entity_t**) tileGrid01},
-        {(entity_t**) tileGrid02}
-    };
-    world.tileMaps = tileMaps;
     world.tileMapIndex = 0;
     world.ecs = {};
     SceneAllocAssets(&world);
