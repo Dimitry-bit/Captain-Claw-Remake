@@ -35,12 +35,12 @@ const float attackPeriod = 0.5f;
 float attackTimer = 0.0f;
 const int swordDmg = 25;
 
-const float playerSpeed = 1000.0f;
+const float playerSpeed = 1300.0f;
 const float stopMovingThreshold = 35.0f;
 
 float timeInAir = 0.0f;
 const float jumpImpulseTime = 0.1f;
-const float jumpImpulseVel = 200.0f;
+const float jumpImpulseVel = 250.0f;
 const float jumpAccel = 25.0f;
 const float MAX_AIR_TIME = 0.4f;
 
