@@ -50,6 +50,7 @@ enum tile_types_t {
 
 struct c_tile_t {
     tile_types_t type;
+    bool isLadderTop;
 };
 
 enum pickup_types_t {

@@ -21,6 +21,12 @@ void CollisionResponse(unsigned long long eID, std::unordered_set<unsigned long 
     c_physics_t* physics = (c_physics_t*) ECSGet(ecs, eID, C_PHYSICS);
     sf::Transformable* transform = (sf::Transformable*) ECSGet(ecs, eID, C_TRANSFORM);
     c_collider_t* collider = (c_collider_t*) ECSGet(ecs, eID, C_COLLIDER);
+    c_player_t* player = nullptr;
+    if (ECSHas(ecs, eID, C_PLAYER))
+    {
+        player = (c_player_t*) ECSGet(ecs, eID, C_PLAYER);
+    }
+
 
     collider->transform = *transform;
     collider->transform.move(collider->offset);
@@ -73,8 +79,23 @@ void CollisionResponse(unsigned long long eID, std::unordered_set<unsigned long 
                     physics->isClimb = tileEntity->tile.type == TILE_CLIMBABLE;
                 }
 
-                if (tileEntity->tile.type == TILE_CLIMBABLE) {
+                if (tileEntity->tile.type == TILE_CLIMBABLE && player->state == Player_STATE_CLIMBING) {
                     physics->isGrounded = true;
+                }
+
+                if (tileEntity->tile.type == TILE_CLIMBABLE && tileEntity->tile.isLadderTop)
+                {
+                    if (normal.y < 0)
+                    {
+                        if (physics->isGrounded)
+                            continue;
+
+                        if (physics->velocity.y > 0.0f) {
+                            physics->velocity.y = 0.0f;
+                        }
+
+                        physics->isGrounded = true;
+                    }
                 }
 
                 if (collider->isTrigger || tileCollider->isTrigger) {

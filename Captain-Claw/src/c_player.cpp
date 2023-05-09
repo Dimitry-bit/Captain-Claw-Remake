@@ -40,7 +40,7 @@ const float stopMovingThreshold = 35.0f;
 
 float timeInAir = 0.0f;
 const float jumpImpulseTime = 0.1f;
-const float jumpImpulseVel = 270.0f;
+const float jumpImpulseVel = 200.0f;
 const float jumpAccel = 25.0f;
 const float MAX_AIR_TIME = 0.4f;
 
@@ -128,7 +128,7 @@ void PlayerUpdate(scene_context_t* world, unsigned long long id, float deltaTime
         timeInAir += deltaTime;
     }
 
-    if (physics->isClimb) {
+    if (cPlayer->state == Player_STATE_CLIMBING&&physics->isClimb) {
         physics->gravityScale = 0.0f;
         physics->velocity.y = 0;
     } else {

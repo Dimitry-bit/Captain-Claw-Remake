@@ -3,6 +3,8 @@
 #include "entity_inits.h"
 #include "c_physics.h"
 #include "c_collider.h"
+#include "resource_manager.h"
+#include "asset_constants.h"
 
 void TileInit(ECS* ecs, entity_t* entity)
 {
@@ -14,6 +16,11 @@ void TileInit(ECS* ecs, entity_t* entity)
     } else if (entity->tile.type != TILE_CLEAR) {
         c_collider_t tileCollider = ColliderCreate(entity->render.sprite, false);
         EntitySet(entity, C_COLLIDER, &tileCollider);
+    }
+
+    entity->tile.isLadderTop = false;
+    if (entity->render.sprite.getTexture() == &ResTextureGet("tilesets/LEVEL1_TILES/ACTION/006")) {
+        entity->tile.isLadderTop = true;
     }
 }
 

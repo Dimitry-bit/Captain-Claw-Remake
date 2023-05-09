@@ -103,24 +103,34 @@ bool CheckCollision(c_collider_t& a, c_collider_t& b, sf::Vector2i* hitNormal,
         if (!a.isTrigger && !b.isTrigger) {
             if (intersectX <= intersectY) {
                 if (dY > 0.0f) {
-                    normal = sf::Vector2i(0, -1);
                     tA->move(0.0f, intersectY * (1.0f - inertia));
                     tB->move(0.0f, -intersectY * inertia);
                 } else {
-                    normal = sf::Vector2i(0, 1);
                     tA->move(0.0f, -intersectY * (1.0f - inertia));
                     tB->move(0.0f, intersectY * inertia);
                 }
             } else {
                 if (dX > 0.0f) {
-                    normal = sf::Vector2i(-1, 0);
                     tA->move(intersectX * (1.0f - inertia), 0.0f);
                     tB->move(-intersectX * inertia, 0.0f);
                 } else {
-                    normal = sf::Vector2i(1, 0);
                     tA->move(-intersectX * (1.0f - inertia), 0.0f);
                     tB->move(intersectX * inertia, 0.0f);
                 }
+            }
+        }
+
+        if (intersectX <= intersectY) {
+            if (dY > 0.0f) {
+                normal = sf::Vector2i(0, -1);
+            } else {
+                normal = sf::Vector2i(0, 1);
+            }
+        } else {
+            if (dX > 0.0f) {
+                normal = sf::Vector2i(-1, 0);
+            } else {
+                normal = sf::Vector2i(1, 0);
             }
         }
 
