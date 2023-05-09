@@ -1,0 +1,8 @@
+n=FRAME01 x=1    y=1    w=28   h=25   pX=0.5  pY=0.5  
+n=FRAME02 x=31   y=1    w=24   h=24   pX=0.5  pY=0.5  
+n=FRAME03 x=57   y=1    w=16   h=17   pX=0.5  pY=0.5  
+n=FRAME04 x=31   y=27   w=20   h=17   pX=0.5  pY=0.5  
+n=FRAME05 x=75   y=1    w=28   h=23   pX=0.5  pY=0.5  
+n=FRAME06 x=75   y=26   w=24   h=18   pX=0.5  pY=0.5  
+n=FRAME07 x=1    y=28   w=20   h=14   pX=0.5  pY=0.5  
+n=FRAME08 x=53   y=27   w=20   h=17   pX=0.5  pY=0.5  
