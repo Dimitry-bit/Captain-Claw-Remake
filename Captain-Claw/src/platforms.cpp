@@ -11,6 +11,8 @@ const float elevatorSpeed = 100.0f;
 const float arriveThreshold = 10.0f;
 const float crumblePeriod = 0.3f;
 
+std::vector<unsigned long long> toRemove = {};
+
 void PlatformUpdate(unsigned long long playerID, std::unordered_set<unsigned long long>& entityIDs,
                     ECS* ecs, float deltaTime)
 {
@@ -59,8 +61,13 @@ void PlatformUpdate(unsigned long long playerID, std::unordered_set<unsigned lon
             }
 
             if (animator->state == ANIMATOR_STATE_PLAYING && AnimGetNormalizedTime(animator) >= 0.9f) {
-                ECSEntityDealloc(ecs, eID);
+                toRemove.emplace_back(eID);
             }
         }
     }
+
+    for (auto& eID: toRemove) {
+        ECSEntityDealloc(ecs, eID);
+    }
+    toRemove.clear();
 }
