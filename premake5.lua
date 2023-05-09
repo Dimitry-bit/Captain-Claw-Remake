@@ -5,12 +5,13 @@ workspace "Captain-Claw"
 project "Captain-Claw"
     kind "ConsoleApp"
     language "C++"
-    cppdialect "C++17"
+    cppdialect "C++20"
     systemversion "latest"
 
     output_dir = "%{cfg.buildcfg}-%{cfg.architecture}"
     targetdir("bin/%{prj.name}/" .. output_dir)
     objdir("intermediate/%{prj.name}/" .. output_dir)
+    debugdir("bin/%{prj.name}/" .. output_dir)
 
     files
     {

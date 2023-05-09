@@ -8,8 +8,13 @@
 git clone https://github.com/Dimitry-bit/Captain-Claw-Remake.git
 cd ./Captain-Claw-Remake
 premake5 vs2022
-cp /path/to/SFML/libs ./vendor/sfml/libs
-cp /path/to/SFML/include ./vendor/sfml/include
+mkdir -p ./vendor/sfml
+cp -r /path/to/SFML/lib ./vendor/sfml/
+cp -r /path/to/SFML/include ./vendor/sfml/
+mkdir -p ./bin/Captain-Claw/Debug-x86_64
+mkdir -p ./bin/Captain-Claw/Release-x86_64
+cp /path/to/SFML/bin/*.dll ./bin/Captain-Claw/Debug-x86_64/
+cp /path/to/SFML/bin/*.dll ./bin/Captain-Claw/Release-x86_64/
 ```
 
 - CLion
@@ -115,7 +120,7 @@ resources/audio/music/main_theme.ogg
 resources/screens/logo/logo.png
 resources/screens/title/title.png
 resources/screens/gameplay/background.png
-resources/characters/player.png
+resources/characters/Player.png
 resources/characters/enemy_slime.png
 resources/common/font_arial.ttf
 resources/common/gui.png
