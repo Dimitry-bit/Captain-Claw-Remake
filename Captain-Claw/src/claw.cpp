@@ -63,6 +63,9 @@ void ClawMain()
     UI_ammo_init();
     UI_lives_init();
 
+    const sf::Image& icon = ResImageGet("ICON.png");
+    window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+
     unsigned int ambientHandle = SoundPlay(&ResSoundBuffGet(WAV_AMBIENT_TITLE), false);
     sf::Clock deltaClock;
     while (window.isOpen()) {

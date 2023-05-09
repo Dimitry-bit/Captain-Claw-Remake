@@ -20,6 +20,7 @@ void SceneAllocAssets(scene_context_t* world)
 
     AssetPushType(ASSET_FONT);
     ResLoadFromFile(FONT_JETBRAINS);
+    ResLoadFromFile(FONT_MAGICDEC);
     AssetPopType();
 
     AssetPushType(ASSET_SPRITESHEET); // ASSET_PUSH
@@ -155,6 +156,10 @@ void SceneAllocAssets(scene_context_t* world)
     ResLoadFromFile(WAV_GAME_SOLHITL2);
     ResLoadFromFile(WAV_UI_SELECT);
     ResLoadFromFile(WAV_UI_CLICK);
+    AssetPopType();
+
+    AssetPushType(ASSET_IMAGE);
+    ResLoadFromFile("ICON.png");
     AssetPopType();
 
     // Load level1

@@ -23,33 +23,35 @@ sf::Text Lives_UI_Text;
 
 void UI_Treasure_init()
 {
-    ResFontGet("JetBrainsMono-Regular.ttf");
-    Treasure_UI_Text.setFont(ResFontGet("JetBrainsMono-Regular.ttf"));
-    Treasure_UI_Text.setCharacterSize(20);
+    Treasure_UI_Text.setFont(ResFontGet(FONT_MAGICDEC));
+    Treasure_UI_Text.setCharacterSize(30);
     Treasure_UI_Text.setFillColor(sf::Color::Yellow);
     Treasure_UI_Text.setStyle(sf::Text::Bold);
+    Treasure_UI_Text.setOutlineThickness(1.0f);
+    Treasure_UI_Text.setOutlineColor(sf::Color::Black);
     Animation TreasureAnimation = AnimAnimationCreate(&ResSpriteSheetGet(UI_TREASURECHEST));
     AnimAnimatorInit(&animator_Treasure, &Treasure);
     AnimPlay(&animator_Treasure, &TreasureAnimation);
-    Treasure.setScale(2, 2);
+    Treasure.setScale(1.8f, 1.8f);
 }
 
 void UI_Treasure_Update(ECS* ecs, unsigned long long player_id)
 {
     c_inventory_t* inventory = (c_inventory_t*) ECSGet(ecs, player_id, C_INVENTORY);
-    Treasure.setPosition(20, 30);
+    Treasure.setPosition(10, 10);
     Treasure_UI_Text.setString(std::to_string(inventory->gold_counter));
-    Treasure_UI_Text.setPosition(Treasure.getPosition().x + 80, Treasure.getPosition().y + 10);
+    Treasure_UI_Text.setPosition(Treasure.getPosition().x + 60, Treasure.getPosition().y + 00);
     rWindow->draw(Treasure);
     rWindow->draw(Treasure_UI_Text);
 }
 
 void UI_Health_init()
 {
-    ResFontGet("JetBrainsMono-Regular.ttf");
-    Health_UI_Text.setFont(ResFontGet("JetBrainsMono-Regular.ttf"));
-    Health_UI_Text.setCharacterSize(20);
-    Health_UI_Text.setFillColor(sf::Color::Black);
+    Health_UI_Text.setFont(ResFontGet(FONT_MAGICDEC));
+    Health_UI_Text.setCharacterSize(40);
+    Health_UI_Text.setFillColor(sf::Color::Red);
+    Health_UI_Text.setOutlineThickness(2.0f);
+    Health_UI_Text.setOutlineColor(sf::Color::Black);
     Health_UI_Text.setStyle(sf::Text::Bold);
     Animation HealthAnimation = AnimAnimationCreate(&ResSpriteSheetGet(UI_HEALTHHEART));
     AnimAnimatorInit(&animator_health, &health);
@@ -60,17 +62,16 @@ void UI_Health_init()
 void UI_Health_Update(ECS* ecs, unsigned long long player_id)
 {
     c_damageable_t* Health = (c_damageable_t*) ECSGet(ecs, player_id, C_DAMAGEABLE);
-    health.setPosition(rWindow->getSize().x - 100, 30);
+    health.setPosition(rWindow->getSize().x - health.getTextureRect().width, 10);
     Health_UI_Text.setString(std::to_string(Health->health));
-    Health_UI_Text.setPosition(health.getPosition().x + (-40), health.getPosition().y + 10);
+    Health_UI_Text.setPosition(health.getPosition().x + (-55), health.getPosition().y - 5.0f);
     rWindow->draw(health);
     rWindow->draw(Health_UI_Text);
 }
 
 void UI_ammo_init()
 {
-    ResFontGet("JetBrainsMono-Regular.ttf");
-    Ammo_UI_Text.setFont(ResFontGet("JetBrainsMono-Regular.ttf"));
+    Ammo_UI_Text.setFont(ResFontGet(FONT_MAGICDEC));
     Ammo_UI_Text.setCharacterSize(15);
     Ammo_UI_Text.setFillColor(sf::Color::Black);
     Ammo_UI_Text.setStyle(sf::Text::Bold);
@@ -84,7 +85,7 @@ void UI_ammo_init()
 void UI_ammo_Update(ECS* ecs, unsigned long long player_id)
 {
     c_inventory_t* ammo = (c_inventory_t*) ECSGet(ecs, player_id, C_INVENTORY);
-    Ammo.setPosition(rWindow->getSize().x - 50, 115);
+    Ammo.setPosition(rWindow->getSize().x, 95);
     Ammo_UI_Text.setString(std::to_string(ammo->ammo_pistol));
     Ammo_UI_Text.setPosition(Ammo.getPosition().x + (-95), Ammo.getPosition().y - 25);
     Ammo.setOrigin(Ammo.getTextureRect().width, Ammo.getTextureRect().height);
@@ -94,8 +95,7 @@ void UI_ammo_Update(ECS* ecs, unsigned long long player_id)
 
 void UI_lives_init()
 {
-    ResFontGet("JetBrainsMono-Regular.ttf");
-    Lives_UI_Text.setFont(ResFontGet("JetBrainsMono-Regular.ttf"));
+    Lives_UI_Text.setFont(ResFontGet(FONT_MAGICDEC));
     Lives_UI_Text.setCharacterSize(20);
     Lives_UI_Text.setFillColor(sf::Color::Black);
     Lives_UI_Text.setStyle(sf::Text::Bold);
@@ -109,8 +109,8 @@ void UI_lives_Update(ECS* ecs, unsigned long long player_id)
 {
     c_damageable_t* lives = (c_damageable_t*) ECSGet(ecs, player_id, C_DAMAGEABLE);
     Lives_UI_Text.setString(std::to_string(lives->lives));
-    Lives.setPosition(rWindow->getSize().x - 90, 130);
-    Lives_UI_Text.setPosition(Lives.getPosition().x + (-30), Lives.getPosition().y + 10);
+    Lives.setPosition(rWindow->getSize().x - Lives.getTextureRect().width, 110);
+    Lives_UI_Text.setPosition(Lives.getPosition().x + (-30), Lives.getPosition().y + 5);
     rWindow->draw(Lives);
     rWindow->draw(Lives_UI_Text);
 }

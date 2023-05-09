@@ -9,10 +9,11 @@ void DrawEntities(const std::unordered_set<unsigned long long>& entityIDs, ECS* 
         sf::Transformable* transform = (sf::Transformable*) ECSGet(ecs, eID, C_TRANSFORM);
         DrawEntity(render, transform->getTransform() * render->sprite.getTransform());
 
-        if (ECSHas(ecs, eID, C_COLLIDER)) {
-            c_collider_t* collider = (c_collider_t*) ECSGet(ecs, eID, C_COLLIDER);
-            DrawCollider(*collider);
-        }
+        // Note(Tony): Debug Only
+//        if (ECSHas(ecs, eID, C_COLLIDER)) {
+//            c_collider_t* collider = (c_collider_t*) ECSGet(ecs, eID, C_COLLIDER);
+//            DrawCollider(*collider);
+//        }
     }
 }
 

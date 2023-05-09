@@ -1,6 +1,7 @@
 #pragma once
 
 #define FONT_JETBRAINS "JetBrainsMono-Regular.ttf"
+#define FONT_MAGICDEC "MagicDecimal-VG4ye.ttf"
 
 #define TILE_LEVEL1_TILES "tilesets/LEVEL1_TILES.png"
 
