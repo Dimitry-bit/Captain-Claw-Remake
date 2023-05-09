@@ -1,6 +1,7 @@
-#include <vector_math.h>
-#include <SFML/Graphics.hpp>
 #include <cmath>
+#include <SFML/Graphics.hpp>
+
+#include "vector_math.h"
 
 using namespace sf;
 
