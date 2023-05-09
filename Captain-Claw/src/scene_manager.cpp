@@ -158,6 +158,10 @@ void SceneAllocAssets(scene_context_t* world)
     ResLoadFromFile(WAV_UI_CLICK);
     AssetPopType();
 
+    AssetPushType(ASSET_IMAGE);
+    ResLoadFromFile("ICON.png");
+    AssetPopType();
+
     // Load level1
     SceneDeserialize(world, LEVEL_ROCA);
 }
